@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPxP", "NPxP\NPxP.csproj", "{43E9BEDC-4BEB-41A7-B140-AD52D2E73BB6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{43E9BEDC-4BEB-41A7-B140-AD52D2E73BB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43E9BEDC-4BEB-41A7-B140-AD52D2E73BB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43E9BEDC-4BEB-41A7-B140-AD52D2E73BB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43E9BEDC-4BEB-41A7-B140-AD52D2E73BB6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

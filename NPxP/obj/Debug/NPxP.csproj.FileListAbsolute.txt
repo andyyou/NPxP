@@ -1,0 +1,12 @@
+C:\Projects\Github\NPxP\NPxP\bin\Debug\NPxP.dll
+C:\Projects\Github\NPxP\NPxP\bin\Debug\NPxP.pdb
+C:\Projects\Github\NPxP\NPxP\bin\Debug\System.ComponentModel.Composition.dll
+C:\Projects\Github\NPxP\NPxP\bin\Debug\WRPlugIn.dll
+C:\Projects\Github\NPxP\NPxP\obj\Debug\ResolveAssemblyReference.cache
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.PxPTab.resources
+C:\Projects\Github\NPxP\NPxP\obj\Debug\ResGen.read.1.tlog
+C:\Projects\Github\NPxP\NPxP\obj\Debug\ResGen.write.1.tlog
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.dll
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.pdb
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.MapWindow.resources
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.Properties.Resources.resources

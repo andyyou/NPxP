@@ -13,7 +13,9 @@ namespace NPxP
     {
         public MapWindow()
         {
+            WriteHelper.Log("MapWindow()");
             InitializeComponent();
         }
+       
     }
 }

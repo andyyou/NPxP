@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace NPxP
+namespace NPxP.Helper
 {
     public class WriteHelper
     {
@@ -22,7 +22,7 @@ namespace NPxP
             {
                 using (StreamWriter sw = new StreamWriter(PATH, true))
                 {
-                    sw.WriteLine(i + ". : " + msg + "\r");
+                    sw.WriteLine(i + ". : " + msg + "\n");
                     sw.Close(); 
                 } 
                 i++;

@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using WRPlugIn;
 using System.ComponentModel.Composition;
+using NPxP.Helper;
+using NPxP.Model;
 
 namespace NPxP
 {
@@ -24,8 +26,9 @@ namespace NPxP
         #endregion
 
         #region Local Objects
-        MapWindow mp = new MapWindow();
-	
+        private MapWindow mp;
+        private DataSet dsPxP;
+        private DataTable dtbFlaws; 
         #endregion
 
         #region Import Objects
@@ -40,10 +43,27 @@ namespace NPxP
 
         #endregion
 
-        // (1)
+        #region Interface Method
+        // (1-1)
         public PxPTab()
         {
+            WriteHelper.Log("PxPTab()");
             InitializeComponent();
+            
+            // initialize dgvFlaw without datasource.
+            ConfigHelper ch = new ConfigHelper();
+            List<Column> lstColumns = ch.GetdgvFlawColumns();
+            foreach (Column c in lstColumns)
+            {
+                DataGridViewCell cell = new DataGridViewTextBoxCell();
+                DataGridViewColumn column = new DataGridViewColumn();
+                column.CellTemplate = cell;
+                column.Name = c.Name;
+                column.HeaderText = c.Name;
+                column.Width = c.Width;
+                dgvFlaw.Columns.Add(column);
+            }
+            
         }
         // (End)
         ~PxPTab()
@@ -53,12 +73,12 @@ namespace NPxP
         // (2)
         public void OnLanguageChanged(e_Language language)
         {
-            
+            WriteHelper.Log("OnLanguageChanged()");
         }
         // (3)(8)
         public void Initialize(string unitsXMLPath)
         {
-            
+            WriteHelper.Log("Initialize()");
         }
         // (4)(7)(17)
         public void GetName(e_Language lang, out string name)
@@ -91,27 +111,30 @@ namespace NPxP
         // (9) :回傳外掛設計的 MapWindow 給主程式
         public void GetMapControlHandle(out IntPtr hndl)
         {
+            mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = mp.Handle;
+            WriteHelper.Log("GetMapControlHandle()");
         }
         // (10)
         public void SetMapPosition(int w, int h)
         {
             mp.SetBounds(0, 0, w, h);
+            WriteHelper.Log("SetMapPosition()");
         }
         // (11)
         public void OnWebDBConnected(IWebDBConnectionInfo info)
         {
-
+            WriteHelper.Log("OnWebDBConnected()");
         }
         // (12)
         public void OnUserTermsChanged(IUserTerms terms)
         {
-
+            WriteHelper.Log("OnUserTermsChanged()");
         }
         // (13)
         public void OnSetFlawLegend(List<FlawLegend> legend)
         {
-           
+            WriteHelper.Log("OnSetFlawLegend()");
         }
         // (14)
         public void OnInitializeGlassEdges(int glassLeftMarginToROI, int glassRightMarginToROI)
@@ -147,22 +170,22 @@ namespace NPxP
         // (D) :資料流入
         public void OnFlaws(IList<IFlawInfo> flaws)
         {
-            
+            WriteHelper.Log("OnFlaws()");
         }
         // (D)
         public void OnCut(double md)
         {
-           
+            WriteHelper.Log("OnCut()");
         }
         // (D) :處理缺陷判斷
         public void OnDoffResult(double md, int doffNumber, bool pass)
         {
-            
+            WriteHelper.Log("OnDoffResult()");
         }
         // (D)
         public void OnGlassEdges(double md, double leftGlassEdge, double leftGearEdge, double leftGearRigthEdge, double leftROI, double rightROI, double rightGearLeftEdge, double rightGearRightEdge, double rigthGlassEdge)
         {
-
+            WriteHelper.Log("OnGlassEdges()");
         }
         // (D) :單位變更
         public void OnUnitsChanged()
@@ -189,6 +212,12 @@ namespace NPxP
         {
             WriteHelper.Log("Unplug()");
         }
-      
+        #endregion
+
+        #region R Method
+        #endregion
+
+        #region Action Method
+        #endregion
     }
 }

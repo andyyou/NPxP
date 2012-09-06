@@ -10,3 +10,4 @@ C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.MapWindow.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.Properties.Resources.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.csproj.GenerateResource.Cache
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.dll.licenses
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.MapSetup.resources

@@ -40,9 +40,12 @@
             // 
             // dgvFlaw
             // 
+            this.dgvFlaw.AllowUserToAddRows = false;
+            this.dgvFlaw.AllowUserToOrderColumns = true;
             this.dgvFlaw.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvFlaw.Location = new System.Drawing.Point(12, 12);
             this.dgvFlaw.Name = "dgvFlaw";
+            this.dgvFlaw.RowHeadersVisible = false;
             this.dgvFlaw.RowTemplate.Height = 24;
             this.dgvFlaw.Size = new System.Drawing.Size(735, 140);
             this.dgvFlaw.TabIndex = 0;

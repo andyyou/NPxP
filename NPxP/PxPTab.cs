@@ -10,6 +10,8 @@ using WRPlugIn;
 using System.ComponentModel.Composition;
 using NPxP.Helper;
 using NPxP.Model;
+using System.Xml;
+using System.Xml.XPath;
 
 namespace NPxP
 {
@@ -26,9 +28,11 @@ namespace NPxP
         #endregion
 
         #region Local Objects
-        private MapWindow mp;
-        private DataSet dsPxP;
-        private DataTable dtbFlaws; 
+        private MapWindow _mp;
+        private DataSet _dsPxP;
+        private DataTable _dtbFlaws;
+        private Dictionary<string, double> _units;
+        private string _unitsXMLPath;
         #endregion
 
         #region Import Objects
@@ -63,12 +67,31 @@ namespace NPxP
                 column.Width = c.Width;
                 dgvFlaw.Columns.Add(column);
             }
-            
+
+            // initialize tlpFlawImages layout without pictures.
+            tlpFlawImages.ColumnStyles.Clear();
+            tlpFlawImages.ColumnCount = ch.GettlpFlawImagesColumns();
+            tlpFlawImages.RowCount = ch.GettlpFlawImagesRows();
+            int phdHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+            int phdrWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+            for (int i = 0; i < tlpFlawImages.RowCount; i++)
+            {
+                tlpFlawImages.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+            }
+
+            for (int i = 0; i < tlpFlawImages.ColumnCount; i++)
+            {
+                tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            }
+
+
+
         }
         // (End)
         ~PxPTab()
         {
-
+            ConfigHelper ch = new ConfigHelper();
+            ch.SavedgvFlawColumns(dgvFlaw);
         }
         // (2)
         public void OnLanguageChanged(e_Language language)
@@ -78,6 +101,7 @@ namespace NPxP
         // (3)(8)
         public void Initialize(string unitsXMLPath)
         {
+            LoadXmlToUnitsObject(unitsXMLPath);
             WriteHelper.Log("Initialize()");
         }
         // (4)(7)(17)
@@ -97,10 +121,8 @@ namespace NPxP
         // (5)
         public void GetControlHandle(out IntPtr hndl)
         {
-            
             hndl = Handle;
             WriteHelper.Log("GetControlHandle()");
-
         }
         // (6)
         public void SetPosition(int w, int h)
@@ -111,14 +133,14 @@ namespace NPxP
         // (9) :回傳外掛設計的 MapWindow 給主程式
         public void GetMapControlHandle(out IntPtr hndl)
         {
-            mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
-            hndl = mp.Handle;
+            _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
+            hndl = _mp.Handle;
             WriteHelper.Log("GetMapControlHandle()");
         }
         // (10)
         public void SetMapPosition(int w, int h)
         {
-            mp.SetBounds(0, 0, w, h);
+            _mp.SetBounds(0, 0, w, h);
             WriteHelper.Log("SetMapPosition()");
         }
         // (11)
@@ -215,6 +237,26 @@ namespace NPxP
         #endregion
 
         #region R Method
+        public void LoadXmlToUnitsObject(string xml)
+        {
+            // initialize units dictionary.
+            _units = new Dictionary<string, double>(); // ex: <Flaw Map CD, 1.00000000000000000>
+
+            // load xml data to dictionary.
+            XmlDocument document = new XmlDocument();
+            document.Load(xml);
+            XPathNavigator navigator = document.CreateNavigator();
+            XPathNodeIterator node = navigator.Select("//Components/Component");
+
+            while (node.MoveNext())
+            {
+                int unitIndex = Convert.ToInt32(node.Current.SelectSingleNode("@unit").Value) + 1; // Xpath's index start from 1.
+                string expr = String.Format("//Units/Unit[{0}]/@conversion", unitIndex);
+                double convertion = Convert.ToDouble(navigator.SelectSingleNode(expr).Value);
+                string componentName = node.Current.SelectSingleNode("@name").Value;
+                _units.Add(componentName, convertion);
+            }
+        }
         #endregion
 
         #region Action Method

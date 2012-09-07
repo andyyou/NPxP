@@ -53,6 +53,7 @@
             // tlpFlawImages
             // 
             this.tlpFlawImages.BackColor = System.Drawing.Color.Transparent;
+            this.tlpFlawImages.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tlpFlawImages.ColumnCount = 2;
             this.tlpFlawImages.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpFlawImages.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));

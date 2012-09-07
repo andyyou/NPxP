@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
 using NPxP.Model;
+using System.Windows.Forms;
 
 namespace NPxP.Helper
 {
@@ -101,36 +102,55 @@ namespace NPxP.Helper
         //--------------------------------------------------------------------------------------//
         
         // 儲存 dgvFlaw 欄位排序和調整的 Width
-        public bool SavedgvFlawColumns()
+        public bool SavedgvFlawColumns(DataGridView dgv)
         {
             string path = PathHelper.SystemConfigFolder + "default.xml";
             XmlDocument document = new XmlDocument();
             document.Load(path);
             XPathNavigator navigator = document.CreateNavigator();
 
-            // Remove old relative_table for add new record
-            if (navigator.Select("//dgv_flaw/*").Count > 0)
+            lock (dgv)
             {
-                XPathNavigator first = navigator.SelectSingleNode("//relative_table/*[1]");
-                XPathNavigator last = navigator.SelectSingleNode("//relative_table/*[last()]");
-                navigator.MoveTo(first);
-                navigator.DeleteRange(last);
+                for (int i = 0; i < dgv.Columns.Count - 1; i++)
+                {
+                    string xpath_index = String.Format("//dgv_flaw/column[name='{0}']/index", dgv.Columns[i].Name);
+                    navigator.SelectSingleNode(xpath_index).SetValue(dgv.Columns[i].DisplayIndex.ToString());
+
+                    string xpath_width = String.Format("//dgv_flaw/column[name='{0}']/width", dgv.Columns[i].Name);
+                    navigator.SelectSingleNode(xpath_width).SetValue(dgv.Columns[i].Width.ToString());
+                }
             }
+            try
+            {
+                document.Save(path);
+            }
+            catch
+            {
+                WriteHelper.Log("ERROR::SavedgvFlawColumns");
+                return false;
+            }
+            return true;
+        }
+        // 儲存 tlpFlawImages Rows * Columns
+        public bool SavetlpFlawImagesLayout(string xmlFile, int columns, int rows)
+        {
+            string path = PathHelper.MapConfigFolder + xmlFile + ".xml";
+            XmlDocument document = new XmlDocument();
+            document.Load(path);
+            XPathNavigator navigator = document.CreateNavigator();
 
-            //lock (dgv)
-            //{
-            //    for (int i = 0; i < dgv.Rows.Count - 1; i++)
-            //    {
-            //        string source = dgv.Rows[i].Cells[0].Value.ToString();
-            //        string target = dgv.Rows[i].Cells[1].Value.ToString();
-            //        navigator.SelectSingleNode("//relative_table").AppendChildElement(string.Empty, "column", string.Empty, null);
-            //        // Move to last column element and add source , target value.
-            //        navigator.SelectSingleNode("//relative_table/column[last()]").AppendChildElement(string.Empty, "source", string.Empty, source.ToUpper());
-            //        navigator.SelectSingleNode("//relative_table/column[last()]").AppendChildElement(string.Empty, "target", string.Empty, target.ToUpper());
+            navigator.SelectSingleNode("//pxptab/image_grid_rows").SetValue(rows.ToString());
+            navigator.SelectSingleNode("//pxptab/image_grid_columns").SetValue(columns.ToString());
 
-            //    }
-            //}
-            document.Save(path); 
+            try
+            {
+                document.Save(path);
+            }
+            catch
+            {
+                WriteHelper.Log("ERROR::SavetlpFlawImagesLayout");
+                return false;
+            }
             return true;
         }
     }

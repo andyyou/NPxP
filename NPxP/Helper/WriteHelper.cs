@@ -9,6 +9,7 @@ namespace NPxP.Helper
     public class WriteHelper
     {
         const string PATH = @"c:\temp\PxPLifeCycle.txt";
+        const string ERROR_PATH = @"c:\temp\ErrorLog.txt";
         static object lockMe = new object();
         public static int i = 1;
         public WriteHelper()
@@ -25,6 +26,20 @@ namespace NPxP.Helper
                     sw.WriteLine(i + ". : " + msg + "\n");
                     sw.Close(); 
                 } 
+                i++;
+            }
+        }
+
+        public static void ErrorLog(string msg)
+        {
+
+            lock (lockMe)
+            {
+                using (StreamWriter sw = new StreamWriter(ERROR_PATH, true))
+                {
+                    sw.WriteLine(DateTime.Now.ToString() + ";  " +  i +  ". : " + msg + "\n");
+                    sw.Close();
+                }
                 i++;
             }
         }

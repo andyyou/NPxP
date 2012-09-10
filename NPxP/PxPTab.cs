@@ -18,7 +18,7 @@ namespace NPxP
     [Export(typeof(IWRPlugIn))]
     public partial class PxPTab : UserControl, IWRPlugIn, IWRMapWindow, IOnFlaws, IOnEvents, IOnCut, IOnJobLoaded,
                                   IOnJobStarted, IOnLanguageChanged, IOnJobStopped, IOnWebDBConnected, 
-                                  IOnGlassEdges, IOnOnline, IOnUserTermsChanged, IOnDoffResult, IOnPxPConfig,
+                                  IOnOnline, IOnUserTermsChanged, IOnDoffResult, IOnPxPConfig,
                                   IOnRollResult, IOnOpenHistory, 
                                   IOnUnitsChanged
     {
@@ -29,10 +29,14 @@ namespace NPxP
 
         #region Local Objects
         private MapWindow _mp;
-        private DataSet _dsPxP;
         private DataTable _dtbFlaws;
         private Dictionary<string, double> _units;
-        private string _unitsXMLPath;
+        private string _xmlUnitsPath;
+        private string _dbConnectString;
+        private IPxPInfo _pxpInfo;
+        private IList<ISeverityInfo> _serverityInfo;
+        private IList<IFlawTypeName> _flawTypes;
+        private IList<ILaneInfo> _lanes;
         #endregion
 
         #region Import Objects
@@ -48,7 +52,7 @@ namespace NPxP
         #endregion
 
         #region Interface Method
-        // (1-1)
+        // (1)
         public PxPTab()
         {
             WriteHelper.Log("PxPTab()");
@@ -65,8 +69,11 @@ namespace NPxP
                 column.Name = c.Name;
                 column.HeaderText = c.Name;
                 column.Width = c.Width;
+                column.DataPropertyName = c.Name;
                 dgvFlaw.Columns.Add(column);
             }
+            dgvFlaw.AutoGenerateColumns = false; 
+            
 
             // initialize tlpFlawImages layout without pictures.
             tlpFlawImages.ColumnStyles.Clear();
@@ -86,6 +93,7 @@ namespace NPxP
 
 
 
+
         }
         // (End)
         ~PxPTab()
@@ -101,6 +109,7 @@ namespace NPxP
         // (3)(8)
         public void Initialize(string unitsXMLPath)
         {
+            _xmlUnitsPath = unitsXMLPath;
             LoadXmlToUnitsObject(unitsXMLPath);
             WriteHelper.Log("Initialize()");
         }
@@ -147,15 +156,21 @@ namespace NPxP
         public void OnWebDBConnected(IWebDBConnectionInfo info)
         {
             WriteHelper.Log("OnWebDBConnected()");
+            _dbConnectString = String.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3};", info.ServerName, info.DatabaseName, info.UserName, info.Password);
         }
         // (12)
         public void OnUserTermsChanged(IUserTerms terms)
         {
             WriteHelper.Log("OnUserTermsChanged()");
+            if (!String.IsNullOrEmpty(_xmlUnitsPath))
+            {
+                LoadXmlToUnitsObject(_xmlUnitsPath);
+            }
         }
         // (13)
         public void OnSetFlawLegend(List<FlawLegend> legend)
         {
+            _mp.SetFlawLegend(legend);  // 把 MapWindow 需要的資料傳過去. 
             WriteHelper.Log("OnSetFlawLegend()");
         }
         // (14)
@@ -166,12 +181,46 @@ namespace NPxP
         // (15)
         public void OnPxPConfig(IPxPInfo info)
         {
+            _pxpInfo = info;
             WriteHelper.Log("OnPxPConfig()");
         }
         // (16)
         public void OnJobLoaded(IList<IFlawTypeName> flawTypes, IList<ILaneInfo> lanes, IList<ISeverityInfo> severityInfo, IJobInfo jobInfo)
         {
             WriteHelper.Log("OnJobLoaded()");
+            // get data to objects
+            _serverityInfo = severityInfo ;
+            _flawTypes = flawTypes;
+            _lanes = lanes;
+            // initialize datatable  flaw format without data.
+            _dtbFlaws = new DataTable("Flaws");
+            _dtbFlaws.Columns.Add("FlawID", typeof(int));
+            _dtbFlaws.Columns.Add("CD", typeof(double));
+            _dtbFlaws.Columns.Add("MD", typeof(double));
+            _dtbFlaws.Columns.Add("Area", typeof(string));
+            _dtbFlaws.Columns.Add("FlawClass", typeof(string));
+            _dtbFlaws.Columns.Add("FlawType", typeof(int));
+            _dtbFlaws.Columns.Add("Images", typeof(IList<IImageInfo>));
+            _dtbFlaws.Columns.Add("LeftEdge", typeof(double));
+            _dtbFlaws.Columns.Add("RightEdge", typeof(double));
+            _dtbFlaws.Columns.Add("Length", typeof(double));
+            _dtbFlaws.Columns.Add("Width", typeof(double));
+            _dtbFlaws.Columns.Add("Roll", typeof(int));
+            _dtbFlaws.Columns.Add("RollMD", typeof(double));
+            _dtbFlaws.Columns.Add("RightRollCD", typeof(double));
+            _dtbFlaws.Columns.Add("LeftRollCD", typeof(double));
+            _dtbFlaws.Columns.Add("DateTime", typeof(DateTime));
+           
+            // other columns for deal grade and score.
+            _dtbFlaws.Columns.Add("Priority", typeof(int));
+            _dtbFlaws.Columns.Add("PointScore", typeof(double));
+            _dtbFlaws.Columns.Add("SubPieceName", typeof(string));
+           
+
+            // set dgvFlaws datasource 
+            dgvFlaw.DataSource = _dtbFlaws;
+           
+
         }
         // (18) :執行每一個步驟都會檢查
         public void OnOnline(bool isOnline)
@@ -192,6 +241,39 @@ namespace NPxP
         // (D) :資料流入
         public void OnFlaws(IList<IFlawInfo> flaws)
         {
+
+            foreach (IFlawInfo flaw in flaws)
+            {
+                DataRow dr = _dtbFlaws.NewRow();
+                dr["FlawID"] = flaw.FlawID;
+                dr["CD"] = flaw.CD;
+                dr["MD"] = flaw.MD;
+                dr["Area"] = flaw.Area;
+                dr["DateTime"] = flaw.DateTime;
+                dr["FlawClass"] = flaw.FlawClass;
+                dr["FlawType"] = flaw.FlawType;
+                dr["Images"] = flaw.Images;
+                dr["LeftEdge"] = flaw.LeftEdge;
+                dr["LeftRollCD"] = flaw.LeftRollCD;
+                dr["Length"] = flaw.Length;
+                dr["RightEdge"] = flaw.RightEdge;
+                dr["RightRollCD"] = flaw.RightRollCD;
+                dr["Roll"] = flaw.Roll;
+                dr["RollMD"] = flaw.RollMD;
+                dr["Width"] = flaw.Width;
+                // deal plug properties
+                int opv;
+                if (_serverityInfo.Count > 0)
+                    dr["Priority"] = _serverityInfo[0].Flaws.TryGetValue(flaw.FlawType, out opv) ? opv : 0;
+                else
+                    dr["Priority"] = 0;
+
+                // add record to datatable
+                _dtbFlaws.Rows.Add(dr); 
+
+ 
+            }
+            
             WriteHelper.Log("OnFlaws()");
         }
         // (D)
@@ -203,11 +285,6 @@ namespace NPxP
         public void OnDoffResult(double md, int doffNumber, bool pass)
         {
             WriteHelper.Log("OnDoffResult()");
-        }
-        // (D)
-        public void OnGlassEdges(double md, double leftGlassEdge, double leftGearEdge, double leftGearRigthEdge, double leftROI, double rightROI, double rightGearLeftEdge, double rightGearRightEdge, double rigthGlassEdge)
-        {
-            WriteHelper.Log("OnGlassEdges()");
         }
         // (D) :單位變更
         public void OnUnitsChanged()

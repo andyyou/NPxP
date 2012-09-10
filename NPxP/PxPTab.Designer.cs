@@ -41,7 +41,9 @@
             // dgvFlaw
             // 
             this.dgvFlaw.AllowUserToAddRows = false;
+            this.dgvFlaw.AllowUserToDeleteRows = false;
             this.dgvFlaw.AllowUserToOrderColumns = true;
+            this.dgvFlaw.AllowUserToResizeRows = false;
             this.dgvFlaw.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvFlaw.Location = new System.Drawing.Point(12, 12);
             this.dgvFlaw.Name = "dgvFlaw";

@@ -12,6 +12,7 @@ using NPxP.Helper;
 using NPxP.Model;
 using System.Xml;
 using System.Xml.XPath;
+using System.Reflection;
 
 namespace NPxP
 {
@@ -22,23 +23,16 @@ namespace NPxP
                                   IOnRollResult, IOnOpenHistory, 
                                   IOnUnitsChanged
     {
-        #region Variable
-		 
-	
-        #endregion
-
         #region Local Objects
+
         private MapWindow _mp;
         private DataTable _dtbFlaws;
         private Dictionary<string, double> _units;
         private string _xmlUnitsPath;
         private string _dbConnectString;
-        private IPxPInfo _pxpInfo;
-        private IList<ISeverityInfo> _serverityInfo;
-        private IList<IFlawTypeName> _flawTypes;
-        private IList<ILaneInfo> _lanes;
-        #endregion
 
+        #endregion
+        //-------------------------------------------------------------------------------------------//
         #region Import Objects
         [Import(typeof(IWRMessageLog))]
         IWRMessageLog MsgLog; // Log 物件
@@ -50,6 +44,8 @@ namespace NPxP
         IWRFireEvent Fire;    // Fire 物件: 回傳 Event 給 CCD
 
         #endregion
+
+        //-------------------------------------------------------------------------------------------//
 
         #region Interface Method
         // (1)
@@ -73,9 +69,9 @@ namespace NPxP
                 dgvFlaw.Columns.Add(column);
             }
             dgvFlaw.AutoGenerateColumns = false; 
-            
 
             // initialize tlpFlawImages layout without pictures.
+            SetDoubleBuffered(tlpFlawImages); // start double buffer.
             tlpFlawImages.ColumnStyles.Clear();
             tlpFlawImages.ColumnCount = ch.GettlpFlawImagesColumns();
             tlpFlawImages.RowCount = ch.GettlpFlawImagesRows();
@@ -90,10 +86,6 @@ namespace NPxP
             {
                 tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             }
-
-
-
-
         }
         // (End)
         ~PxPTab()
@@ -109,9 +101,9 @@ namespace NPxP
         // (3)(8)
         public void Initialize(string unitsXMLPath)
         {
+            WriteHelper.Log("Initialize()");
             _xmlUnitsPath = unitsXMLPath;
             LoadXmlToUnitsObject(unitsXMLPath);
-            WriteHelper.Log("Initialize()");
         }
         // (4)(7)(17)
         public void GetName(e_Language lang, out string name)
@@ -130,27 +122,28 @@ namespace NPxP
         // (5)
         public void GetControlHandle(out IntPtr hndl)
         {
-            hndl = Handle;
             WriteHelper.Log("GetControlHandle()");
+            hndl = Handle;
         }
         // (6)
         public void SetPosition(int w, int h)
         {
-            SetBounds(0, 0, w, h);
             WriteHelper.Log("SetPosition()");
+            SetBounds(0, 0, w, h);
+          
         }
         // (9) :回傳外掛設計的 MapWindow 給主程式
         public void GetMapControlHandle(out IntPtr hndl)
         {
+            WriteHelper.Log("GetMapControlHandle()");
             _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
-            WriteHelper.Log("GetMapControlHandle()");
         }
         // (10)
         public void SetMapPosition(int w, int h)
         {
-            _mp.SetBounds(0, 0, w, h);
             WriteHelper.Log("SetMapPosition()");
+            _mp.SetBounds(0, 0, w, h);
         }
         // (11)
         public void OnWebDBConnected(IWebDBConnectionInfo info)
@@ -170,8 +163,8 @@ namespace NPxP
         // (13)
         public void OnSetFlawLegend(List<FlawLegend> legend)
         {
-            _mp.SetFlawLegend(legend);  // 把 MapWindow 需要的資料傳過去. 
             WriteHelper.Log("OnSetFlawLegend()");
+            _mp.SetFlawLegend(legend);  // 把 MapWindow 需要的資料傳過去. 
         }
         // (14)
         public void OnInitializeGlassEdges(int glassLeftMarginToROI, int glassRightMarginToROI)
@@ -181,17 +174,19 @@ namespace NPxP
         // (15)
         public void OnPxPConfig(IPxPInfo info)
         {
-            _pxpInfo = info;
             WriteHelper.Log("OnPxPConfig()");
+            JobHelper.PxPInfo = info;
         }
         // (16)
         public void OnJobLoaded(IList<IFlawTypeName> flawTypes, IList<ILaneInfo> lanes, IList<ISeverityInfo> severityInfo, IJobInfo jobInfo)
         {
             WriteHelper.Log("OnJobLoaded()");
-            // get data to objects
-            _serverityInfo = severityInfo ;
-            _flawTypes = flawTypes;
-            _lanes = lanes;
+            // save datas in global helper.
+            JobHelper.FlawTypes = flawTypes;
+            JobHelper.JobInfo = jobInfo;
+            JobHelper.Lanes = lanes;
+            JobHelper.SeverityInfo = severityInfo;
+           
             // initialize datatable  flaw format without data.
             _dtbFlaws = new DataTable("Flaws");
             _dtbFlaws.Columns.Add("FlawID", typeof(int));
@@ -215,7 +210,6 @@ namespace NPxP
             _dtbFlaws.Columns.Add("Priority", typeof(int));
             _dtbFlaws.Columns.Add("PointScore", typeof(double));
             _dtbFlaws.Columns.Add("SubPieceName", typeof(string));
-           
 
             // set dgvFlaws datasource 
             dgvFlaw.DataSource = _dtbFlaws;
@@ -241,7 +235,6 @@ namespace NPxP
         // (D) :資料流入
         public void OnFlaws(IList<IFlawInfo> flaws)
         {
-
             foreach (IFlawInfo flaw in flaws)
             {
                 DataRow dr = _dtbFlaws.NewRow();
@@ -263,14 +256,25 @@ namespace NPxP
                 dr["Width"] = flaw.Width;
                 // deal plug properties
                 int opv;
-                if (_serverityInfo.Count > 0)
-                    dr["Priority"] = _serverityInfo[0].Flaws.TryGetValue(flaw.FlawType, out opv) ? opv : 0;
+                if (JobHelper.SeverityInfo.Count > 0)
+                    dr["Priority"] = JobHelper.SeverityInfo[0].Flaws.TryGetValue(flaw.FlawType, out opv) ? opv : 0;
                 else
                     dr["Priority"] = 0;
-
                 // add record to datatable
-                _dtbFlaws.Rows.Add(dr); 
+                _dtbFlaws.Rows.Add(dr);
 
+                // test draw picture
+                int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+                int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+                if (Convert.ToInt32(dr["FlawID"].ToString()) < 8)
+                {
+                    FlawImageControl fic = new FlawImageControl(dr);
+                    SetDoubleBuffered(fic);
+                    fic.Width = holderWidth;
+                    fic.Height = holderHeight;
+                    fic.Dock = DockStyle.Fill;
+                    tlpFlawImages.Controls.Add(fic);
+                }
  
             }
             
@@ -279,6 +283,9 @@ namespace NPxP
         // (D)
         public void OnCut(double md)
         {
+            // test draw picture
+            DataRow[] drs = _dtbFlaws.Select("FlawID = 1");
+            FlawImageControl fic = new FlawImageControl(drs[0]);
             WriteHelper.Log("OnCut()");
         }
         // (D) :處理缺陷判斷
@@ -313,7 +320,10 @@ namespace NPxP
         }
         #endregion
 
+        //-------------------------------------------------------------------------------------------//
+
         #region R Method
+        // 將xml單位換算值儲存至 _units 物件
         public void LoadXmlToUnitsObject(string xml)
         {
             // initialize units dictionary.
@@ -334,7 +344,17 @@ namespace NPxP
                 _units.Add(componentName, convertion);
             }
         }
+        // 啟動次要緩衝
+        public static void SetDoubleBuffered(Control control)
+        {
+            // set instance non-public property with name "DoubleBuffered" to true
+            typeof(Control).InvokeMember("DoubleBuffered",
+                BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                null, control, new object[] { true });
+        }
         #endregion
+
+        //-------------------------------------------------------------------------------------------//
 
         #region Action Method
         #endregion

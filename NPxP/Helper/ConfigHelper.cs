@@ -111,6 +111,10 @@ namespace NPxP.Helper
 
             lock (dgv)
             {
+                if (dgv.Columns.Count != 8)
+                {
+                    return false;
+                }
                 for (int i = 0; i < dgv.Columns.Count - 1; i++)
                 {
                     string xpath_index = String.Format("//dgv_flaw/column[name='{0}']/index", dgv.Columns[i].Name);
@@ -126,7 +130,7 @@ namespace NPxP.Helper
             }
             catch
             {
-                WriteHelper.Log("ERROR::SavedgvFlawColumns");
+                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawColumns()");
                 return false;
             }
             return true;
@@ -148,7 +152,7 @@ namespace NPxP.Helper
             }
             catch
             {
-                WriteHelper.Log("ERROR::SavetlpFlawImagesLayout");
+                WriteHelper.ErrorLog("ConfigHelper.cs:SavetlpFlawImagesLayout()");
                 return false;
             }
             return true;

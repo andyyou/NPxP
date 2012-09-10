@@ -11,3 +11,5 @@ C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.Properties.Resources.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.csproj.GenerateResource.Cache
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.dll.licenses
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.MapSetup.resources
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.FlawImageControl.resources
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.FlawForm.resources

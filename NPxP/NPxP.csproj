@@ -68,6 +68,7 @@
       <DependentUpon>FlawImageControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper\ConfigHelper.cs" />
+    <Compile Include="Helper\DataHelper.cs" />
     <Compile Include="Helper\JobHelper.cs" />
     <Compile Include="Helper\PathHelper.cs" />
     <Compile Include="MapSetup.cs">
@@ -97,6 +98,14 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\WriteHelper.cs" />
+    <Compile Include="TransparentTrackbar\FusionTrackBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TransparentTrackbar\NativeMethods.cs" />
+    <Compile Include="TransparentTrackbar\TrackBarDrawItemEventArgs.cs" />
+    <Compile Include="TransparentTrackbar\TrackBarItemState.cs" />
+    <Compile Include="TransparentTrackbar\TrackBarOwnerDrawnParts.cs" />
+    <Compile Include="TransparentTrackbar\TrackDrawModeEditor.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>

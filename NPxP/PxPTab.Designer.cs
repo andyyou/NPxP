@@ -78,6 +78,7 @@
             this.btnProvFlawImages.TabIndex = 2;
             this.btnProvFlawImages.Text = "<";
             this.btnProvFlawImages.UseVisualStyleBackColor = true;
+            this.btnProvFlawImages.Click += new System.EventHandler(this.btnProvFlawImages_Click);
             // 
             // btnNextFlawImages
             // 
@@ -89,6 +90,7 @@
             this.btnNextFlawImages.TabIndex = 3;
             this.btnNextFlawImages.Text = ">";
             this.btnNextFlawImages.UseVisualStyleBackColor = true;
+            this.btnNextFlawImages.Click += new System.EventHandler(this.btnNextFlawImages_Click);
             // 
             // lblSlash
             // 

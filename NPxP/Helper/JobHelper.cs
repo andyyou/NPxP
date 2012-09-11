@@ -13,5 +13,13 @@ namespace NPxP.Helper
         public static IList<ISeverityInfo> SeverityInfo { set; get; }
         public static IJobInfo JobInfo { set; get; }
         public static IPxPInfo PxPInfo { set; get; }
+        public static IWRJob Job;
+        public static bool IsOnline { set; get; }
+
+        static JobHelper()
+        {
+            // Default
+            IsOnline = false;
+        }
     }
 }

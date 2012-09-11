@@ -8,18 +8,23 @@ using System.Text;
 using System.Windows.Forms;
 using NPxP.Helper;
 using WRPlugIn;
+using System.ComponentModel.Composition;
 
 namespace NPxP
 {
-    public partial class MapWindow : UserControl
+    public partial class MapWindow : UserControl, IOnLanguageChanged
     {
         #region Local Objects
-        public List<FlawLegend> _legend;
+        private List<FlawLegend> _legend;
         #endregion
+
+       
+
         public MapWindow()
         {
             WriteHelper.Log("MapWindow()");
             InitializeComponent();
+           
         }
 
 
@@ -27,6 +32,24 @@ namespace NPxP
         {
             _legend = legned;
         }
+
        
+
+        private void btnMapSetting_Click(object sender, EventArgs e)
+        {
+            JobHelper.Job.SetOffline();
+        }
+
+
+
+
+        #region IOnLanguageChanged 成員
+
+        public void OnLanguageChanged(e_Language language)
+        {
+            
+        }
+
+        #endregion
     }
 }

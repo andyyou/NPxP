@@ -45,8 +45,10 @@
             this.lblAreaVal = new System.Windows.Forms.Label();
             this.lblCDVal = new System.Windows.Forms.Label();
             this.lblLengthVal = new System.Windows.Forms.Label();
-            this.tabImage = new System.Windows.Forms.TabControl();
+            this.tabImages = new System.Windows.Forms.TabControl();
+            this.ftbImage = new NPxP.Toolkit.FusionTrackBar();
             this.tlpFlawInfo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ftbImage)).BeginInit();
             this.SuspendLayout();
             // 
             // tlpFlawInfo
@@ -245,29 +247,49 @@
             this.lblLengthVal.TabIndex = 8;
             this.lblLengthVal.Text = "Length Value";
             // 
-            // tabImage
+            // tabImages
             // 
-            this.tabImage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.tabImages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabImage.Location = new System.Drawing.Point(12, 112);
-            this.tabImage.Name = "tabImage";
-            this.tabImage.SelectedIndex = 0;
-            this.tabImage.Size = new System.Drawing.Size(503, 287);
-            this.tabImage.TabIndex = 2;
+            this.tabImages.Location = new System.Drawing.Point(12, 112);
+            this.tabImages.Name = "tabImages";
+            this.tabImages.SelectedIndex = 0;
+            this.tabImages.Size = new System.Drawing.Size(492, 278);
+            this.tabImages.TabIndex = 2;
+            // 
+            // ftbImage
+            // 
+            this.ftbImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ftbImage.BackColor = System.Drawing.Color.Transparent;
+            this.ftbImage.LargeChange = 25;
+            this.ftbImage.Location = new System.Drawing.Point(407, 390);
+            this.ftbImage.Maximum = 400;
+            this.ftbImage.Minimum = 25;
+            this.ftbImage.Name = "ftbImage";
+            this.ftbImage.Size = new System.Drawing.Size(100, 45);
+            this.ftbImage.TabIndex = 4;
+            this.ftbImage.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.ftbImage.Value = 100;
+            this.ftbImage.Scroll += new System.EventHandler(this.ftbImage_Scroll);
             // 
             // FlawForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = global::NPxP.Properties.Resources.BackgroundLeft;
             this.ClientSize = new System.Drawing.Size(527, 429);
+            this.Controls.Add(this.ftbImage);
             this.Controls.Add(this.tlpFlawInfo);
-            this.Controls.Add(this.tabImage);
+            this.Controls.Add(this.tabImages);
             this.Name = "FlawForm";
             this.Text = "FlawForm";
+            this.Load += new System.EventHandler(this.FlawForm_Load);
             this.tlpFlawInfo.ResumeLayout(false);
             this.tlpFlawInfo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ftbImage)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -290,6 +312,7 @@
         private System.Windows.Forms.Label lblAreaVal;
         private System.Windows.Forms.Label lblCDVal;
         private System.Windows.Forms.Label lblLengthVal;
-        private System.Windows.Forms.TabControl tabImage;
+        private System.Windows.Forms.TabControl tabImages;
+        private NPxP.Toolkit.FusionTrackBar ftbImage;
     }
 }

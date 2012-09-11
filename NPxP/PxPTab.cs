@@ -28,8 +28,12 @@ namespace NPxP
         private MapWindow _mp;
         private DataTable _dtbFlaws;
         private Dictionary<string, double> _units;
+        private List<double> _cuts;
         private string _xmlUnitsPath;
         private string _dbConnectString;
+
+        private int _nowPage, _totalPage; // For TableLayout pages , start from 1.
+        
 
         #endregion
         //-------------------------------------------------------------------------------------------//
@@ -38,7 +42,7 @@ namespace NPxP
         IWRMessageLog MsgLog; // Log 物件
 
         [Import(typeof(IWRJob))]
-        IWRJob Job;           // Job 物件: 啟動,停止,回復工單,Margin ROI 等... 
+        public IWRJob Job;           // Job 物件: 啟動,停止,回復工單,Margin ROI 等... 
         
         [Import(typeof(IWRFireEvent))]
         IWRFireEvent Fire;    // Fire 物件: 回傳 Event 給 CCD
@@ -53,7 +57,6 @@ namespace NPxP
         {
             WriteHelper.Log("PxPTab()");
             InitializeComponent();
-            
             // initialize dgvFlaw without datasource.
             ConfigHelper ch = new ConfigHelper();
             List<Column> lstColumns = ch.GetdgvFlawColumns();
@@ -104,6 +107,7 @@ namespace NPxP
             WriteHelper.Log("Initialize()");
             _xmlUnitsPath = unitsXMLPath;
             LoadXmlToUnitsObject(unitsXMLPath);
+            JobHelper.Job = Job;  // 設定 Helper 協助各頁面停止工單等操作.
         }
         // (4)(7)(17)
         public void GetName(e_Language lang, out string name)
@@ -139,7 +143,7 @@ namespace NPxP
             _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
         }
-        // (10)
+        // (10) :設定 MapWindow Position with Job object.
         public void SetMapPosition(int w, int h)
         {
             WriteHelper.Log("SetMapPosition()");
@@ -181,6 +185,13 @@ namespace NPxP
         public void OnJobLoaded(IList<IFlawTypeName> flawTypes, IList<ILaneInfo> lanes, IList<ISeverityInfo> severityInfo, IJobInfo jobInfo)
         {
             WriteHelper.Log("OnJobLoaded()");
+            // Reset to default.
+            _cuts = new List<double>();
+            lblNowPage.Text = "---";
+            lblTotalPage.Text = "---";
+            btnNextFlawImages.Enabled = false;
+            btnProvFlawImages.Enabled = false;
+
             // save datas in global helper.
             JobHelper.FlawTypes = flawTypes;
             JobHelper.JobInfo = jobInfo;
@@ -219,17 +230,42 @@ namespace NPxP
         // (18) :執行每一個步驟都會檢查
         public void OnOnline(bool isOnline)
         {
+            JobHelper.IsOnline = isOnline;
             WriteHelper.Log("OnOnline()");
         }
         // (19)
         public void OnJobStarted(int jobKey)
         {
             WriteHelper.Log("OnJobStarted()");
+            
         }
         // (20) :設定幾個 Events 就會觸發幾次
         public void OnEvents(IList<IEventInfo> events)
         {
             WriteHelper.Log("OnEvents()");
+            foreach (IEventInfo eventInfo in events)
+            {
+                switch ((e_EventID)eventInfo.EventType)
+                {
+                    case e_EventID.STOP_JOB:
+                       
+                        break;
+
+                    case e_EventID.STOP_INSPECTION:
+                      
+                        break;
+
+                    case e_EventID.START_INSPECTION:
+                       
+                        break;
+
+                    case e_EventID.CUT_SIGNAL:
+                        _cuts.Add(eventInfo.MD);
+                        break;
+                    default:
+                        break;
+                }
+            }
 
         }
         // (D) :資料流入
@@ -262,20 +298,6 @@ namespace NPxP
                     dr["Priority"] = 0;
                 // add record to datatable
                 _dtbFlaws.Rows.Add(dr);
-
-                // test draw picture
-                int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
-                int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
-                if (Convert.ToInt32(dr["FlawID"].ToString()) < 8)
-                {
-                    FlawImageControl fic = new FlawImageControl(dr);
-                    SetDoubleBuffered(fic);
-                    fic.Width = holderWidth;
-                    fic.Height = holderHeight;
-                    fic.Dock = DockStyle.Fill;
-                    tlpFlawImages.Controls.Add(fic);
-                }
- 
             }
             
             WriteHelper.Log("OnFlaws()");
@@ -283,10 +305,56 @@ namespace NPxP
         // (D)
         public void OnCut(double md)
         {
-            // test draw picture
-            DataRow[] drs = _dtbFlaws.Select("FlawID = 1");
-            FlawImageControl fic = new FlawImageControl(drs[0]);
             WriteHelper.Log("OnCut()");
+            // UNDONE: 
+            if (JobHelper.IsOnline)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
+            {
+                // Filter DataGridView
+                double prevMD = md - JobHelper.PxPInfo.Height;
+                string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, md);
+                DataView dv = _dtbFlaws.DefaultView;
+                dv.RowFilter = filterExp;
+
+                
+                // Clear tableLyout controls and search data.  
+                tlpFlawImages.Controls.Clear();
+                int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+                int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+                DataRow[] rows = _dtbFlaws.Select(filterExp);
+                // Calculate pages & set label and buttons
+                int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
+                _nowPage = 1;
+                _totalPage = rows.Length % pageSize == 0 ?
+                             rows.Length / pageSize :
+                             rows.Length / pageSize + 1;
+                lblNowPage.Text = _nowPage.ToString();
+                lblTotalPage.Text = _totalPage.ToString();
+                int startFicIndex = (_nowPage - 1) * pageSize;
+                int endFicIndex = ((startFicIndex + pageSize) > rows.Length) ? rows.Length : (startFicIndex + pageSize);
+                // Add FlawImageControl in tableLayout.
+                for (int i = startFicIndex; i < endFicIndex; i++)
+                {
+                    FlawImageControl fi = new FlawImageControl(rows[i]);
+                    SetDoubleBuffered(fi);
+                    fi.Width = holderWidth;
+                    fi.Height = holderHeight;
+                    fi.Dock = DockStyle.Fill;
+                    tlpFlawImages.Controls.Add(fi);
+                }
+                // Set can using buttons when oncut all button reset.
+                if (_totalPage > 1)
+                {
+                    btnNextFlawImages.Enabled = true;
+                    btnProvFlawImages.Enabled = false;
+                }
+                else
+                {
+                    btnNextFlawImages.Enabled = true;
+                    btnProvFlawImages.Enabled = true;
+                }
+
+
+            }
         }
         // (D) :處理缺陷判斷
         public void OnDoffResult(double md, int doffNumber, bool pass)
@@ -352,11 +420,78 @@ namespace NPxP
                 BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
                 null, control, new object[] { true });
         }
+        // 設定 TableLayoutPanel without data just initialize.  
+        public void LoadXmlTotlpImages()
+        {
+            ConfigHelper ch = new ConfigHelper();
+            tlpFlawImages.ColumnStyles.Clear();
+            tlpFlawImages.ColumnCount = ch.GettlpFlawImagesColumns();
+            tlpFlawImages.RowCount = ch.GettlpFlawImagesRows();
+            int phdHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+            int phdrWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+            for (int i = 0; i < tlpFlawImages.RowCount; i++)
+            {
+                tlpFlawImages.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+            }
+
+            for (int i = 0; i < tlpFlawImages.ColumnCount; i++)
+            {
+                tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            }
+        }
+        // 更新 tlpImages 內部 Controls
+        public void RefreshtlpImagesControls(int nowPage)
+        {
+            // Clear  TableLayout of FlawImages's controls
+            tlpFlawImages.Controls.Clear();
+            // Calculate about init.
+            int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+            int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+            int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
+            lblNowPage.Text = nowPage.ToString();
+            DataRow[] rows = _dtbFlaws.DefaultView.Table.Select();
+            int startFicIndex = (nowPage - 1) * pageSize;
+            int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
+            // Add FlawImageControl in tableLayout.
+            for (int i = startFicIndex; i < endFicIndex; i++)
+            {
+                FlawImageControl fi = new FlawImageControl(rows[i]);
+                SetDoubleBuffered(fi);
+                fi.Width = holderWidth;
+                fi.Height = holderHeight;
+                fi.Dock = DockStyle.Fill;
+                tlpFlawImages.Controls.Add(fi);
+            }
+        }
+       
         #endregion
+
+       
 
         //-------------------------------------------------------------------------------------------//
 
         #region Action Method
+        private void btnNextFlawImages_Click(object sender, EventArgs e)
+        {
+            Job.SetOffline();
+            // change page to next and check limit.
+            if (_nowPage + 1 > _totalPage)
+            {
+                _nowPage = _totalPage;
+            }
+            else
+            {
+                _nowPage++;
+            }
+            RefreshTableLayoutControls(_nowPage);
+
+        }
+        private void btnProvFlawImages_Click(object sender, EventArgs e)
+        {
+            Job.SetOffline();
+        }
         #endregion
+
+        
     }
 }

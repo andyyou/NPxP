@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.ComponentModel.Composition;
 using WRPlugIn;
 using NPxP.Helper;
+using NPxP.Properties;
 
 namespace NPxP
 {
@@ -18,21 +19,9 @@ namespace NPxP
 
         private DataRow _drFlaw;
         private PictureBox[] _pb;
-        private double[] _dRatio;
+        private double[] _pbRatio;
         private Image[] _srcImages;
         
-        #endregion
-
-        //-------------------------------------------------------------------------------------------//
-
-        #region Import Objects
-
-        [Import(typeof(IWRJob))]
-        IWRJob Job;           // Job 物件: 啟動,停止,回復工單,Margin ROI 等... 
-
-        [Import(typeof(IWRFireEvent))]
-        IWRFireEvent Fire;    // Fire 物件: 回傳 Event 給 CCD
-
         #endregion
 
         //-------------------------------------------------------------------------------------------//
@@ -40,11 +29,10 @@ namespace NPxP
         public FlawImageControl(DataRow drFlaw)
         {
             InitializeComponent();
-            //
             this._drFlaw = drFlaw;
             lblFlawID.Text += drFlaw["FlawID"].ToString();
             _pb = new PictureBox[JobHelper.JobInfo.NumberOfStations];
-            _dRatio = new double[JobHelper.JobInfo.NumberOfStations];
+            _pbRatio = new double[JobHelper.JobInfo.NumberOfStations];
             _srcImages = new Image[JobHelper.JobInfo.NumberOfStations];
            
             for (int i = 0; i < JobHelper.JobInfo.NumberOfStations; i++)
@@ -54,10 +42,6 @@ namespace NPxP
                 _pb[i].SizeMode = PictureBoxSizeMode.Zoom;
                 _pb[i].Location = new Point(0, 0);
                 _pb[i].BackColor = Color.Transparent;
-                //_pb[i].MouseDown += new MouseEventHandler(pb_MouseDown);
-                //_pb[i].MouseMove += new MouseEventHandler(pb_MouseMove);
-                //_pb[i].MouseUp += new MouseEventHandler(pb_MouseUp);
-                //_pb[i].MouseLeave += new EventHandler(pb_MouseLeave);
                 _pb[i].MouseClick += new MouseEventHandler(pb_Click);
                 _pb[i].MouseDoubleClick += new MouseEventHandler(pb_MouseDoubleClick);
                 tabImages.TabPages[i].AutoScroll = true;
@@ -65,15 +49,23 @@ namespace NPxP
                 tabImages.TabPages[i].BackColor = Color.Transparent;
                 tabImages.TabPages[i].Tag = 100;  // Zoom Multiplier value.
             }
-            IList<IImageInfo> images = drFlaw["Images"] as IList<IImageInfo>;
-            foreach (IImageInfo image in images)
+            if (!drFlaw.IsNull("Images"))
             {
-                _srcImages[image.Station] = image.Image;
-                _dRatio[image.Station] = Init_Image(image.Image, tabImages.TabPages[image.Station], _pb[image.Station]);
+                IList<IImageInfo> images = drFlaw["Images"] as IList<IImageInfo>;
+                foreach (IImageInfo image in images)
+                {
+                    _srcImages[image.Station] = image.Image;
+                    _pbRatio[image.Station] = Init_Image(image.Image, tabImages.TabPages[image.Station], _pb[image.Station]);
+                }
             }
-
-            this.Tag = (int)drFlaw["FlawID"];
-
+            else
+            {
+                for (int i = 0; i < JobHelper.JobInfo.NumberOfStations; i++)
+                {
+                    _srcImages[i] = Resources.NoImage;
+                    _pbRatio[i] = Init_Image(Resources.NoImage, tabImages.TabPages[i], _pb[i]);
+                }
+            }
         }
 
 
@@ -135,8 +127,8 @@ namespace NPxP
                 Image src = pb.Image;
                 Bitmap dest = null;
 
-                int newWidth = (int)(((double)_srcImages[tabImages.SelectedIndex].Width / _dRatio[tabImages.SelectedIndex]) * ((double)ZoomPercent / 100));
-                int newHeight = (int)(((double)_srcImages[tabImages.SelectedIndex].Height / _dRatio[tabImages.SelectedIndex]) * ((double)ZoomPercent / 100));
+                int newWidth = (int)(((double)_srcImages[tabImages.SelectedIndex].Width / _pbRatio[tabImages.SelectedIndex]) * ((double)ZoomPercent / 100));
+                int newHeight = (int)(((double)_srcImages[tabImages.SelectedIndex].Height / _pbRatio[tabImages.SelectedIndex]) * ((double)ZoomPercent / 100));
                 dest = new Bitmap(newWidth, newHeight);
 
                 Graphics g = Graphics.FromImage(dest);
@@ -152,7 +144,6 @@ namespace NPxP
         //-------------------------------------------------------------------------------------------//
 
         #region Action Methods
-
         // 
         private void tabImages_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -175,11 +166,9 @@ namespace NPxP
         //
         public void pb_Click(object sender, MouseEventArgs e)
         {
-            Job.SetOffline();
-
+            JobHelper.Job.SetOffline();
             if (e.Button == MouseButtons.Right)
             {
-
                 int multiliper = (int)tabImages.SelectedTab.Tag;
                 if (multiliper < 100)
                 {
@@ -191,10 +180,7 @@ namespace NPxP
                     multiliper = multiliper - 50;
                     PicZoomByPercent(multiliper);
                 }
-               
-
                 tabImages.SelectedTab.Tag = multiliper;
-               
             }
             else if (e.Button == MouseButtons.Left)
             {
@@ -209,18 +195,17 @@ namespace NPxP
                     multiliper = 200;
                     PicZoomByPercent(multiliper);
                 }
-
                 tabImages.SelectedTab.Tag = multiliper;
             }
         }
-        //
         public void pb_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            Job.SetOffline();
-
-            FlawForm ff = new FlawForm();
-            ff.ShowDialog();
-            //PicZoomByPercent(100);
+            if (e.Button == MouseButtons.Left)
+            {
+                JobHelper.Job.SetOffline();
+                FlawForm ff = new FlawForm(_drFlaw);
+                ff.ShowDialog();
+            }
         }
         #endregion
 

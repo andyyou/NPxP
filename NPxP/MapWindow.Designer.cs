@@ -30,17 +30,17 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapWindow));
             this.tlpMapInfo = new System.Windows.Forms.TableLayoutPanel();
-            this.lblDateTimeValue = new System.Windows.Forms.Label();
-            this.lblDateTime = new System.Windows.Forms.Label();
             this.lblOperatorValue = new System.Windows.Forms.Label();
             this.lblOperator = new System.Windows.Forms.Label();
             this.lblMeterialType = new System.Windows.Forms.Label();
             this.lblMeterialTypeValue = new System.Windows.Forms.Label();
             this.lblOrderNumber = new System.Windows.Forms.Label();
-            this.lblDoff = new System.Windows.Forms.Label();
             this.lblJobId = new System.Windows.Forms.Label();
             this.lblOrderNumberValue = new System.Windows.Forms.Label();
             this.lblJobIdValue = new System.Windows.Forms.Label();
+            this.lblDateTime = new System.Windows.Forms.Label();
+            this.lblDateTimeValue = new System.Windows.Forms.Label();
+            this.lblDoff = new System.Windows.Forms.Label();
             this.lblDoffValue = new System.Windows.Forms.Label();
             this.lblFilterType = new System.Windows.Forms.Label();
             this.cmbFilterType = new System.Windows.Forms.ComboBox();
@@ -82,7 +82,7 @@
             this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 97F));
             this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 119F));
             this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 73F));
-            this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 128F));
+            this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 130F));
             this.tlpMapInfo.Controls.Add(this.lblOperatorValue, 3, 1);
             this.tlpMapInfo.Controls.Add(this.lblOperator, 2, 1);
             this.tlpMapInfo.Controls.Add(this.lblMeterialType, 2, 0);
@@ -106,31 +106,11 @@
             this.tlpMapInfo.Size = new System.Drawing.Size(636, 59);
             this.tlpMapInfo.TabIndex = 0;
             // 
-            // lblDateTimeValue
-            // 
-            this.lblDateTimeValue.AutoSize = true;
-            this.lblDateTimeValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDateTimeValue.Location = new System.Drawing.Point(507, 3);
-            this.lblDateTimeValue.Name = "lblDateTimeValue";
-            this.lblDateTimeValue.Size = new System.Drawing.Size(19, 14);
-            this.lblDateTimeValue.TabIndex = 10;
-            this.lblDateTimeValue.Text = "--";
-            // 
-            // lblDateTime
-            // 
-            this.lblDateTime.AutoSize = true;
-            this.lblDateTime.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDateTime.Location = new System.Drawing.Point(433, 3);
-            this.lblDateTime.Name = "lblDateTime";
-            this.lblDateTime.Size = new System.Drawing.Size(66, 14);
-            this.lblDateTime.TabIndex = 9;
-            this.lblDateTime.Text = "DateTime";
-            // 
             // lblOperatorValue
             // 
             this.lblOperatorValue.AutoSize = true;
             this.lblOperatorValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOperatorValue.Location = new System.Drawing.Point(313, 30);
+            this.lblOperatorValue.Location = new System.Drawing.Point(311, 30);
             this.lblOperatorValue.Name = "lblOperatorValue";
             this.lblOperatorValue.Size = new System.Drawing.Size(19, 14);
             this.lblOperatorValue.TabIndex = 8;
@@ -140,7 +120,7 @@
             // 
             this.lblOperator.AutoSize = true;
             this.lblOperator.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOperator.Location = new System.Drawing.Point(215, 30);
+            this.lblOperator.Location = new System.Drawing.Point(213, 30);
             this.lblOperator.Name = "lblOperator";
             this.lblOperator.Size = new System.Drawing.Size(64, 14);
             this.lblOperator.TabIndex = 7;
@@ -150,7 +130,7 @@
             // 
             this.lblMeterialType.AutoSize = true;
             this.lblMeterialType.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMeterialType.Location = new System.Drawing.Point(215, 3);
+            this.lblMeterialType.Location = new System.Drawing.Point(213, 3);
             this.lblMeterialType.Name = "lblMeterialType";
             this.lblMeterialType.Size = new System.Drawing.Size(91, 14);
             this.lblMeterialType.TabIndex = 6;
@@ -160,7 +140,7 @@
             // 
             this.lblMeterialTypeValue.AutoSize = true;
             this.lblMeterialTypeValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMeterialTypeValue.Location = new System.Drawing.Point(313, 3);
+            this.lblMeterialTypeValue.Location = new System.Drawing.Point(311, 3);
             this.lblMeterialTypeValue.Name = "lblMeterialTypeValue";
             this.lblMeterialTypeValue.Size = new System.Drawing.Size(19, 14);
             this.lblMeterialTypeValue.TabIndex = 4;
@@ -176,16 +156,6 @@
             this.lblOrderNumber.TabIndex = 0;
             this.lblOrderNumber.Text = "Order Number";
             // 
-            // lblDoff
-            // 
-            this.lblDoff.AutoSize = true;
-            this.lblDoff.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDoff.Location = new System.Drawing.Point(433, 30);
-            this.lblDoff.Name = "lblDoff";
-            this.lblDoff.Size = new System.Drawing.Size(32, 14);
-            this.lblDoff.TabIndex = 2;
-            this.lblDoff.Text = "Doff";
-            // 
             // lblJobId
             // 
             this.lblJobId.AutoSize = true;
@@ -200,7 +170,7 @@
             // 
             this.lblOrderNumberValue.AutoSize = true;
             this.lblOrderNumberValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOrderNumberValue.Location = new System.Drawing.Point(131, 3);
+            this.lblOrderNumberValue.Location = new System.Drawing.Point(130, 3);
             this.lblOrderNumberValue.Name = "lblOrderNumberValue";
             this.lblOrderNumberValue.Size = new System.Drawing.Size(19, 14);
             this.lblOrderNumberValue.TabIndex = 3;
@@ -210,17 +180,47 @@
             // 
             this.lblJobIdValue.AutoSize = true;
             this.lblJobIdValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblJobIdValue.Location = new System.Drawing.Point(131, 30);
+            this.lblJobIdValue.Location = new System.Drawing.Point(130, 30);
             this.lblJobIdValue.Name = "lblJobIdValue";
             this.lblJobIdValue.Size = new System.Drawing.Size(19, 14);
             this.lblJobIdValue.TabIndex = 4;
             this.lblJobIdValue.Text = "--";
             // 
+            // lblDateTime
+            // 
+            this.lblDateTime.AutoSize = true;
+            this.lblDateTime.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDateTime.Location = new System.Drawing.Point(431, 3);
+            this.lblDateTime.Name = "lblDateTime";
+            this.lblDateTime.Size = new System.Drawing.Size(66, 14);
+            this.lblDateTime.TabIndex = 9;
+            this.lblDateTime.Text = "DateTime";
+            // 
+            // lblDateTimeValue
+            // 
+            this.lblDateTimeValue.AutoSize = true;
+            this.lblDateTimeValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDateTimeValue.Location = new System.Drawing.Point(505, 3);
+            this.lblDateTimeValue.Name = "lblDateTimeValue";
+            this.lblDateTimeValue.Size = new System.Drawing.Size(19, 14);
+            this.lblDateTimeValue.TabIndex = 10;
+            this.lblDateTimeValue.Text = "--";
+            // 
+            // lblDoff
+            // 
+            this.lblDoff.AutoSize = true;
+            this.lblDoff.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDoff.Location = new System.Drawing.Point(431, 30);
+            this.lblDoff.Name = "lblDoff";
+            this.lblDoff.Size = new System.Drawing.Size(32, 14);
+            this.lblDoff.TabIndex = 2;
+            this.lblDoff.Text = "Doff";
+            // 
             // lblDoffValue
             // 
             this.lblDoffValue.AutoSize = true;
             this.lblDoffValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDoffValue.Location = new System.Drawing.Point(507, 30);
+            this.lblDoffValue.Location = new System.Drawing.Point(505, 30);
             this.lblDoffValue.Name = "lblDoffValue";
             this.lblDoffValue.Size = new System.Drawing.Size(19, 14);
             this.lblDoffValue.TabIndex = 5;
@@ -265,6 +265,7 @@
             this.btnMapSetting.TabIndex = 3;
             this.btnMapSetting.Text = "Map Setting";
             this.btnMapSetting.UseVisualStyleBackColor = true;
+            this.btnMapSetting.Click += new System.EventHandler(this.btnMapSetting_Click);
             // 
             // btnFailPieceList
             // 

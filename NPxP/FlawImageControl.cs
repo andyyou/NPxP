@@ -212,7 +212,7 @@ namespace NPxP
         {
             if (e.Button == MouseButtons.Left)
             {
-                JobHelper.Job.SetOffline();
+
                 FlawForm ff = new FlawForm(_drFlaw);
                 ff.ShowDialog();
             }

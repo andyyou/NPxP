@@ -97,7 +97,7 @@ namespace NPxP
         {
             ConfigHelper ch = new ConfigHelper();
             ch.SavedgvFlawColumns(dgvFlaw);
-            if (!String.IsNullOrEmpty(dgvFlaw.SortedColumn.Name))
+            if (dgvFlaw.SortedColumn != null && !String.IsNullOrEmpty(dgvFlaw.SortedColumn.Name))
             {
                 ch.SavedgvFlawOrderByColumn(dgvFlaw.SortedColumn.Name);
             }

@@ -448,7 +448,7 @@ namespace NPxP
                 tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             }
         }
-        // 更新 tlpImages 內部 Controls
+        // 更新 tlpImages 內部 Controls , 更新 lblNowPage
         public void RefreshtlpImagesControls(int nowPage)
         {
             // Clear  TableLayout of FlawImages's controls
@@ -492,12 +492,56 @@ namespace NPxP
             {
                 _nowPage++;
             }
+            // re add need controls to tlpImages and update lblNowPage
             RefreshtlpImagesControls(_nowPage);
+            // check now page and set can using buttons
+            if (_totalPage == 1)
+            {
+                btnNextFlawImages.Enabled = false;
+                btnProvFlawImages.Enabled = false;
+            }
+            else if (_nowPage == _totalPage)
+            {
+                btnNextFlawImages.Enabled = false;
+                btnProvFlawImages.Enabled = true;
+            }
+            else
+            {
+                btnNextFlawImages.Enabled = true;
+                btnProvFlawImages.Enabled = true;
+            }
 
         }
         private void btnProvFlawImages_Click(object sender, EventArgs e)
         {
             Job.SetOffline();
+            // change page to next and check limit.
+            if (_nowPage - 1 < 1 )
+            {
+                _nowPage = 1;
+            }
+            else
+            {
+                _nowPage--;
+            }
+            // re add need controls to tlpImages and update lblNowPage.
+            RefreshtlpImagesControls(_nowPage);
+            // check now page and set can using buttons
+            if (_totalPage == 1)
+            {
+                btnNextFlawImages.Enabled = false;
+                btnProvFlawImages.Enabled = false;
+            }
+            else if (_nowPage == _totalPage)
+            {
+                btnNextFlawImages.Enabled = false;
+                btnProvFlawImages.Enabled = true;
+            }
+            else
+            {
+                btnNextFlawImages.Enabled = true;
+                btnProvFlawImages.Enabled = true;
+            }
         }
         #endregion
 

@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapWindow));
+            DevExpress.XtraCharts.SideBySideBarSeriesLabel sideBySideBarSeriesLabel1 = new DevExpress.XtraCharts.SideBySideBarSeriesLabel();
+            DevExpress.XtraCharts.PointSeriesView pointSeriesView1 = new DevExpress.XtraCharts.PointSeriesView();
             this.tlpMapInfo = new System.Windows.Forms.TableLayoutPanel();
             this.lblOperatorValue = new System.Windows.Forms.Label();
             this.lblOperator = new System.Windows.Forms.Label();
@@ -55,7 +56,6 @@
             this.lblYieldValue = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.nChartControl1 = new Nevron.Chart.WinForm.NChartControl();
             this.dgvFlawLegend = new System.Windows.Forms.DataGridView();
             this.btnPrevPiece = new System.Windows.Forms.Button();
             this.btnNextPiece = new System.Windows.Forms.Button();
@@ -63,14 +63,18 @@
             this.lblTotalPiece = new System.Windows.Forms.Label();
             this.lblNowPiece = new System.Windows.Forms.Label();
             this.dgvFlawLegendDetial = new System.Windows.Forms.DataGridView();
+            this.chartControl = new DevExpress.XtraCharts.ChartControl();
             this.tlpMapInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegend)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendDetial)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(pointSeriesView1)).BeginInit();
             this.SuspendLayout();
             // 
             // tlpMapInfo
             // 
-            this.tlpMapInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.tlpMapInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tlpMapInfo.AutoSize = true;
             this.tlpMapInfo.BackColor = System.Drawing.Color.Transparent;
@@ -82,7 +86,7 @@
             this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 97F));
             this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 119F));
             this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 73F));
-            this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 130F));
+            this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 132F));
             this.tlpMapInfo.Controls.Add(this.lblOperatorValue, 3, 1);
             this.tlpMapInfo.Controls.Add(this.lblOperator, 2, 1);
             this.tlpMapInfo.Controls.Add(this.lblMeterialType, 2, 0);
@@ -110,7 +114,7 @@
             // 
             this.lblOperatorValue.AutoSize = true;
             this.lblOperatorValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOperatorValue.Location = new System.Drawing.Point(311, 30);
+            this.lblOperatorValue.Location = new System.Drawing.Point(309, 30);
             this.lblOperatorValue.Name = "lblOperatorValue";
             this.lblOperatorValue.Size = new System.Drawing.Size(19, 14);
             this.lblOperatorValue.TabIndex = 8;
@@ -120,7 +124,7 @@
             // 
             this.lblOperator.AutoSize = true;
             this.lblOperator.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOperator.Location = new System.Drawing.Point(213, 30);
+            this.lblOperator.Location = new System.Drawing.Point(211, 30);
             this.lblOperator.Name = "lblOperator";
             this.lblOperator.Size = new System.Drawing.Size(64, 14);
             this.lblOperator.TabIndex = 7;
@@ -130,7 +134,7 @@
             // 
             this.lblMeterialType.AutoSize = true;
             this.lblMeterialType.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMeterialType.Location = new System.Drawing.Point(213, 3);
+            this.lblMeterialType.Location = new System.Drawing.Point(211, 3);
             this.lblMeterialType.Name = "lblMeterialType";
             this.lblMeterialType.Size = new System.Drawing.Size(91, 14);
             this.lblMeterialType.TabIndex = 6;
@@ -140,7 +144,7 @@
             // 
             this.lblMeterialTypeValue.AutoSize = true;
             this.lblMeterialTypeValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMeterialTypeValue.Location = new System.Drawing.Point(311, 3);
+            this.lblMeterialTypeValue.Location = new System.Drawing.Point(309, 3);
             this.lblMeterialTypeValue.Name = "lblMeterialTypeValue";
             this.lblMeterialTypeValue.Size = new System.Drawing.Size(19, 14);
             this.lblMeterialTypeValue.TabIndex = 4;
@@ -170,7 +174,7 @@
             // 
             this.lblOrderNumberValue.AutoSize = true;
             this.lblOrderNumberValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOrderNumberValue.Location = new System.Drawing.Point(130, 3);
+            this.lblOrderNumberValue.Location = new System.Drawing.Point(129, 3);
             this.lblOrderNumberValue.Name = "lblOrderNumberValue";
             this.lblOrderNumberValue.Size = new System.Drawing.Size(19, 14);
             this.lblOrderNumberValue.TabIndex = 3;
@@ -180,7 +184,7 @@
             // 
             this.lblJobIdValue.AutoSize = true;
             this.lblJobIdValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblJobIdValue.Location = new System.Drawing.Point(130, 30);
+            this.lblJobIdValue.Location = new System.Drawing.Point(129, 30);
             this.lblJobIdValue.Name = "lblJobIdValue";
             this.lblJobIdValue.Size = new System.Drawing.Size(19, 14);
             this.lblJobIdValue.TabIndex = 4;
@@ -190,7 +194,7 @@
             // 
             this.lblDateTime.AutoSize = true;
             this.lblDateTime.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDateTime.Location = new System.Drawing.Point(431, 3);
+            this.lblDateTime.Location = new System.Drawing.Point(429, 3);
             this.lblDateTime.Name = "lblDateTime";
             this.lblDateTime.Size = new System.Drawing.Size(66, 14);
             this.lblDateTime.TabIndex = 9;
@@ -200,7 +204,7 @@
             // 
             this.lblDateTimeValue.AutoSize = true;
             this.lblDateTimeValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDateTimeValue.Location = new System.Drawing.Point(505, 3);
+            this.lblDateTimeValue.Location = new System.Drawing.Point(503, 3);
             this.lblDateTimeValue.Name = "lblDateTimeValue";
             this.lblDateTimeValue.Size = new System.Drawing.Size(19, 14);
             this.lblDateTimeValue.TabIndex = 10;
@@ -210,7 +214,7 @@
             // 
             this.lblDoff.AutoSize = true;
             this.lblDoff.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDoff.Location = new System.Drawing.Point(431, 30);
+            this.lblDoff.Location = new System.Drawing.Point(429, 30);
             this.lblDoff.Name = "lblDoff";
             this.lblDoff.Size = new System.Drawing.Size(32, 14);
             this.lblDoff.TabIndex = 2;
@@ -220,7 +224,7 @@
             // 
             this.lblDoffValue.AutoSize = true;
             this.lblDoffValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDoffValue.Location = new System.Drawing.Point(505, 30);
+            this.lblDoffValue.Location = new System.Drawing.Point(503, 30);
             this.lblDoffValue.Name = "lblDoffValue";
             this.lblDoffValue.Size = new System.Drawing.Size(19, 14);
             this.lblDoffValue.TabIndex = 5;
@@ -228,8 +232,6 @@
             // 
             // lblFilterType
             // 
-            this.lblFilterType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFilterType.AutoSize = true;
             this.lblFilterType.BackColor = System.Drawing.Color.Transparent;
             this.lblFilterType.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -242,7 +244,6 @@
             // 
             // cmbFilterType
             // 
-            this.cmbFilterType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbFilterType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbFilterType.FormattingEnabled = true;
             this.cmbFilterType.Items.AddRange(new object[] {
@@ -257,8 +258,7 @@
             // 
             // btnMapSetting
             // 
-            this.btnMapSetting.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMapSetting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnMapSetting.Location = new System.Drawing.Point(504, 320);
             this.btnMapSetting.Name = "btnMapSetting";
             this.btnMapSetting.Size = new System.Drawing.Size(137, 32);
@@ -279,8 +279,7 @@
             // 
             // btnGradeSetting
             // 
-            this.btnGradeSetting.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGradeSetting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGradeSetting.Location = new System.Drawing.Point(504, 358);
             this.btnGradeSetting.Name = "btnGradeSetting";
             this.btnGradeSetting.Size = new System.Drawing.Size(137, 31);
@@ -362,8 +361,6 @@
             // 
             // label1
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -383,20 +380,9 @@
             this.comboBox1.Size = new System.Drawing.Size(198, 20);
             this.comboBox1.TabIndex = 13;
             // 
-            // nChartControl1
-            // 
-            this.nChartControl1.AutoRefresh = false;
-            this.nChartControl1.BackColor = System.Drawing.SystemColors.Control;
-            this.nChartControl1.InputKeys = new System.Windows.Forms.Keys[0];
-            this.nChartControl1.Location = new System.Drawing.Point(6, 70);
-            this.nChartControl1.Name = "nChartControl1";
-            this.nChartControl1.Size = new System.Drawing.Size(493, 480);
-            this.nChartControl1.State = ((Nevron.Chart.WinForm.NState)(resources.GetObject("nChartControl1.State")));
-            this.nChartControl1.TabIndex = 14;
-            this.nChartControl1.Text = "nchMap";
-            // 
             // dgvFlawLegend
             // 
+            this.dgvFlawLegend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvFlawLegend.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvFlawLegend.Location = new System.Drawing.Point(504, 70);
             this.dgvFlawLegend.Name = "dgvFlawLegend";
@@ -406,6 +392,7 @@
             // 
             // btnPrevPiece
             // 
+            this.btnPrevPiece.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPrevPiece.Location = new System.Drawing.Point(7, 556);
             this.btnPrevPiece.Name = "btnPrevPiece";
             this.btnPrevPiece.Size = new System.Drawing.Size(36, 32);
@@ -415,6 +402,7 @@
             // 
             // btnNextPiece
             // 
+            this.btnNextPiece.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnNextPiece.Location = new System.Drawing.Point(464, 556);
             this.btnNextPiece.Name = "btnNextPiece";
             this.btnNextPiece.Size = new System.Drawing.Size(36, 32);
@@ -424,6 +412,7 @@
             // 
             // lblN1
             // 
+            this.lblN1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblN1.AutoSize = true;
             this.lblN1.BackColor = System.Drawing.Color.Transparent;
             this.lblN1.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -436,6 +425,7 @@
             // 
             // lblTotalPiece
             // 
+            this.lblTotalPiece.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTotalPiece.AutoSize = true;
             this.lblTotalPiece.BackColor = System.Drawing.Color.Transparent;
             this.lblTotalPiece.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -448,6 +438,7 @@
             // 
             // lblNowPiece
             // 
+            this.lblNowPiece.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblNowPiece.AutoSize = true;
             this.lblNowPiece.BackColor = System.Drawing.Color.Transparent;
             this.lblNowPiece.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -460,6 +451,8 @@
             // 
             // dgvFlawLegendDetial
             // 
+            this.dgvFlawLegendDetial.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvFlawLegendDetial.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvFlawLegendDetial.Location = new System.Drawing.Point(6, 660);
             this.dgvFlawLegendDetial.Name = "dgvFlawLegendDetial";
@@ -467,11 +460,28 @@
             this.dgvFlawLegendDetial.Size = new System.Drawing.Size(635, 150);
             this.dgvFlawLegendDetial.TabIndex = 22;
             // 
+            // chartControl
+            // 
+            this.chartControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.chartControl.Legend.Visible = false;
+            this.chartControl.Location = new System.Drawing.Point(6, 70);
+            this.chartControl.Name = "chartControl";
+            this.chartControl.RuntimeHitTesting = true;
+            this.chartControl.SeriesSerializable = new DevExpress.XtraCharts.Series[0];
+            sideBySideBarSeriesLabel1.LineVisible = true;
+            this.chartControl.SeriesTemplate.Label = sideBySideBarSeriesLabel1;
+            this.chartControl.SeriesTemplate.View = pointSeriesView1;
+            this.chartControl.Size = new System.Drawing.Size(493, 480);
+            this.chartControl.TabIndex = 23;
+            // 
             // MapWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::NPxP.Properties.Resources.BackgroundLeft;
+            this.Controls.Add(this.chartControl);
             this.Controls.Add(this.dgvFlawLegendDetial);
             this.Controls.Add(this.lblNowPiece);
             this.Controls.Add(this.lblTotalPiece);
@@ -479,7 +489,6 @@
             this.Controls.Add(this.btnNextPiece);
             this.Controls.Add(this.btnPrevPiece);
             this.Controls.Add(this.dgvFlawLegend);
-            this.Controls.Add(this.nChartControl1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblYieldValue);
@@ -500,6 +509,9 @@
             this.tlpMapInfo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegend)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendDetial)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(pointSeriesView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartControl)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -533,7 +545,6 @@
         private System.Windows.Forms.Label lblYieldValue;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBox1;
-        private Nevron.Chart.WinForm.NChartControl nChartControl1;
         private System.Windows.Forms.DataGridView dgvFlawLegend;
         private System.Windows.Forms.Button btnPrevPiece;
         private System.Windows.Forms.Button btnNextPiece;
@@ -541,5 +552,6 @@
         private System.Windows.Forms.Label lblTotalPiece;
         private System.Windows.Forms.Label lblNowPiece;
         private System.Windows.Forms.DataGridView dgvFlawLegendDetial;
+        private DevExpress.XtraCharts.ChartControl chartControl;
     }
 }

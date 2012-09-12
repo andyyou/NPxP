@@ -27,14 +27,13 @@ namespace NPxP
 
         private MapWindow _mp;
         private DataTable _dtbFlaws;
-        private DataTable _dtbAfterFilter;
         private Dictionary<string, double> _units;
         private List<double> _cuts;
         private string _xmlUnitsPath;
         private string _dbConnectString;
 
         private int _nowPage, _totalPage; // For TableLayout pages , start from 1.
-        private int _paintID; // For paint TableLayout grid.
+       
 
         #endregion
         //-------------------------------------------------------------------------------------------//
@@ -281,8 +280,6 @@ namespace NPxP
                             string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
                             DataView dv = _dtbFlaws.DefaultView;
                             dv.RowFilter = filterExp;
-                            _dtbAfterFilter = new DataTable();
-                            _dtbAfterFilter = dv.ToTable();
                             // Clear tableLyout controls and search data.  
                             tlpFlawImages.Controls.Clear();
                             int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
@@ -309,6 +306,7 @@ namespace NPxP
                                 fi.Dock = DockStyle.Fill;
                                 tlpFlawImages.Controls.Add(fi);
                             }
+                            _mp.DrawChartPoint(rows, eventInfo.MD);
                             // Set can using buttons when oncut all button reset.
                             if (_totalPage > 1)
                             {
@@ -461,7 +459,8 @@ namespace NPxP
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
             lblNowPage.Text = nowPage.ToString();
-            DataRow[] rows = _dtbAfterFilter.Select();
+            // Get now filter rows
+            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter); 
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.
@@ -485,7 +484,8 @@ namespace NPxP
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
             lblNowPage.Text = nowPage.ToString();
-            DataRow[] rows = _dtbAfterFilter.Select(); 
+            // Get now filter rows
+            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter); 
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.

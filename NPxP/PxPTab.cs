@@ -222,6 +222,10 @@ namespace NPxP
             _dtbFlaws.Columns.Add("PointScore", typeof(double));
             _dtbFlaws.Columns.Add("SubPieceName", typeof(string));
 
+            // sort by default column
+            ConfigHelper ch = new ConfigHelper();
+            _dtbFlaws.DefaultView.Sort = String.Format("{0} ASC", ch.GetSortByColumnName().Trim());
+            
             // set dgvFlaws datasource 
             dgvFlaw.DataSource = _dtbFlaws;
            
@@ -349,8 +353,8 @@ namespace NPxP
                 }
                 else
                 {
-                    btnNextFlawImages.Enabled = true;
-                    btnProvFlawImages.Enabled = true;
+                    btnNextFlawImages.Enabled = false;
+                    btnProvFlawImages.Enabled = false;
                 }
 
 
@@ -449,7 +453,7 @@ namespace NPxP
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
             lblNowPage.Text = nowPage.ToString();
-            DataRow[] rows = _dtbFlaws.DefaultView.Table.Select();
+            DataRow[] rows = _dtbFlaws.DefaultView.Table.Select(); // 目前是該片 Rows 全部先選取, 看有沒有辦法只撈該顯示的.
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.
@@ -483,7 +487,7 @@ namespace NPxP
             {
                 _nowPage++;
             }
-            RefreshTableLayoutControls(_nowPage);
+            RefreshtlpImagesControls(_nowPage);
 
         }
         private void btnProvFlawImages_Click(object sender, EventArgs e)

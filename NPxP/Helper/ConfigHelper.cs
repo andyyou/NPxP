@@ -92,7 +92,19 @@ namespace NPxP.Helper
                 return columns;
             }
         }
+        // 取得 排序的欄位名稱
+        public string GetSortByColumnName()
+        {
+            string system_config_path = PathHelper.SystemConfigFolder + "default.xml";
+            using (FileStream stream = new FileStream(system_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string column = navigator.SelectSingleNode("//dgv_flaw/orderby").Value;
 
+                return column;
+            }
+        }
 
 
 

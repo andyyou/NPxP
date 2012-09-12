@@ -44,7 +44,8 @@
             this.dgvFlaw.AllowUserToDeleteRows = false;
             this.dgvFlaw.AllowUserToOrderColumns = true;
             this.dgvFlaw.AllowUserToResizeRows = false;
-            this.dgvFlaw.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvFlaw.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvFlaw.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvFlaw.Location = new System.Drawing.Point(12, 12);
             this.dgvFlaw.Name = "dgvFlaw";
@@ -78,6 +79,7 @@
             // btnProvFlawImages
             // 
             this.btnProvFlawImages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnProvFlawImages.Enabled = false;
             this.btnProvFlawImages.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.btnProvFlawImages.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.btnProvFlawImages.Location = new System.Drawing.Point(177, 688);
@@ -91,6 +93,7 @@
             // btnNextFlawImages
             // 
             this.btnNextFlawImages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnNextFlawImages.Enabled = false;
             this.btnNextFlawImages.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.btnNextFlawImages.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.btnNextFlawImages.Location = new System.Drawing.Point(502, 688);

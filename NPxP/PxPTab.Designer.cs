@@ -52,6 +52,7 @@
             this.dgvFlaw.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvFlaw.Size = new System.Drawing.Size(735, 140);
             this.dgvFlaw.TabIndex = 0;
+            this.dgvFlaw.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvFlaw_ColumnHeaderMouseClick);
             // 
             // tlpFlawImages
             // 

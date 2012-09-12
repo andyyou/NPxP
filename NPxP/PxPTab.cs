@@ -69,10 +69,11 @@ namespace NPxP
                 column.HeaderText = c.Name;
                 column.Width = c.Width;
                 column.DataPropertyName = c.Name;
+                column.SortMode = DataGridViewColumnSortMode.Automatic;
                 dgvFlaw.Columns.Add(column);
             }
-            dgvFlaw.AutoGenerateColumns = false; 
-
+            dgvFlaw.AutoGenerateColumns = false;
+           
             // initialize tlpFlawImages layout without pictures.
             SetDoubleBuffered(tlpFlawImages); // start double buffer.
             tlpFlawImages.ColumnStyles.Clear();
@@ -95,6 +96,10 @@ namespace NPxP
         {
             ConfigHelper ch = new ConfigHelper();
             ch.SavedgvFlawColumns(dgvFlaw);
+            if (!String.IsNullOrEmpty(dgvFlaw.SortedColumn.Name))
+            {
+                ch.SavedgvFlawOrderByColumn(dgvFlaw.SortedColumn.Name);
+            }
         }
         // (2)
         public void OnLanguageChanged(e_Language language)
@@ -221,7 +226,7 @@ namespace NPxP
             _dtbFlaws.Columns.Add("Priority", typeof(int));
             _dtbFlaws.Columns.Add("PointScore", typeof(double));
             _dtbFlaws.Columns.Add("SubPieceName", typeof(string));
-
+            
             // sort by default column
             ConfigHelper ch = new ConfigHelper();
             _dtbFlaws.DefaultView.Sort = String.Format("{0} ASC", ch.GetSortByColumnName().Trim());
@@ -495,6 +500,11 @@ namespace NPxP
             Job.SetOffline();
         }
         #endregion
+
+        private void dgvFlaw_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            //dgvFlaw.SortedColumn;
+        }
 
         
     }

@@ -147,6 +147,25 @@ namespace NPxP.Helper
             }
             return true;
         }
+        // 儲存 dgvFlaw OrderBy column
+        public bool SavedgvFlawOrderByColumn(string columnName)
+        {
+            string path = PathHelper.SystemConfigFolder + "default.xml";
+            XmlDocument document = new XmlDocument();
+            document.Load(path);
+            XPathNavigator navigator = document.CreateNavigator();
+            navigator.SelectSingleNode("//dgv_flaw/orderby").SetValue(columnName);
+            try
+            {
+                document.Save(path);
+            }
+            catch
+            {
+                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawColumns()");
+                return false;
+            }
+            return true;
+        }
         // 儲存 tlpFlawImages Rows * Columns
         public bool SavetlpFlawImagesLayout(string xmlFile, int columns, int rows)
         {
@@ -169,5 +188,7 @@ namespace NPxP.Helper
             }
             return true;
         }
+        
+
     }
 }

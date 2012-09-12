@@ -44,18 +44,24 @@
             this.dgvFlaw.AllowUserToDeleteRows = false;
             this.dgvFlaw.AllowUserToOrderColumns = true;
             this.dgvFlaw.AllowUserToResizeRows = false;
+            this.dgvFlaw.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvFlaw.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvFlaw.Location = new System.Drawing.Point(12, 12);
             this.dgvFlaw.Name = "dgvFlaw";
+            this.dgvFlaw.ReadOnly = true;
             this.dgvFlaw.RowHeadersVisible = false;
             this.dgvFlaw.RowTemplate.Height = 24;
             this.dgvFlaw.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvFlaw.Size = new System.Drawing.Size(735, 140);
             this.dgvFlaw.TabIndex = 0;
+            this.dgvFlaw.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvFlaw_CellDoubleClick);
             this.dgvFlaw.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvFlaw_ColumnHeaderMouseClick);
             // 
             // tlpFlawImages
             // 
+            this.tlpFlawImages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.tlpFlawImages.BackColor = System.Drawing.Color.Transparent;
             this.tlpFlawImages.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tlpFlawImages.ColumnCount = 2;
@@ -71,6 +77,7 @@
             // 
             // btnProvFlawImages
             // 
+            this.btnProvFlawImages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnProvFlawImages.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.btnProvFlawImages.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.btnProvFlawImages.Location = new System.Drawing.Point(177, 688);
@@ -83,6 +90,7 @@
             // 
             // btnNextFlawImages
             // 
+            this.btnNextFlawImages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnNextFlawImages.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.btnNextFlawImages.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.btnNextFlawImages.Location = new System.Drawing.Point(502, 688);
@@ -95,6 +103,7 @@
             // 
             // lblSlash
             // 
+            this.lblSlash.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblSlash.AutoSize = true;
             this.lblSlash.BackColor = System.Drawing.Color.Transparent;
             this.lblSlash.Font = new System.Drawing.Font("新細明體", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
@@ -106,6 +115,7 @@
             // 
             // lblTotalPage
             // 
+            this.lblTotalPage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblTotalPage.AutoSize = true;
             this.lblTotalPage.BackColor = System.Drawing.Color.Transparent;
             this.lblTotalPage.Font = new System.Drawing.Font("新細明體", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
@@ -117,6 +127,7 @@
             // 
             // lblNowPage
             // 
+            this.lblNowPage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblNowPage.AutoSize = true;
             this.lblNowPage.BackColor = System.Drawing.Color.Transparent;
             this.lblNowPage.Font = new System.Drawing.Font("新細明體", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));

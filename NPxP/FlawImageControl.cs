@@ -21,15 +21,24 @@ namespace NPxP
         private PictureBox[] _pb;
         private double[] _pbRatio;
         private Image[] _srcImages;
+
+        
         
         #endregion
+        //-------------------------------------------------------------------------------------------//
 
+        #region Properties
+
+        public bool IsDrawBorder { set; get; }
+
+        #endregion
         //-------------------------------------------------------------------------------------------//
 
         public FlawImageControl(DataRow drFlaw)
         {
             InitializeComponent();
             this._drFlaw = drFlaw;
+            IsDrawBorder = false;
             lblFlawID.Text += drFlaw["FlawID"].ToString();
             _pb = new PictureBox[JobHelper.JobInfo.NumberOfStations];
             _pbRatio = new double[JobHelper.JobInfo.NumberOfStations];
@@ -138,6 +147,7 @@ namespace NPxP
                 pb.Image = dest;
             }
         }
+       
         #endregion
 
 
@@ -207,7 +217,71 @@ namespace NPxP
                 ff.ShowDialog();
             }
         }
+        private void FlawImageControl_Paint(object sender, PaintEventArgs e)
+        {
+            if (IsDrawBorder)
+            {
+                var borderColor = Color.FromArgb(255, 0, 0);
+                var borderStyle = ButtonBorderStyle.Solid;
+                var borderWidth = 3;
+
+                ControlPaint.DrawBorder(
+                                    e.Graphics,
+                                    this.ClientRectangle,
+                                    borderColor,
+                                    borderWidth,
+                                    borderStyle,
+                                    borderColor,
+                                    borderWidth,
+                                    borderStyle,
+                                    borderColor,
+                                    borderWidth,
+                                    borderStyle,
+                                    borderColor,
+                                    borderWidth,
+                                    borderStyle);
+            }
+        }
+
+        private void FlawImageControl_Click(object sender, EventArgs e)
+        {
+            
+        }
         #endregion
+
+        private void tabImages_DoubleClick(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabImages_Click(object sender, EventArgs e)
+        {
+            var c = from controls in this.Parent.Controls.OfType<FlawImageControl>()
+                    select controls; 
+            foreach (Control control in c)
+            {
+                if (control.GetType().Name == "FlawImageControl")
+                {
+                    FlawImageControl fi = (FlawImageControl)control;
+                    fi.IsDrawBorder = false;
+                    fi.Invalidate();
+                }
+            }
+
+            IsDrawBorder = true;
+            this.Invalidate();
+            DataGridView dgv = (DataGridView)this.Parent.Parent.Controls.Find("dgvFlaw", true)[0];
+            DataGridViewRow row = dgv.Rows
+            .Cast<DataGridViewRow>()
+            .Where(r => r.Cells["FlawID"].Value.ToString().Equals(_drFlaw["FlawID"].ToString()))
+            .First();
+            row.Selected = true;
+            
+        }
+
+       
+
+        
 
        
     }

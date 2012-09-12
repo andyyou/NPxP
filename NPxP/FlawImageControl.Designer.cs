@@ -43,6 +43,8 @@
             this.tabImages.SelectedIndex = 0;
             this.tabImages.Size = new System.Drawing.Size(202, 119);
             this.tabImages.TabIndex = 2;
+            this.tabImages.DoubleClick += new System.EventHandler(this.tabImages_DoubleClick);
+            this.tabImages.Click += new System.EventHandler(this.tabImages_Click);
             this.tabImages.SelectedIndexChanged += new System.EventHandler(this.tabImages_SelectedIndexChanged);
             // 
             // lblFlawID
@@ -65,6 +67,8 @@
             this.Controls.Add(this.lblFlawID);
             this.Name = "FlawImageControl";
             this.Size = new System.Drawing.Size(210, 150);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.FlawImageControl_Paint);
+            this.Click += new System.EventHandler(this.FlawImageControl_Click);
             this.ResumeLayout(false);
             this.PerformLayout();
 

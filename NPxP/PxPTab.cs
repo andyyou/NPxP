@@ -271,7 +271,7 @@ namespace NPxP
 
                     case e_EventID.CUT_SIGNAL:
                         _cuts.Add(eventInfo.MD);
-                        dgvFlaw.ClearSelection();
+                        
                         // UNDONE: 
                         if (JobHelper.IsOnline)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
                         {
@@ -289,9 +289,14 @@ namespace NPxP
                             // Calculate pages & set label and buttons
                             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
                             _nowPage = 1;
-                            _totalPage = rows.Length % pageSize == 0 ?
-                                         rows.Length / pageSize :
-                                         rows.Length / pageSize + 1;
+                            if (rows.Length <= pageSize)
+                                _totalPage = 1;
+                            else
+                            {
+                                _totalPage = rows.Length % pageSize == 0 ?
+                                             rows.Length / pageSize :
+                                             rows.Length / pageSize + 1;
+                            }
                             lblNowPage.Text = _nowPage.ToString();
                             lblTotalPage.Text = _totalPage.ToString();
                             int startFicIndex = (_nowPage - 1) * pageSize;
@@ -364,6 +369,7 @@ namespace NPxP
         public void OnCut(double md)
         {
             WriteHelper.Log("OnCut()");
+            dgvFlaw.ClearSelection();
            
         }
         // (D) :處理缺陷判斷

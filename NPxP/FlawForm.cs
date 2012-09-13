@@ -26,13 +26,11 @@ namespace NPxP
 
         public FlawForm(DataRow drFlaw)
         {
+
             InitializeComponent();
-            this._drFlaw = drFlaw;
-            this.Text = "Flaw ID : " + _drFlaw["FlawID"].ToString();
-            
-            _pb = new PictureBox[JobHelper.JobInfo.NumberOfStations];
-            _pbRatio = new double[JobHelper.JobInfo.NumberOfStations];
-            _srcImages = new Image[JobHelper.JobInfo.NumberOfStations];
+            _drFlaw = drFlaw;
+           
+
         }
         //-------------------------------------------------------------------------------------------//
 
@@ -110,6 +108,10 @@ namespace NPxP
         #region Action Methods
         private void FlawForm_Load(object sender, EventArgs e)
         {
+            // set local variables.
+            _pb = new PictureBox[JobHelper.JobInfo.NumberOfStations];
+            _pbRatio = new double[JobHelper.JobInfo.NumberOfStations];
+            _srcImages = new Image[JobHelper.JobInfo.NumberOfStations];
             // initialize all labels
             lblFlawIDVal.Text = _drFlaw["FlawID"].ToString();
             lblFlawClassVal.Text = _drFlaw["FlawClass"].ToString();

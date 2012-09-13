@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <config>
   <pxptab>
-    <image_grid_rows>3</image_grid_rows>
-    <image_grid_columns>3</image_grid_columns>
+    <image_grid_rows>2</image_grid_rows>
+    <image_grid_columns>2</image_grid_columns>
   </pxptab>
   <map_window>
     <map_chart>
       <!-- 比例 x:y -->
-      <map_proportion name="x">1</map_proportion>
-      <map_proportion name="y">1</map_proportion>
+      <map_proportion name="x">16</map_proportion>
+      <map_proportion name="y">9</map_proportion>
       <!-- 顯示格線 -->
-      <grid_line_display>1</grid_line_display>
+      <grid_line_display>0</grid_line_display>
       <!-- Map底格線間隔模式 0: FixSize , 1: EachCellCount-->
-      <grid_line_mode>0</grid_line_mode>
+      <grid_line_mode>1</grid_line_mode>
       <grid_line_set>
-        <fix> <symbol>m</symbol> <cd>0.2</cd> <md>0.2</md></fix>
+        <fix> <symbol>m</symbol> <cd>0.1</cd> <md>0.1</md></fix>
         <count> <cd>3</cd> <md>3</md></count>
       </grid_line_set>
       <!-- 紀錄 MD 或 CD 為 Bottom Axes  -->
-      <bottom_axes>CD</bottom_axes>
+      <bottom_axes>MD</bottom_axes>
       <!-- 垂直翻轉 -->
       <md_inver>true</md_inver>
       <!-- 水平翻轉 -->
-      <cd_inver>true</cd_inver>
+      <cd_inver>false</cd_inver>
     </map_chart>
     <!-- 顯示項目 0:All, 1:Pass, 2:Fail -->
     <filter_display>0</filter_display>

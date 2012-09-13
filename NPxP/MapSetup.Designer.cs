@@ -37,8 +37,8 @@
             this.nudImageRows = new System.Windows.Forms.NumericUpDown();
             this.nudImageColumns = new System.Windows.Forms.NumericUpDown();
             this.grbMapSettings = new System.Windows.Forms.GroupBox();
-            this.cmbCDInverse = new System.Windows.Forms.CheckBox();
-            this.cmbMDInverse = new System.Windows.Forms.CheckBox();
+            this.chkCDInverse = new System.Windows.Forms.CheckBox();
+            this.chkMDInverse = new System.Windows.Forms.CheckBox();
             this.cmbBottomAxes = new System.Windows.Forms.ComboBox();
             this.lblBottomAxie = new System.Windows.Forms.Label();
             this.pnlGridSizeSettings = new System.Windows.Forms.Panel();
@@ -59,7 +59,7 @@
             this.rdoMapGridOff = new System.Windows.Forms.RadioButton();
             this.rdoMapGridOn = new System.Windows.Forms.RadioButton();
             this.lblMapGridShow = new System.Windows.Forms.Label();
-            this.cboxMapSize = new System.Windows.Forms.ComboBox();
+            this.cmbMapSize = new System.Windows.Forms.ComboBox();
             this.lblMapSize = new System.Windows.Forms.Label();
             this.gbSeriesSetting = new System.Windows.Forms.GroupBox();
             this.dgvFlawLegendSettings = new System.Windows.Forms.DataGridView();
@@ -91,6 +91,7 @@
             this.cmbMapConfigName.Name = "cmbMapConfigName";
             this.cmbMapConfigName.Size = new System.Drawing.Size(150, 20);
             this.cmbMapConfigName.TabIndex = 1;
+            this.cmbMapConfigName.SelectedIndexChanged += new System.EventHandler(this.cmbMapConfigName_SelectedIndexChanged);
             // 
             // grbImageSettings
             // 
@@ -149,15 +150,15 @@
             // 
             // grbMapSettings
             // 
-            this.grbMapSettings.Controls.Add(this.cmbCDInverse);
-            this.grbMapSettings.Controls.Add(this.cmbMDInverse);
+            this.grbMapSettings.Controls.Add(this.chkCDInverse);
+            this.grbMapSettings.Controls.Add(this.chkMDInverse);
             this.grbMapSettings.Controls.Add(this.cmbBottomAxes);
             this.grbMapSettings.Controls.Add(this.lblBottomAxie);
             this.grbMapSettings.Controls.Add(this.pnlGridSizeSettings);
             this.grbMapSettings.Controls.Add(this.rdoMapGridOff);
             this.grbMapSettings.Controls.Add(this.rdoMapGridOn);
             this.grbMapSettings.Controls.Add(this.lblMapGridShow);
-            this.grbMapSettings.Controls.Add(this.cboxMapSize);
+            this.grbMapSettings.Controls.Add(this.cmbMapSize);
             this.grbMapSettings.Controls.Add(this.lblMapSize);
             this.grbMapSettings.Location = new System.Drawing.Point(15, 142);
             this.grbMapSettings.Name = "grbMapSettings";
@@ -166,27 +167,25 @@
             this.grbMapSettings.TabStop = false;
             this.grbMapSettings.Text = "Map Settings";
             // 
-            // cmbCDInverse
+            // chkCDInverse
             // 
-            this.cmbCDInverse.AutoSize = true;
-            this.cmbCDInverse.Location = new System.Drawing.Point(113, 272);
-            this.cmbCDInverse.Name = "cmbCDInverse";
-            this.cmbCDInverse.Size = new System.Drawing.Size(77, 16);
-            this.cmbCDInverse.TabIndex = 9;
-            this.cmbCDInverse.Text = "CD Inverse";
-            this.cmbCDInverse.UseVisualStyleBackColor = true;
-            this.cmbCDInverse.Visible = false;
+            this.chkCDInverse.AutoSize = true;
+            this.chkCDInverse.Location = new System.Drawing.Point(113, 272);
+            this.chkCDInverse.Name = "chkCDInverse";
+            this.chkCDInverse.Size = new System.Drawing.Size(77, 16);
+            this.chkCDInverse.TabIndex = 9;
+            this.chkCDInverse.Text = "CD Inverse";
+            this.chkCDInverse.UseVisualStyleBackColor = true;
             // 
-            // cmbMDInverse
+            // chkMDInverse
             // 
-            this.cmbMDInverse.AutoSize = true;
-            this.cmbMDInverse.Location = new System.Drawing.Point(12, 273);
-            this.cmbMDInverse.Name = "cmbMDInverse";
-            this.cmbMDInverse.Size = new System.Drawing.Size(79, 16);
-            this.cmbMDInverse.TabIndex = 8;
-            this.cmbMDInverse.Text = "MD Inverse";
-            this.cmbMDInverse.UseVisualStyleBackColor = true;
-            this.cmbMDInverse.Visible = false;
+            this.chkMDInverse.AutoSize = true;
+            this.chkMDInverse.Location = new System.Drawing.Point(12, 273);
+            this.chkMDInverse.Name = "chkMDInverse";
+            this.chkMDInverse.Size = new System.Drawing.Size(79, 16);
+            this.chkMDInverse.TabIndex = 8;
+            this.chkMDInverse.Text = "MD Inverse";
+            this.chkMDInverse.UseVisualStyleBackColor = true;
             // 
             // cmbBottomAxes
             // 
@@ -344,6 +343,7 @@
             this.rdoCountSize.TabStop = true;
             this.rdoCountSize.Text = "Equal Cell Count";
             this.rdoCountSize.UseVisualStyleBackColor = false;
+            this.rdoCountSize.CheckedChanged += new System.EventHandler(this.rdoCountSize_CheckedChanged);
             // 
             // rdoFixCellSize
             // 
@@ -355,6 +355,7 @@
             this.rdoFixCellSize.TabStop = true;
             this.rdoFixCellSize.Text = "Specify Cell Size";
             this.rdoFixCellSize.UseVisualStyleBackColor = false;
+            this.rdoFixCellSize.CheckedChanged += new System.EventHandler(this.rdoFixCellSize_CheckedChanged);
             // 
             // rdoMapGridOff
             // 
@@ -387,20 +388,20 @@
             this.lblMapGridShow.TabIndex = 2;
             this.lblMapGridShow.Text = "Map Grid Show";
             // 
-            // cboxMapSize
+            // cmbMapSize
             // 
-            this.cboxMapSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboxMapSize.FormattingEnabled = true;
-            this.cboxMapSize.Items.AddRange(new object[] {
+            this.cmbMapSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMapSize.FormattingEnabled = true;
+            this.cmbMapSize.Items.AddRange(new object[] {
             "1:1",
             "2:1 ",
             "4:3 ",
             "3:4 ",
             "16:9"});
-            this.cboxMapSize.Location = new System.Drawing.Point(113, 21);
-            this.cboxMapSize.Name = "cboxMapSize";
-            this.cboxMapSize.Size = new System.Drawing.Size(121, 20);
-            this.cboxMapSize.TabIndex = 1;
+            this.cmbMapSize.Location = new System.Drawing.Point(113, 21);
+            this.cmbMapSize.Name = "cmbMapSize";
+            this.cmbMapSize.Size = new System.Drawing.Size(121, 20);
+            this.cmbMapSize.TabIndex = 1;
             // 
             // lblMapSize
             // 
@@ -466,6 +467,7 @@
             this.Controls.Add(this.lblMapConfig);
             this.Name = "MapSetup";
             this.Text = "MapSetup";
+            this.Load += new System.EventHandler(this.MapSetup_Load);
             this.grbImageSettings.ResumeLayout(false);
             this.grbImageSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageRows)).EndInit();
@@ -492,8 +494,8 @@
         private System.Windows.Forms.NumericUpDown nudImageRows;
         private System.Windows.Forms.NumericUpDown nudImageColumns;
         private System.Windows.Forms.GroupBox grbMapSettings;
-        private System.Windows.Forms.CheckBox cmbCDInverse;
-        private System.Windows.Forms.CheckBox cmbMDInverse;
+        private System.Windows.Forms.CheckBox chkCDInverse;
+        private System.Windows.Forms.CheckBox chkMDInverse;
         private System.Windows.Forms.ComboBox cmbBottomAxes;
         private System.Windows.Forms.Label lblBottomAxie;
         private System.Windows.Forms.Panel pnlGridSizeSettings;
@@ -514,7 +516,7 @@
         private System.Windows.Forms.RadioButton rdoMapGridOff;
         private System.Windows.Forms.RadioButton rdoMapGridOn;
         private System.Windows.Forms.Label lblMapGridShow;
-        private System.Windows.Forms.ComboBox cboxMapSize;
+        private System.Windows.Forms.ComboBox cmbMapSize;
         private System.Windows.Forms.Label lblMapSize;
         private System.Windows.Forms.GroupBox gbSeriesSetting;
         private System.Windows.Forms.DataGridView dgvFlawLegendSettings;

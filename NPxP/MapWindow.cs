@@ -34,7 +34,8 @@ namespace NPxP
 
         private void btnMapSetting_Click(object sender, EventArgs e)
         {
-            JobHelper.Job.SetOffline();
+            MapSetup ms = new MapSetup();
+            ms.ShowDialog();
         }
 
         #region IOnLanguageChanged 成員
@@ -64,7 +65,7 @@ namespace NPxP
                 // Access the view-type-specific options of the series.
                 PointSeriesView flawPointView = (PointSeriesView)flawPoint.View;
                 flawPointView.PointMarkerOptions.Kind = MarkerKind.Circle;
-                chartControl.Series.Add(flawPoint);
+                //chartControl.Series.Add(flawPoint);
             }
         }
 

@@ -11,14 +11,18 @@
       <map_proportion name="y">1</map_proportion>
       <!-- 顯示格線 -->
       <grid_line_display>1</grid_line_display>
-      <!-- Map底格線間隔模式 0: EachCellSize , 1: EachCellCount-->
+      <!-- Map底格線間隔模式 0: FixSize , 1: EachCellCount-->
       <grid_line_mode>0</grid_line_mode>
+      <grid_line_set>
+        <fix> <symbol>m</symbol> <cd>0.2</cd> <md>0.2</md></fix>
+        <count> <cd>3</cd> <md>3</md></count>
+      </grid_line_set>
       <!-- 紀錄 MD 或 CD 為 Bottom Axes  -->
       <bottom_axes>CD</bottom_axes>
       <!-- 垂直翻轉 -->
-      <md_inver>0</md_inver>
+      <md_inver>true</md_inver>
       <!-- 水平翻轉 -->
-      <cd_inver>0</cd_inver>
+      <cd_inver>true</cd_inver>
     </map_chart>
     <!-- 顯示項目 0:All, 1:Pass, 2:Fail -->
     <filter_display>0</filter_display>

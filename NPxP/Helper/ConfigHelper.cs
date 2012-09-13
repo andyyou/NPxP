@@ -17,7 +17,7 @@ namespace NPxP.Helper
         // method using for get data from xml
         //--------------------------------------------------------------------------------------//
 
-        // 取得 dgvFlaw 要使用的欄位且排序完成.
+        // 取得 PxPTab.cs/dgvFlaw 要使用的欄位且排序完成.
         public List<Column> GetdgvFlawColumns()
         {
             List<Column> columns = new  List<Column>();
@@ -40,7 +40,7 @@ namespace NPxP.Helper
                 return columns;
             }
         }
-        // 取得 tlpFlawImages 幾列(預設)
+        // 取得 PxPTab.cs/tlpFlawImages 幾列(預設)
         public int GettlpFlawImagesRows()
         {
             string map_config_path = PathHelper.MapConfigFolder + "default.xml";
@@ -53,7 +53,7 @@ namespace NPxP.Helper
                 return row;
             }
         }
-        // 取得 tlpFlawImages 幾列(使用檔名)
+        // 取得 PxPTab.cs/tlpFlawImages 幾列(使用檔名)
         public int GettlpFlawImagesRows(string fileName)
         {
             string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
@@ -66,7 +66,7 @@ namespace NPxP.Helper
                 return rows;
             }
         }
-        // 取得 tlpFlawImages 幾攔(預設)
+        // 取得 PxPTab.cs/tlpFlawImages 幾攔(預設)
         public int GettlpFlawImagesColumns()
         {
             string map_config_path = PathHelper.MapConfigFolder + "default.xml";
@@ -79,7 +79,7 @@ namespace NPxP.Helper
                 return columns;
             }
         }
-        // 取得 tlpFlawImages 幾攔(使用檔名)
+        // 取得 PxPTab.cs/tlpFlawImages 幾攔(使用檔名)
         public int GettlpFlawImagesColumns(string fileName)
         {
             string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
@@ -92,7 +92,7 @@ namespace NPxP.Helper
                 return columns;
             }
         }
-        // 取得 排序的欄位名稱
+        // 取得 PxPTab.cs/dgvFlaw 排序的欄位名稱
         public string GetSortByColumnName()
         {
             string system_config_path = PathHelper.SystemConfigFolder + "default.xml";
@@ -105,11 +105,173 @@ namespace NPxP.Helper
                 return column;
             }
         }
+        // 取得 目前 Map config file name
+        public string GetDefaultMapConfigName()
+        {
+            string system_config_path = PathHelper.SystemConfigFolder + "default.xml";
+            using (FileStream stream = new FileStream(system_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string filename = navigator.SelectSingleNode("/system/map_conf_name").Value;
 
+                return filename;
+            }
+        }
+        // 取得 MapSetup.cs Map 格線是否開啟
+        public bool GetIsDisplayMapGrid(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/grid_line_display").Value);
+                if (value == 0)
+                    return false;
+                else
+                    return true;
+            }
+        }
+        // 取得 MapSetup.cs 格線顯示模式 0->FixCellSize, 1-> EachCellCount
+        public bool GetIsFixCellSizeMode(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/grid_line_mode").Value);
+                if (value == 0)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        // 取得 FixCellSize 時 symbol
+        public string GetFixCellSizeSmybol(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string value = navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/fix/symbol").Value;
+                return value;
+            }
+        }
+        // 取得 FixCellSize 時 CD
+        public double GetFixCellSizeCD(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                double value = Convert.ToDouble(navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/fix/cd").Value);
+                return value;
+            }
+        }
+        // 取得 FixCellSize 時 MD
+        public double GetFixCellSizeMD(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                double value = Convert.ToDouble(navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/fix/md").Value);
+                return value;
+            }
+        }
+        // 取得 CountSize 時 CD
+        public int GetCountSizeCD(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/count/cd").Value);
+                return value;
+            }
+        }
+        // 取得 CountSize 時 MD
+        public int GetCountSizeMD(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/count/md").Value);
+                return value;
+            }
+        }
+        // 取得 Bottom Axes 
+        public string GetBottomAxes(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string value = navigator.SelectSingleNode("//map_window/map_chart/bottom_axes").Value;
+                return value;
+            }
+        }
+        // 取得 MD 是否反轉(垂直翻轉)
+        public bool IsMdInver_Y(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//map_window/map_chart/md_inver").Value);
 
+                return value;
+            }
+        }
+        // 取得 CD 是否反轉(水平翻轉)
+        public bool IsCdInver_X(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//map_window/map_chart/cd_inver").Value);
 
+                return value;
+            }
+        }
+        // 取得 Map Control 的 X 比例(X:Y)
+        public int GetMapProportion_X(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/map_proportion[@name='x']").Value);
 
+                return value;
+            }
+        }
+        // 取得 Map Control 的 Y 比例(X:Y)
+        public int GetMapProportion_Y(string fileName)
+        {
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/map_proportion[@name='y']").Value);
 
+                return value;
+            }
+        }
         // method using for save data to xml
         //--------------------------------------------------------------------------------------//
         

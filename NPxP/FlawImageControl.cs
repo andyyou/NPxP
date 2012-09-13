@@ -243,16 +243,8 @@ namespace NPxP
             }
         }
 
-        private void FlawImageControl_Click(object sender, EventArgs e)
-        {
-            
-        }
+       
         #endregion
-
-        private void tabImages_DoubleClick(object sender, EventArgs e)
-        {
-
-        }
 
         private void tabImages_Click(object sender, EventArgs e)
         {

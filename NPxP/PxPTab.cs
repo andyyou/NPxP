@@ -13,6 +13,9 @@ using NPxP.Model;
 using System.Xml;
 using System.Xml.XPath;
 using System.Reflection;
+using System.Data.SqlClient;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace NPxP
 {
@@ -33,6 +36,7 @@ namespace NPxP
         private string _dbConnectString;
 
         private int _nowPage, _totalPage; // For TableLayout pages , start from 1.
+        private bool _isOpenHistory;
        
 
         #endregion
@@ -241,6 +245,7 @@ namespace NPxP
         public void OnOnline(bool isOnline)
         {
             JobHelper.IsOnline = isOnline;
+            _isOpenHistory = false;
             WriteHelper.Log("OnOnline()");
         }
         // (19)
@@ -272,8 +277,7 @@ namespace NPxP
                     case e_EventID.CUT_SIGNAL:
                         _cuts.Add(eventInfo.MD);
                         
-                        // UNDONE: 
-                        if (JobHelper.IsOnline)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
+                        if (JobHelper.IsOnline || _isOpenHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
                         {
                             // Filter DataGridView
                             double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
@@ -344,7 +348,7 @@ namespace NPxP
                 dr["DateTime"] = flaw.DateTime;
                 dr["FlawClass"] = flaw.FlawClass;
                 dr["FlawType"] = flaw.FlawType;
-                dr["Images"] = flaw.Images;
+               
                 dr["LeftEdge"] = flaw.LeftEdge;
                 dr["LeftRollCD"] = flaw.LeftRollCD;
                 dr["Length"] = flaw.Length;
@@ -359,6 +363,51 @@ namespace NPxP
                     dr["Priority"] = JobHelper.SeverityInfo[0].Flaws.TryGetValue(flaw.FlawType, out opv) ? opv : 0;
                 else
                     dr["Priority"] = 0;
+                // UNDONE: 因讀取歷史資料, 特別處理 Image
+                if (_isOpenHistory)
+                {
+                    bool blnShowImg = false;
+                    int intW = 0;
+                    int intH = 0;
+                    using (SqlConnection cn = new SqlConnection(_dbConnectString))
+                    {
+                        cn.Open();
+                        string QueryStr = "Select iImage From dbo.Jobs T1, dbo.Flaw T2, dbo.Image T3 Where T1.klKey = T2.klJobKey AND T2.pklFlawKey = T3.klFlawKey AND T1.JobID = @JobID AND T2.lFlawId = @FlawID";
+                        SqlCommand cmd = new SqlCommand(QueryStr, cn);
+                        cmd.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
+                        cmd.Parameters.AddWithValue("@FlawID", flaw.FlawID );
+                        SqlDataReader sd = cmd.ExecuteReader();
+                        sd.Read();
+                        byte[] images = (Byte[])sd["iImage"];
+
+                        intW = images[0] + images[1] * 256;
+                        intH = images[4] + images[5] * 256;
+
+                        if (intW == 0 & intH == 0)
+                        {
+                            intW = 1;
+                            intH = 1;
+                            blnShowImg = false;
+                        }
+                        else
+                        {
+                            blnShowImg = true;
+                        }
+                        Bitmap bmpShowImg = new Bitmap(intW, intH);
+
+                        if (blnShowImg)
+                        {
+                            bmpShowImg = ToGrayBitmap(images, intW, intH);
+                        }
+
+                        ImageInfo tmpImg = new ImageInfo(bmpShowImg, 0);
+                        dr["Images"] = tmpImg;
+                    }
+                }
+                else
+                {
+                    dr["Images"] = flaw.Images;
+                }
                 // add record to datatable
                 _dtbFlaws.Rows.Add(dr);
             }
@@ -391,6 +440,7 @@ namespace NPxP
         public void OnOpenHistory(double startMD, double stopMD)
         {
             WriteHelper.Log("OnOpenHistory()");
+            _isOpenHistory = true;
         }
         // (25) :停止工單
         public void OnJobStopped(double md)
@@ -512,6 +562,51 @@ namespace NPxP
 
             }
         }
+        // Function of Image
+        public static Bitmap ToGrayBitmap(byte[] rawValues, int width, int height)
+        {
+            // Declare bitmap variable and lock memory
+            Bitmap bmp = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
+
+            // Get image parameter
+            int stride = bmpData.Stride;  // Width of scan line
+            int offset = stride - width;  // Display width and the scan line width of the gap
+            IntPtr iptr = bmpData.Scan0;  // Get bmpData start position in memory
+            int scanBytes = stride * height;  // Size of the memory area
+
+            // Convert the original display size of the byte array into an array of bytes actually stored in the memory
+            int posScan = 0, posReal = 0;  // Declare two pointer, point to source and destination arrays
+            byte[] pixelValues = new byte[scanBytes];  // Declare array size
+            for (int x = 0; x < height; x++)
+            {
+                // Emulate line scanning
+                for (int y = 0; y < width; y++)
+                {
+                    pixelValues[posScan++] = rawValues[posReal++];
+                }
+                posScan += offset;  //Line scan finished
+            }
+
+            // Using Marshal.Copy function copy pixelValues to BitmapData
+            Marshal.Copy(pixelValues, 0, iptr, scanBytes);
+            bmp.UnlockBits(bmpData);  // Unlock memory
+
+            // Change 8 bit bitmap index table to Grayscale
+            ColorPalette tempPalette;
+            using (Bitmap tempBmp = new Bitmap(1, 1, PixelFormat.Format8bppIndexed))
+            {
+                tempPalette = tempBmp.Palette;
+            }
+            for (int i = 0; i < 256; i++)
+            {
+                tempPalette.Entries[i] = Color.FromArgb(i, i, i);
+            }
+
+            bmp.Palette = tempPalette;
+            return bmp;
+        }
         #endregion
 
        
@@ -599,5 +694,22 @@ namespace NPxP
         }
 
         
+    }
+
+    // Extend class 
+    public class ImageInfo : IImageInfo
+    {
+        #region IImageInfo 成員
+
+        public System.Drawing.Bitmap Image { set; get; }
+        public int Station { set; get; }
+
+        public ImageInfo(System.Drawing.Bitmap image, int station)
+        {
+            this.Image = image;
+            this.Station = station;
+        }
+
+        #endregion
     }
 }

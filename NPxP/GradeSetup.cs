@@ -14,7 +14,7 @@ namespace NPxP
 {
     public partial class GradeSetup : Form
     {
-        private DataTable _dtbColumns, _dtbRows;
+        private DataTable _dtbColumns, _dtbRows, _dtbPoints;
         public GradeSetup()
         {
             InitializeComponent();
@@ -105,6 +105,48 @@ namespace NPxP
             // Initialize Tab of grade/point
             chkEnablePonit.Checked = ch.IsGradePointEnable(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
 
+            // Initialize SubPiece (cmbSubPieceOfGrade)
+            cmbSubPieceOfPoint.DataSource = ch.GetSubPieceNameList(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
+
+            // Initialize dgvPoint, dgvGrade without data
+            Column className = new Column(0, "ClassName", 200);
+            Column score = new Column(1, "Score", 200);
+            columns = new List<Column>();
+            columns.Add(className);
+            columns.Add(score);
+            foreach (Column c in columns)
+            {
+                DataGridViewCell cell = new DataGridViewTextBoxCell();
+                DataGridViewColumn column = new DataGridViewColumn();
+                column.CellTemplate = cell;
+                column.Name = c.Name;
+                column.HeaderText = c.Name;
+                column.Width = c.Width;
+                column.DataPropertyName = c.Name;
+                column.SortMode = DataGridViewColumnSortMode.Automatic;
+                dgvPoint.Columns.Add(column);
+            }
+            dgvPoint.MultiSelect = false;
+            dgvPoint.AutoGenerateColumns = false;
+            foreach (Column c in columns)
+            {
+                DataGridViewCell cell = new DataGridViewTextBoxCell();
+                DataGridViewColumn column = new DataGridViewColumn();
+                column.CellTemplate = cell;
+                column.Name = c.Name;
+                column.HeaderText = c.Name;
+                column.Width = c.Width;
+                column.DataPropertyName = c.Name;
+                column.SortMode = DataGridViewColumnSortMode.Automatic;
+                dgvGrade.Columns.Add(column);
+            }
+            dgvGrade.MultiSelect = false;
+            dgvGrade.AutoGenerateColumns = false;
+            
+            // Set dgvPoint datasource
+            _dtbPoints = ch.GetDataTableOfdgvPointBySubPicecName(cmbGradeConfigFiles.SelectedItem.ToString().Trim(), cmbSubPieceOfPoint.SelectedItem.ToString().Trim());
+            dgvPoint.DataSource = _dtbPoints;
+
 
             // Initialize Tab of grade/grade
             chkEnableGrade.Checked = ch.IsGradeMarksEnable(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
@@ -177,6 +219,26 @@ namespace NPxP
                     e.Cancel = true;
                 }
             }
+        }
+
+        private void cmbSubPieceOfGrade_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void cmbSubPieceOfPoint_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            
+           
+        }
+
+        private void cmbSubPieceOfPoint_DropDownClosed(object sender, EventArgs e)
+        {
+            // UNDONE: 切換有bug
+            ConfigHelper ch = new ConfigHelper();
+            _dtbPoints = ch.GetDataTableOfdgvPointBySubPicecName(cmbGradeConfigFiles.SelectedItem.ToString(), cmbSubPieceOfPoint.SelectedItem.ToString().Trim());
+            dgvPoint.Refresh();
         }
 
        

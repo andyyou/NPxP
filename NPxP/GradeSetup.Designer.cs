@@ -320,6 +320,8 @@
             // 
             // dgvPoint
             // 
+            this.dgvPoint.AllowUserToAddRows = false;
+            this.dgvPoint.AllowUserToDeleteRows = false;
             this.dgvPoint.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvPoint.Location = new System.Drawing.Point(23, 51);
             this.dgvPoint.Name = "dgvPoint";
@@ -344,6 +346,8 @@
             this.cmbSubPieceOfPoint.Name = "cmbSubPieceOfPoint";
             this.cmbSubPieceOfPoint.Size = new System.Drawing.Size(121, 20);
             this.cmbSubPieceOfPoint.TabIndex = 0;
+            this.cmbSubPieceOfPoint.SelectedIndexChanged += new System.EventHandler(this.cmbSubPieceOfPoint_SelectedIndexChanged);
+            this.cmbSubPieceOfPoint.DropDownClosed += new System.EventHandler(this.cmbSubPieceOfPoint_DropDownClosed);
             // 
             // chkEnablePonit
             // 
@@ -402,6 +406,8 @@
             // 
             // dgvGrade
             // 
+            this.dgvGrade.AllowUserToAddRows = false;
+            this.dgvGrade.AllowUserToDeleteRows = false;
             this.dgvGrade.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvGrade.Location = new System.Drawing.Point(23, 51);
             this.dgvGrade.Name = "dgvGrade";
@@ -426,6 +432,7 @@
             this.cmbSubPieceOfGrade.Name = "cmbSubPieceOfGrade";
             this.cmbSubPieceOfGrade.Size = new System.Drawing.Size(121, 20);
             this.cmbSubPieceOfGrade.TabIndex = 0;
+            this.cmbSubPieceOfGrade.SelectedIndexChanged += new System.EventHandler(this.cmbSubPieceOfGrade_SelectedIndexChanged);
             // 
             // tpPassOrFail
             // 

@@ -197,6 +197,10 @@ namespace NPxP
         {
             // Save default config file to system config
             ConfigHelper ch = new ConfigHelper();
+            if (String.IsNullOrEmpty(cmbMapConfigName.Text))
+            {
+                cmbMapConfigName.Text = DateTime.Now.ToShortDateString();
+            }
             ch.SaveMapSetupConfigFile(cmbMapConfigName.Text.Trim());
 
             // initialize map xml sechma

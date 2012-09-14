@@ -427,8 +427,53 @@ namespace NPxP.Helper
                 return value;
             }
         }
+        // 取得 GradeSetup.cs/ subpiece name list
+        public List<string> GetSubPieceNameList(string fileName)
+        {
+            List<string> subpieces = new List<string>();
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//grade/points/sub_piece/name");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.Value;
 
-        // 取得 Grade / point is enable
+                    subpieces.Add(name);
+                }
+                return subpieces;
+            }
+        }
+        // 取得 GradeSetup.cs/ dgvPoint DataTable 設定資料
+        public DataTable GetDataTableOfdgvPointBySubPicecName(string fileName, string subpieceName)
+        {
+            DataTable dtb = new DataTable(subpieceName);
+            dtb.Columns.Add("ClassName", typeof(string));
+            dtb.Columns.Add("Score", typeof(int));
+
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string expr = String.Format("//config/grade/points/sub_piece[name='{0}']/flawtype_score", subpieceName);
+                XPathNodeIterator node = navigator.Select(expr);
+                while (node.MoveNext())
+                {
+                    string flawtypeID = node.Current.SelectSingleNode("@id").Value;
+                    int score = Convert.ToInt32(node.Current.Value);
+                    DataRow dr = dtb.NewRow();
+                    dr["ClassName"] = flawtypeID;
+                    dr["Score"] = score;
+
+                    dtb.Rows.Add(dr);
+                }
+                return dtb;
+            }
+        }
+        // 取得 Grade / marks(grade) is enable
         public bool IsGradeMarksEnable(string fileName)
         {
             string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";

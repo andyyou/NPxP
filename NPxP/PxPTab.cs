@@ -255,6 +255,12 @@ namespace NPxP
             
             // set dgvFlaws datasource 
             dgvFlaw.DataSource = _dtbFlaws;
+
+            //// Initial Flaw Chart
+            //NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+            //double mapWidth = JobHelper.PxPInfo.Width * unitFlawMapCD.Conversion;
+            //double mapHeight = JobHelper.PxPInfo.Height * unitFlawMapCD.Conversion;
+            //_mp.InitChart(mapWidth, mapHeight);
            
 
         }

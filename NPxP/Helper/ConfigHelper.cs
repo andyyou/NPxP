@@ -119,6 +119,35 @@ namespace NPxP.Helper
                 return filename;
             }
         }
+        // 取得 MapWindow Filter Type
+        public string GetFilterType()
+        {
+            string system_config_path = PathHelper.SystemConfigFolder + "default.xml";
+            using (FileStream stream = new FileStream(system_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("/system/filter_display").Value);
+                // 顯示項目 0:All, 1:Pass, 2:Fail
+                string result;
+                switch (value)
+                { 
+                    case 0:
+                        result = "All";
+                        break;
+                    case 1:
+                        result = "Pass";
+                        break;
+                    case 2:
+                        result = "Fail";
+                        break;
+                    default:
+                        result = "All";
+                        break;
+                }
+                return result;
+            }
+        }
         // 取得 目前 Grade config file name
         public string GetDefaultGradeConfigName()
         {
@@ -326,7 +355,122 @@ namespace NPxP.Helper
                 return value;
             }
         }
+        // 取得 GradeSetup.cs/dgvColumns DataTable 設定資料
+        public DataTable GetDataTableOfdgvColumns(string fileName)
+        {
+            DataTable dtb = new DataTable("Columns");
+            dtb.Columns.Add("Name", typeof(string));
+            dtb.Columns.Add("Start", typeof(double));
+            dtb.Columns.Add("End", typeof(double));
 
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//config/roi/columns/column");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    double start = Convert.ToDouble(node.Current.SelectSingleNode("start").Value);
+                    double end = Convert.ToDouble(node.Current.SelectSingleNode("end").Value);
+                    DataRow dr = dtb.NewRow();
+                    dr["Name"] = name;
+                    dr["Start"] = start;
+                    dr["End"] = end;
+
+                    dtb.Rows.Add(dr);
+                }
+                return dtb;
+            }
+        }
+        // 取得 GradeSetup.cs/dgvRows DataTable 設定資料
+        public DataTable GetDataTableOfdgvRows(string fileName)
+        {
+            DataTable dtb = new DataTable("Columns");
+            dtb.Columns.Add("Name", typeof(string));
+            dtb.Columns.Add("Start", typeof(double));
+            dtb.Columns.Add("End", typeof(double));
+
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//config/roi/rows/row");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    double start = Convert.ToDouble(node.Current.SelectSingleNode("start").Value);
+                    double end = Convert.ToDouble(node.Current.SelectSingleNode("end").Value);
+                    DataRow dr = dtb.NewRow();
+                    dr["Name"] = name;
+                    dr["Start"] = start;
+                    dr["End"] = end;
+
+                    dtb.Rows.Add(dr);
+                }
+                return dtb;
+            }
+        }
+        // 取得 Grade / point is enable
+        public bool IsGradePointEnable(string fileName)
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//grade/points/enable").Value);
+
+                return value;
+            }
+        }
+
+        // 取得 Grade / point is enable
+        public bool IsGradeMarksEnable(string fileName)
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//grade/marks/enable").Value);
+
+                return value;
+            }
+        }
+
+        // 取得 Grade / pass_fail 
+        public bool IsGradePassFailEnable(string fileName)
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//grade/pass_fail/enable").Value);
+
+                return value;
+            }
+        }
+        // 取得 Grade / pass_fail / score
+        public int GetPassFailScore(string fileName)
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//grade/pass_fail/score").Value);
+
+                return value;
+            }
+        }
 
         // method using for save data to xml
         //--------------------------------------------------------------------------------------//
@@ -383,6 +527,44 @@ namespace NPxP.Helper
                 return false;
             }
             return true;
+        }
+        // 儲存 FilterType 
+        public bool SaveFilterType(string type)
+        {
+            string path = PathHelper.SystemConfigFolder + "default.xml";
+            XmlDocument document = new XmlDocument();
+            document.Load(path);
+            XPathNavigator navigator = document.CreateNavigator();
+            // 顯示項目 0:All, 1:Pass, 2:Fail
+            string value = "0";
+            switch(type.ToLower().Trim())
+            {
+                case "all":
+                    value = "0";
+                    break;
+                case "pass":
+                    value = "1";
+                    break;
+                case "fail":
+                    value = "2";
+                    break;
+                default:
+                    value = "0";
+                    break;
+            }
+            navigator.SelectSingleNode("//system/filter_display").SetValue(value);
+            try
+            {
+                document.Save(path);
+            }
+            catch
+            {
+                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawColumns()");
+                return false;
+            }
+            return true;
+
+            
         }
         // 儲存 tlpFlawImages Rows * Columns
         public bool SavetlpFlawImagesLayout(string xmlFile, int columns, int rows)

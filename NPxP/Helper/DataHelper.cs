@@ -24,17 +24,5 @@ namespace NPxP.Helper
             }
             return newdt;
         }
-
-        public DataRow[] QueryDataRows(DataTable dt, string queryExp)
-        {
-            DataRow[] rows = dt.Select(queryExp);
-            return rows;
-        }
-
-        public DataRow QueryDataRow(DataTable dt, string queryExp)
-        {
-            DataRow[] rows = dt.Select(queryExp);
-            return rows[0];
-        }
     }
 }

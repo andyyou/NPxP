@@ -189,9 +189,9 @@ namespace NPxP
             WriteHelper.Log("OnPxPConfig()");
             JobHelper.PxPInfo = info;
             // keep pxpinfo height and width's units is meter.
-            NowUnit unitFlawMaCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
-            JobHelper.PxPInfo.Height = JobHelper.PxPInfo.Height / unitFlawMaCD.Conversion;
-            JobHelper.PxPInfo.Width = JobHelper.PxPInfo.Width / unitFlawMaCD.Conversion;
+            //NowUnit unitFlawMaCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+            //JobHelper.PxPInfo.Height = JobHelper.PxPInfo.Height / unitFlawMaCD.Conversion;
+            //JobHelper.PxPInfo.Width = JobHelper.PxPInfo.Width / unitFlawMaCD.Conversion;
         }
         // (16)
         public void OnJobLoaded(IList<IFlawTypeName> flawTypes, IList<ILaneInfo> lanes, IList<ISeverityInfo> severityInfo, IJobInfo jobInfo)
@@ -209,6 +209,9 @@ namespace NPxP
             JobHelper.JobInfo = jobInfo;
             JobHelper.Lanes = lanes;
             JobHelper.SeverityInfo = severityInfo;
+
+            // update MapWindow JobInfo
+            _mp.InitJobInfo(jobInfo);
 
             //update dgvFlaw HeaderText + (Unit)
             NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");

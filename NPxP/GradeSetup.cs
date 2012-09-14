@@ -14,7 +14,7 @@ namespace NPxP
 {
     public partial class GradeSetup : Form
     {
-        private DataTable _dtbColumns, _dtbRows, _dtbPoints;
+        private DataTable _dtbColumns, _dtbRows, _dtbPoints, _dtbGrades;
         public GradeSetup()
         {
             InitializeComponent();
@@ -22,7 +22,7 @@ namespace NPxP
 
         private void GradeSetup_Load(object sender, EventArgs e)
         {
-            // Prepare cmbGradeConfigFiles datasource
+            // Prepare cmbConfig datasource
             List<string> gradeConfigs = new List<string>();
             DirectoryInfo dirInfo = new DirectoryInfo(PathHelper.GradeConfigFolder);
             FileInfo[] files = dirInfo.GetFiles("*.xml");
@@ -30,18 +30,20 @@ namespace NPxP
             {
                 gradeConfigs.Add(file.Name.ToString().Substring(0, file.Name.ToString().LastIndexOf(".")));
             }
-            // Binding cmbGradeConfigFiles
-            cmbGradeConfigFiles.DataSource = gradeConfigs;
+            // Binding cmbConfig
+            cmbConfig.DataSource = gradeConfigs;
             ConfigHelper ch = new ConfigHelper();
-            cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
+            cmbConfig.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
 
-            //-Tab of ROI Settings---------------------------------------------------------------------------------------//
+
+            //ROI Settings
+            //----------------------------------------------------------------------------------------//
 
             // Initialize Roi Mode
             RadioButton[] rdos = { rdoNoRoi, rdoSymmetrical };
             foreach (RadioButton rdo in rdos)
             { 
-                string roiMode = ch.GetGradeNoRoiMode(cmbGradeConfigFiles.SelectedItem.ToString());
+                string roiMode = ch.GetGradeNoRoiMode(cmbConfig.SelectedItem.ToString());
                 if (rdo.Text == roiMode)
                 {
                     rdo.Checked = true;
@@ -53,10 +55,10 @@ namespace NPxP
             }
 
             // Initialize TextBox of Columns, Rows
-            txtColumns.Text = ch.GetGradeColumns(cmbGradeConfigFiles.SelectedItem.ToString()).ToString();
-            txtRows.Text = ch.GetGradeRows(cmbGradeConfigFiles.SelectedItem.ToString()).ToString();
+            txtColumns.Text = ch.GetGradeColumns(cmbConfig.SelectedItem.ToString()).ToString();
+            txtRows.Text = ch.GetGradeRows(cmbConfig.SelectedItem.ToString()).ToString();
 
-            // Initialize dgvColumns and dgvRows without data.
+            // Initialize dgvColumns without data.
             Column name = new Column(0, "Name", 75);
             Column start = new Column(1, "Start", 60);
             Column end = new Column(2, "End", 60);
@@ -76,6 +78,10 @@ namespace NPxP
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
                 dgvColumns.Columns.Add(column);
             }
+            dgvColumns.MultiSelect = false;
+            dgvColumns.AutoGenerateColumns = false;
+
+            // Initialize dgvRows without data.
             foreach (Column c in columns)
             {
                 DataGridViewCell cell = new DataGridViewTextBoxCell();
@@ -88,27 +94,28 @@ namespace NPxP
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
                 dgvRows.Columns.Add(column);
             }
-            dgvColumns.MultiSelect = false;
-            dgvColumns.AutoGenerateColumns = false;
             dgvRows.MultiSelect = false;
             dgvRows.AutoGenerateColumns = false;
 
             // Initialize DataTable of dgvColumns and dgvRows
-            _dtbColumns = ch.GetDataTableOfdgvColumns(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
+            _dtbColumns = ch.GetDataTableOfdgvColumns(cmbConfig.SelectedItem.ToString().Trim());
             dgvColumns.DataSource = _dtbColumns;
-            _dtbRows = ch.GetDataTableOfdgvRows(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
+            _dtbRows = ch.GetDataTableOfdgvRows(cmbConfig.SelectedItem.ToString().Trim());
             dgvRows.DataSource = _dtbRows;
 
 
-            //- Tab of Grade Settings---------------------------------------------------------------------------------------//
-            
-            // Initialize Tab of grade/point
-            chkEnablePonit.Checked = ch.IsGradePointEnable(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
 
-            // Initialize SubPiece (cmbSubPieceOfGrade)
-            cmbSubPieceOfPoint.DataSource = ch.GetSubPieceNameList(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
 
-            // Initialize dgvPoint, dgvGrade without data
+            // Grade Settings
+            //----------------------------------------------------------------------------------------//
+
+            // Initialize Point is enable. 
+            chkEnablePonit.Checked = ch.IsGradePointEnable(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Initialize SubPiece (cmbSubPoints)
+            cmbSubPoints.DataSource = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Initialize dgvPoint without data
             Column className = new Column(0, "ClassName", 200);
             Column score = new Column(1, "Score", 200);
             columns = new List<Column>();
@@ -128,6 +135,8 @@ namespace NPxP
             }
             dgvPoint.MultiSelect = false;
             dgvPoint.AutoGenerateColumns = false;
+
+            // Initialize dgvGrade without data
             foreach (Column c in columns)
             {
                 DataGridViewCell cell = new DataGridViewTextBoxCell();
@@ -144,16 +153,26 @@ namespace NPxP
             dgvGrade.AutoGenerateColumns = false;
             
             // Set dgvPoint datasource
-            _dtbPoints = ch.GetDataTableOfdgvPointBySubPicecName(cmbGradeConfigFiles.SelectedItem.ToString().Trim(), cmbSubPieceOfPoint.SelectedItem.ToString().Trim());
+            _dtbPoints = ch.GetDataTabledgvPoints(cmbConfig.SelectedItem.ToString().Trim());
             dgvPoint.DataSource = _dtbPoints;
+            DataView dvPoints = _dtbPoints.DefaultView;
+            dvPoints.RowFilter = String.Format("SubpieceName='{0}'", cmbSubPoints.SelectedItem.ToString().Trim());
 
+            // Initialize grade is enable (marks)
+            chkEnableGrade.Checked = ch.IsGradeMarksEnable(cmbConfig.SelectedItem.ToString().Trim());
 
-            // Initialize Tab of grade/grade
-            chkEnableGrade.Checked = ch.IsGradeMarksEnable(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
+            // Initialize SubPiece (cmbSubPoints)
+            cmbSubMarks.DataSource = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
+            
+            // Set dgvGrade datasource
+            _dtbGrades = ch.GetDataTabledgvGrade(cmbConfig.SelectedItem.ToString().Trim());
+            dgvGrade.DataSource = _dtbGrades;
+            DataView dvGrade = _dtbGrades.DefaultView;
+            dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
 
             // Initialize Tab of grade/pass or fail
-            chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
-            txtFilterScore.Text = ch.GetPassFailScore(cmbGradeConfigFiles.SelectedItem.ToString().Trim()).ToString();
+            chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbConfig.SelectedItem.ToString().Trim());
+            txtFilterScore.Text = ch.GetPassFailScore(cmbConfig.SelectedItem.ToString().Trim()).ToString();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -221,29 +240,18 @@ namespace NPxP
             }
         }
 
-        private void cmbSubPieceOfGrade_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmbSubPoints_DropDownClosed(object sender, EventArgs e)
         {
-            
+            DataView dvPoints = _dtbPoints.DefaultView;
+            dvPoints.RowFilter = String.Format("SubpieceName='{0}'", cmbSubPoints.SelectedItem.ToString().Trim());
         }
 
-        private void cmbSubPieceOfPoint_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmbSubMarks_DropDownClosed(object sender, EventArgs e)
         {
-            
-            
-           
+            DataView dvGrade = _dtbGrades.DefaultView;
+            dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
         }
 
-        private void cmbSubPieceOfPoint_DropDownClosed(object sender, EventArgs e)
-        {
-            // UNDONE: 切換有bug
-            ConfigHelper ch = new ConfigHelper();
-            _dtbPoints = ch.GetDataTableOfdgvPointBySubPicecName(cmbGradeConfigFiles.SelectedItem.ToString(), cmbSubPieceOfPoint.SelectedItem.ToString().Trim());
-            dgvPoint.Refresh();
-        }
-
-       
-
-       
 
     }
 }

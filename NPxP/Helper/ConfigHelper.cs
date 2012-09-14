@@ -427,8 +427,8 @@ namespace NPxP.Helper
                 return value;
             }
         }
-        // 取得 GradeSetup.cs/ subpiece name list
-        public List<string> GetSubPieceNameList(string fileName)
+        // 取得 GradeSetup.cs/ points subpiece name list
+        public List<string> GetSubPointsNameList(string fileName)
         {
             List<string> subpieces = new List<string>();
             string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
@@ -446,10 +446,30 @@ namespace NPxP.Helper
                 return subpieces;
             }
         }
-        // 取得 GradeSetup.cs/ dgvPoint DataTable 設定資料
-        public DataTable GetDataTableOfdgvPointBySubPicecName(string fileName, string subpieceName)
+        // 取得 GradeSetup.cs/ grade(marks) subpiece name list
+        public List<string> GetSubMarksNameList(string fileName)
         {
-            DataTable dtb = new DataTable(subpieceName);
+            List<string> subpieces = new List<string>();
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//grade/marks/sub_piece/name");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.Value;
+
+                    subpieces.Add(name);
+                }
+                return subpieces;
+            }
+        }
+        // 取得 所有 GradeSetup.cs/ dgvPoint DataTable (All, ROI-11, ROI-12...) All in one table.
+        public DataTable GetDataTabledgvPoints(string fileName)
+        {
+            DataTable dtb = new DataTable();
+            dtb.Columns.Add("SubpieceName", typeof(string));
             dtb.Columns.Add("ClassName", typeof(string));
             dtb.Columns.Add("Score", typeof(int));
 
@@ -458,17 +478,57 @@ namespace NPxP.Helper
             {
                 XPathDocument document = new XPathDocument(stream);
                 XPathNavigator navigator = document.CreateNavigator();
-                string expr = String.Format("//config/grade/points/sub_piece[name='{0}']/flawtype_score", subpieceName);
+                string expr = String.Format("//config/grade/points/sub_piece");
                 XPathNodeIterator node = navigator.Select(expr);
                 while (node.MoveNext())
                 {
-                    string flawtypeID = node.Current.SelectSingleNode("@id").Value;
-                    int score = Convert.ToInt32(node.Current.Value);
-                    DataRow dr = dtb.NewRow();
-                    dr["ClassName"] = flawtypeID;
-                    dr["Score"] = score;
+                    string subpieceName = node.Current.SelectSingleNode("name").Value;
+                    XPathNodeIterator subNode = node.Current.Select("flawtype_score");
+                    while (subNode.MoveNext())
+                    {
+                        string flawtypeID = subNode.Current.SelectSingleNode("@id").Value;
+                        int score = Convert.ToInt32(subNode.Current.Value);
+                        DataRow dr = dtb.NewRow();
+                        dr["SubpieceName"] = subpieceName;
+                        dr["ClassName"] = flawtypeID;
+                        dr["Score"] = score;
 
-                    dtb.Rows.Add(dr);
+                        dtb.Rows.Add(dr);
+                    }
+                }
+                return dtb;
+            }
+        }
+        // 取得 所有 GradeSetup.cs/ dgvGrade DataTable (All, ROI-11, ROI-12...) All in one table.
+        public DataTable GetDataTabledgvGrade(string fileName)
+        {
+            DataTable dtb = new DataTable();
+            dtb.Columns.Add("SubpieceName", typeof(string));
+            dtb.Columns.Add("ClassName", typeof(string));
+            dtb.Columns.Add("Score", typeof(int));
+
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string expr = String.Format("//config/grade/marks/sub_piece");
+                XPathNodeIterator node = navigator.Select(expr);
+                while (node.MoveNext())
+                {
+                    string subpieceName = node.Current.SelectSingleNode("name").Value;
+                    XPathNodeIterator subNode = node.Current.Select("mark");
+                    while (subNode.MoveNext())
+                    {
+                        string flawtypeID = subNode.Current.SelectSingleNode("@id").Value;
+                        int score = Convert.ToInt32(subNode.Current.Value);
+                        DataRow dr = dtb.NewRow();
+                        dr["SubpieceName"] = subpieceName;
+                        dr["ClassName"] = flawtypeID;
+                        dr["Score"] = score;
+
+                        dtb.Rows.Add(dr);
+                    }
                 }
                 return dtb;
             }
@@ -487,7 +547,6 @@ namespace NPxP.Helper
                 return value;
             }
         }
-
         // 取得 Grade / pass_fail 
         public bool IsGradePassFailEnable(string fileName)
         {

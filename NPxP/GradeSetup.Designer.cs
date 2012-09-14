@@ -51,7 +51,7 @@
             this.chkAllSameOfPoint = new System.Windows.Forms.CheckBox();
             this.dgvPoint = new System.Windows.Forms.DataGridView();
             this.lbSubPieceOfPoint = new System.Windows.Forms.Label();
-            this.cmbSubPieceOfPoint = new System.Windows.Forms.ComboBox();
+            this.cmbSubPoints = new System.Windows.Forms.ComboBox();
             this.chkEnablePonit = new System.Windows.Forms.CheckBox();
             this.tpGradeLevel = new System.Windows.Forms.TabPage();
             this.chkEnableGrade = new System.Windows.Forms.CheckBox();
@@ -59,7 +59,7 @@
             this.chkAllSameOfGrade = new System.Windows.Forms.CheckBox();
             this.dgvGrade = new System.Windows.Forms.DataGridView();
             this.lbSubPieceOfGrade = new System.Windows.Forms.Label();
-            this.cmbSubPieceOfGrade = new System.Windows.Forms.ComboBox();
+            this.cmbSubMarks = new System.Windows.Forms.ComboBox();
             this.tpPassOrFail = new System.Windows.Forms.TabPage();
             this.lblScore = new System.Windows.Forms.Label();
             this.txtFilterScore = new System.Windows.Forms.TextBox();
@@ -67,7 +67,7 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSaveGradeConfigFile = new System.Windows.Forms.Button();
             this.lblGradeConfig = new System.Windows.Forms.Label();
-            this.cmbGradeConfigFiles = new System.Windows.Forms.ComboBox();
+            this.cmbConfig = new System.Windows.Forms.ComboBox();
             this.tabGradeSetup.SuspendLayout();
             this.tpROI.SuspendLayout();
             this.pnlRoiGrid.SuspendLayout();
@@ -300,7 +300,7 @@
             this.gbPointSetting.Controls.Add(this.chkAllSameOfPoint);
             this.gbPointSetting.Controls.Add(this.dgvPoint);
             this.gbPointSetting.Controls.Add(this.lbSubPieceOfPoint);
-            this.gbPointSetting.Controls.Add(this.cmbSubPieceOfPoint);
+            this.gbPointSetting.Controls.Add(this.cmbSubPoints);
             this.gbPointSetting.Location = new System.Drawing.Point(13, 36);
             this.gbPointSetting.Name = "gbPointSetting";
             this.gbPointSetting.Size = new System.Drawing.Size(472, 340);
@@ -338,16 +338,15 @@
             this.lbSubPieceOfPoint.TabIndex = 1;
             this.lbSubPieceOfPoint.Text = "SubPiece";
             // 
-            // cmbSubPieceOfPoint
+            // cmbSubPoints
             // 
-            this.cmbSubPieceOfPoint.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbSubPieceOfPoint.FormattingEnabled = true;
-            this.cmbSubPieceOfPoint.Location = new System.Drawing.Point(76, 21);
-            this.cmbSubPieceOfPoint.Name = "cmbSubPieceOfPoint";
-            this.cmbSubPieceOfPoint.Size = new System.Drawing.Size(121, 20);
-            this.cmbSubPieceOfPoint.TabIndex = 0;
-            this.cmbSubPieceOfPoint.SelectedIndexChanged += new System.EventHandler(this.cmbSubPieceOfPoint_SelectedIndexChanged);
-            this.cmbSubPieceOfPoint.DropDownClosed += new System.EventHandler(this.cmbSubPieceOfPoint_DropDownClosed);
+            this.cmbSubPoints.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSubPoints.FormattingEnabled = true;
+            this.cmbSubPoints.Location = new System.Drawing.Point(76, 21);
+            this.cmbSubPoints.Name = "cmbSubPoints";
+            this.cmbSubPoints.Size = new System.Drawing.Size(121, 20);
+            this.cmbSubPoints.TabIndex = 0;
+            this.cmbSubPoints.DropDownClosed += new System.EventHandler(this.cmbSubPoints_DropDownClosed);
             // 
             // chkEnablePonit
             // 
@@ -386,7 +385,7 @@
             this.gbGradeSetting.Controls.Add(this.chkAllSameOfGrade);
             this.gbGradeSetting.Controls.Add(this.dgvGrade);
             this.gbGradeSetting.Controls.Add(this.lbSubPieceOfGrade);
-            this.gbGradeSetting.Controls.Add(this.cmbSubPieceOfGrade);
+            this.gbGradeSetting.Controls.Add(this.cmbSubMarks);
             this.gbGradeSetting.Location = new System.Drawing.Point(13, 36);
             this.gbGradeSetting.Name = "gbGradeSetting";
             this.gbGradeSetting.Size = new System.Drawing.Size(472, 340);
@@ -424,15 +423,15 @@
             this.lbSubPieceOfGrade.TabIndex = 1;
             this.lbSubPieceOfGrade.Text = "SubPiece";
             // 
-            // cmbSubPieceOfGrade
+            // cmbSubMarks
             // 
-            this.cmbSubPieceOfGrade.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbSubPieceOfGrade.FormattingEnabled = true;
-            this.cmbSubPieceOfGrade.Location = new System.Drawing.Point(76, 21);
-            this.cmbSubPieceOfGrade.Name = "cmbSubPieceOfGrade";
-            this.cmbSubPieceOfGrade.Size = new System.Drawing.Size(121, 20);
-            this.cmbSubPieceOfGrade.TabIndex = 0;
-            this.cmbSubPieceOfGrade.SelectedIndexChanged += new System.EventHandler(this.cmbSubPieceOfGrade_SelectedIndexChanged);
+            this.cmbSubMarks.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSubMarks.FormattingEnabled = true;
+            this.cmbSubMarks.Location = new System.Drawing.Point(76, 21);
+            this.cmbSubMarks.Name = "cmbSubMarks";
+            this.cmbSubMarks.Size = new System.Drawing.Size(121, 20);
+            this.cmbSubMarks.TabIndex = 0;
+            this.cmbSubMarks.DropDownClosed += new System.EventHandler(this.cmbSubMarks_DropDownClosed);
             // 
             // tpPassOrFail
             // 
@@ -501,13 +500,13 @@
             this.lblGradeConfig.TabIndex = 6;
             this.lblGradeConfig.Text = "Grade Config File";
             // 
-            // cmbGradeConfigFiles
+            // cmbConfig
             // 
-            this.cmbGradeConfigFiles.FormattingEnabled = true;
-            this.cmbGradeConfigFiles.Location = new System.Drawing.Point(121, 465);
-            this.cmbGradeConfigFiles.Name = "cmbGradeConfigFiles";
-            this.cmbGradeConfigFiles.Size = new System.Drawing.Size(234, 20);
-            this.cmbGradeConfigFiles.TabIndex = 5;
+            this.cmbConfig.FormattingEnabled = true;
+            this.cmbConfig.Location = new System.Drawing.Point(121, 465);
+            this.cmbConfig.Name = "cmbConfig";
+            this.cmbConfig.Size = new System.Drawing.Size(234, 20);
+            this.cmbConfig.TabIndex = 5;
             // 
             // GradeSetup
             // 
@@ -517,7 +516,7 @@
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSaveGradeConfigFile);
             this.Controls.Add(this.lblGradeConfig);
-            this.Controls.Add(this.cmbGradeConfigFiles);
+            this.Controls.Add(this.cmbConfig);
             this.Controls.Add(this.tabGradeSetup);
             this.Name = "GradeSetup";
             this.Text = "GradeSetup";
@@ -574,7 +573,7 @@
         private System.Windows.Forms.CheckBox chkAllSameOfPoint;
         private System.Windows.Forms.DataGridView dgvPoint;
         private System.Windows.Forms.Label lbSubPieceOfPoint;
-        private System.Windows.Forms.ComboBox cmbSubPieceOfPoint;
+        private System.Windows.Forms.ComboBox cmbSubPoints;
         private System.Windows.Forms.CheckBox chkEnablePonit;
         private System.Windows.Forms.TabPage tpGradeLevel;
         private System.Windows.Forms.CheckBox chkEnableGrade;
@@ -582,7 +581,7 @@
         private System.Windows.Forms.CheckBox chkAllSameOfGrade;
         private System.Windows.Forms.DataGridView dgvGrade;
         private System.Windows.Forms.Label lbSubPieceOfGrade;
-        private System.Windows.Forms.ComboBox cmbSubPieceOfGrade;
+        private System.Windows.Forms.ComboBox cmbSubMarks;
         private System.Windows.Forms.TabPage tpPassOrFail;
         private System.Windows.Forms.Label lblScore;
         private System.Windows.Forms.TextBox txtFilterScore;
@@ -590,7 +589,7 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSaveGradeConfigFile;
         private System.Windows.Forms.Label lblGradeConfig;
-        private System.Windows.Forms.ComboBox cmbGradeConfigFiles;
+        private System.Windows.Forms.ComboBox cmbConfig;
 
     }
 }

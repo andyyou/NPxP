@@ -285,6 +285,20 @@ namespace NPxP
             // save
             string map_path = PathHelper.MapConfigFolder + cmbMapConfigName.Text.Trim() + ".xml";
             document.Save(map_path);
+
+            // Re binding cmbMapConfigName datasource
+            List<string> mapConfigs = new List<string>();
+            DirectoryInfo dirInfo = new DirectoryInfo(PathHelper.MapConfigFolder);
+            FileInfo[] files = dirInfo.GetFiles("*.xml");
+            foreach (FileInfo file in files)
+            {
+                mapConfigs.Add(file.Name.ToString().Substring(0, file.Name.ToString().LastIndexOf(".")));
+            }
+            // Binding datasource for cmbMapConfigName and set default value.
+            cmbMapConfigName.DataSource = mapConfigs;
+            cmbMapConfigName.SelectedItem = ch.GetDefaultMapConfigName().Trim();
+
+
             MessageBox.Show("Success.");
         }
 

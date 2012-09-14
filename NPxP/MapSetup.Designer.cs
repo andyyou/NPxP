@@ -64,7 +64,7 @@
             this.gbSeriesSetting = new System.Windows.Forms.GroupBox();
             this.dgvFlawLegendSettings = new System.Windows.Forms.DataGridView();
             this.btnConfirm = new System.Windows.Forms.Button();
-            this.btnSaveAs = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.grbImageSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageRows)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageColumns)).BeginInit();
@@ -85,7 +85,6 @@
             // 
             // cmbMapConfigName
             // 
-            this.cmbMapConfigName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbMapConfigName.FormattingEnabled = true;
             this.cmbMapConfigName.Location = new System.Drawing.Point(354, 453);
             this.cmbMapConfigName.Name = "cmbMapConfigName";
@@ -291,6 +290,7 @@
             this.txtCountSizeCD.Name = "txtCountSizeCD";
             this.txtCountSizeCD.Size = new System.Drawing.Size(34, 22);
             this.txtCountSizeCD.TabIndex = 7;
+            this.txtCountSizeCD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCountSizeCD_KeyPress);
             // 
             // txtCountSizeMD
             // 
@@ -298,6 +298,7 @@
             this.txtCountSizeMD.Name = "txtCountSizeMD";
             this.txtCountSizeMD.Size = new System.Drawing.Size(34, 22);
             this.txtCountSizeMD.TabIndex = 6;
+            this.txtCountSizeMD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCountSizeMD_KeyPress);
             // 
             // txtFixSizeCD
             // 
@@ -305,6 +306,8 @@
             this.txtFixSizeCD.Name = "txtFixSizeCD";
             this.txtFixSizeCD.Size = new System.Drawing.Size(34, 22);
             this.txtFixSizeCD.TabIndex = 5;
+            this.txtFixSizeCD.TextChanged += new System.EventHandler(this.Double_Validation);
+            this.txtFixSizeCD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFixSizeCD_KeyPress);
             // 
             // txtFixSizeMD
             // 
@@ -312,6 +315,8 @@
             this.txtFixSizeMD.Name = "txtFixSizeMD";
             this.txtFixSizeMD.Size = new System.Drawing.Size(34, 22);
             this.txtFixSizeMD.TabIndex = 4;
+            this.txtFixSizeMD.TextChanged += new System.EventHandler(this.Double_Validation);
+            this.txtFixSizeMD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFixSizeMD_KeyPress);
             // 
             // lblFixSizeCD
             // 
@@ -394,9 +399,9 @@
             this.cmbMapSize.FormattingEnabled = true;
             this.cmbMapSize.Items.AddRange(new object[] {
             "1:1",
-            "2:1 ",
-            "4:3 ",
-            "3:4 ",
+            "2:1",
+            "4:3",
+            "3:4",
             "16:9"});
             this.cmbMapSize.Location = new System.Drawing.Point(113, 21);
             this.cmbMapSize.Name = "cmbMapSize";
@@ -441,17 +446,19 @@
             this.btnConfirm.Name = "btnConfirm";
             this.btnConfirm.Size = new System.Drawing.Size(75, 23);
             this.btnConfirm.TabIndex = 9;
-            this.btnConfirm.Text = "Apply";
+            this.btnConfirm.Text = "Close";
             this.btnConfirm.UseVisualStyleBackColor = true;
+            this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
             // 
-            // btnSaveAs
+            // btnSave
             // 
-            this.btnSaveAs.Location = new System.Drawing.Point(510, 451);
-            this.btnSaveAs.Name = "btnSaveAs";
-            this.btnSaveAs.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveAs.TabIndex = 8;
-            this.btnSaveAs.Text = "Save As";
-            this.btnSaveAs.UseVisualStyleBackColor = true;
+            this.btnSave.Location = new System.Drawing.Point(510, 451);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.TabIndex = 8;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // MapSetup
             // 
@@ -459,7 +466,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(684, 512);
             this.Controls.Add(this.btnConfirm);
-            this.Controls.Add(this.btnSaveAs);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.gbSeriesSetting);
             this.Controls.Add(this.grbMapSettings);
             this.Controls.Add(this.grbImageSettings);
@@ -491,8 +498,8 @@
         private System.Windows.Forms.Label lblImgX;
         private System.Windows.Forms.Label lblImgColumn;
         private System.Windows.Forms.Label lblImgRow;
-        private System.Windows.Forms.NumericUpDown nudImageRows;
-        private System.Windows.Forms.NumericUpDown nudImageColumns;
+        public System.Windows.Forms.NumericUpDown nudImageRows;
+        public System.Windows.Forms.NumericUpDown nudImageColumns;
         private System.Windows.Forms.GroupBox grbMapSettings;
         private System.Windows.Forms.CheckBox chkCDInverse;
         private System.Windows.Forms.CheckBox chkMDInverse;
@@ -521,6 +528,6 @@
         private System.Windows.Forms.GroupBox gbSeriesSetting;
         private System.Windows.Forms.DataGridView dgvFlawLegendSettings;
         private System.Windows.Forms.Button btnConfirm;
-        private System.Windows.Forms.Button btnSaveAs;
+        private System.Windows.Forms.Button btnSave;
     }
 }

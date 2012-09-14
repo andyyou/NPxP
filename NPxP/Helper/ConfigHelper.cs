@@ -9,6 +9,7 @@ using System.Xml;
 using System.Xml.XPath;
 using NPxP.Model;
 using System.Windows.Forms;
+using System.Xml.Schema;
 
 namespace NPxP.Helper
 {
@@ -118,6 +119,19 @@ namespace NPxP.Helper
                 return filename;
             }
         }
+        // 取得 目前 Grade config file name
+        public string GetDefaultGradeConfigName()
+        {
+            string system_config_path = PathHelper.SystemConfigFolder + "default.xml";
+            using (FileStream stream = new FileStream(system_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string filename = navigator.SelectSingleNode("/system/grade_conf_name").Value;
+
+                return filename;
+            }
+        }
         // 取得 MapSetup.cs Map 格線是否開啟
         public bool GetIsDisplayMapGrid(string fileName)
         {
@@ -126,11 +140,9 @@ namespace NPxP.Helper
             {
                 XPathDocument document = new XPathDocument(stream);
                 XPathNavigator navigator = document.CreateNavigator();
-                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/grid_line_display").Value);
-                if (value == 0)
-                    return false;
-                else
-                    return true;
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//map_window/map_chart/grid_line_display").Value);
+
+                return value;
             }
         }
         // 取得 MapSetup.cs 格線顯示模式 0->FixCellSize, 1-> EachCellCount
@@ -272,6 +284,50 @@ namespace NPxP.Helper
                 return value;
             }
         }
+        // 取得 Grade Mode 
+        public string GetGradeNoRoiMode(string fileName)
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                string value = navigator.SelectSingleNode("//roi/mode").Value;
+
+                return value;
+            }
+        }
+        // 取得 Grade Column Size
+        public int GetGradeColumns(string fileName)
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//roi/columns/size").Value);
+
+                return value;
+            }
+        }
+        // 取得 Grade Rows Size
+        public int GetGradeRows(string fileName)
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//roi/rows/size").Value);
+
+                return value;
+            }
+        }
+
+
         // method using for save data to xml
         //--------------------------------------------------------------------------------------//
         
@@ -350,7 +406,28 @@ namespace NPxP.Helper
             }
             return true;
         }
-        
+        // 儲存 MapSetup Config Name to System Config
+        public bool SaveMapSetupConfigFile(string fileName)
+        {
+            string path = PathHelper.SystemConfigFolder + "default.xml";
+            XmlDocument document = new XmlDocument();
+            document.Load(path);
+            XPathNavigator navigator = document.CreateNavigator();
+            navigator.SelectSingleNode("//system/map_conf_name").SetValue(fileName);
+            try
+            {
+                document.Save(path);
+            }
+            catch
+            {
+                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawColumns()");
+                return false;
+            }
+            return true;
+        }
+       
+
+
 
     }
 }

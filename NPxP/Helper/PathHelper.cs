@@ -37,5 +37,13 @@ namespace NPxP.Helper
                 return grade_config_path;
             }
         }
+
+        public static string MapConfigXmlSchema
+        {
+            get {
+                string map_config_xsd_path = folder_path + "\\map\\map.xsd";
+                return map_config_xsd_path;
+            }
+        }
     }
 }

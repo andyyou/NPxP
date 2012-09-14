@@ -31,14 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.Charts.v12.1.Core, Version=12.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.Data.v12.1, Version=12.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.Printing.v12.1.Core, Version=12.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.Utils.v12.1, Version=12.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.XtraBars.v12.1, Version=12.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.XtraCharts.v12.1, Version=12.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.XtraCharts.v12.1.UI, Version=12.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.XtraEditors.v12.1, Version=12.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition">
       <HintPath>..\..\..\..\Program Files (x86)\Web Ranger\Web Inspector\System.ComponentModel.Composition.dll</HintPath>
@@ -68,10 +60,17 @@
     <Compile Include="FlawImageControl.Designer.cs">
       <DependentUpon>FlawImageControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="GradeSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GradeSetup.Designer.cs">
+      <DependentUpon>GradeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helper\ConfigHelper.cs" />
     <Compile Include="Helper\DataHelper.cs" />
     <Compile Include="Helper\JobHelper.cs" />
     <Compile Include="Helper\PathHelper.cs" />
+    <Compile Include="Helper\SerializationHelper.cs" />
     <Compile Include="MapSetup.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -116,13 +115,15 @@
     <EmbeddedResource Include="FlawImageControl.resx">
       <DependentUpon>FlawImageControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GradeSetup.resx">
+      <DependentUpon>GradeSetup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MapSetup.resx">
       <DependentUpon>MapSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MapWindow.resx">
       <DependentUpon>MapWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

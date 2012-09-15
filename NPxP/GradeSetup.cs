@@ -277,8 +277,12 @@ namespace NPxP
             // if save error break;
             if (!ch.SaveGradeSetupConfigFile(cmbConfig.Text.Trim()))
             {
+                MessageBox.Show("File name is empty.");
                 return;
             }
+
+            // ROI-Setting
+            //----------------------------------------------------------------------------------//
 
             // initialize grade xml sechma
             string sechma_path = PathHelper.SystemConfigFolder + "grade_sechma.xml";
@@ -301,7 +305,7 @@ namespace NPxP
             navigator.SelectSingleNode("//roi/rows/size").SetValue(_dtbRows.Rows.Count.ToString());
 
             // save roi data (start, end) of columns , rows.
-            // Remove old relative_table for add new record
+            // Remove old  columns for add new record
             if (navigator.Select("//roi/columns/column").Count > 0)
             {
                 XPathNavigator first = navigator.SelectSingleNode("//roi/columns/column[1]");
@@ -310,9 +314,8 @@ namespace NPxP
                 navigator.DeleteRange(last);
             }
             // save _dgvColumns data to xml
-            for (int i = 0; i < _dtbColumns.Rows.Count - 1; i++)
+            for (int i = 0; i < _dtbColumns.Rows.Count; i++)
             {
-
                 string name = _dtbColumns.Rows[i]["Name"].ToString();
                 string start = _dtbColumns.Rows[i]["Start"].ToString();
                 string end = _dtbColumns.Rows[i]["End"].ToString();
@@ -323,10 +326,112 @@ namespace NPxP
                 navigator.SelectSingleNode("//roi/columns/column[last()]").AppendChildElement(string.Empty, "end", string.Empty, end);
             }
             
+            // Remove old rows for add new record.
+            if (navigator.Select("//roi/rows/row").Count > 0)
+            {
+                XPathNavigator first = navigator.SelectSingleNode("//roi/rows/row[1]");
+                XPathNavigator last = navigator.SelectSingleNode("//roi/rows/row[last()]");
+                navigator.MoveTo(first);
+                navigator.DeleteRange(last);
+            }
+            // save _dtbRows data to xml
+            for (int i = 0; i < _dtbRows.Rows.Count; i++)
+            {
+                string name = _dtbRows.Rows[i]["Name"].ToString();
+                string start = _dtbRows.Rows[i]["Start"].ToString();
+                string end = _dtbRows.Rows[i]["End"].ToString();
+                navigator.SelectSingleNode("//roi/rows").AppendChildElement(string.Empty, "row", string.Empty, null);
+                // Move to last column element and add name, start, end value.
+                navigator.SelectSingleNode("//roi/rows/row[last()]").AppendChildElement(string.Empty, "name", string.Empty, name);
+                navigator.SelectSingleNode("//roi/rows/row[last()]").AppendChildElement(string.Empty, "start", string.Empty, start);
+                navigator.SelectSingleNode("//roi/rows/row[last()]").AppendChildElement(string.Empty, "end", string.Empty, end);
+            }
 
-             
+            // Grade - Setting
+            //----------------------------------------------------------------------------------//
+            
+            // Points
+            // Save is points enable?
+            navigator.SelectSingleNode("//grade/points/enable").SetValue(chkEnablePonit.Checked.ToString());
 
-            // save
+            // Remove old points/sub_piece for add new record. (_dtbPoints)
+            if (navigator.Select("//grade/points/sub_piece").Count > 0)
+            {
+                XPathNavigator first = navigator.SelectSingleNode("//grade/points/sub_piece[1]");
+                XPathNavigator last = navigator.SelectSingleNode("//grade/points/sub_piece[last()]");
+                navigator.MoveTo(first);
+                navigator.DeleteRange(last);
+            }
+            // save _dtbPoints
+            List<string> pointsSubpieces = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+            foreach (string subpieceName in pointsSubpieces)
+            {
+                navigator.SelectSingleNode("//grade/points").AppendChildElement(string.Empty, "sub_piece", string.Empty, null);
+                // Move to last column element and add name value.
+                navigator.SelectSingleNode("//grade/points/sub_piece[last()]").AppendChildElement(string.Empty, "name", string.Empty, subpieceName);
+                string expr = String.Format("SubpieceName='{0}'", subpieceName);
+                // check all same
+                if (chkAllSameOfPoint.Checked)
+                {
+                    expr = String.Format("SubpieceName='{0}'", "All");
+                }
+               
+                DataRow[] drs = _dtbPoints.Select(expr);
+                foreach (DataRow dr in drs)
+                {
+                    string className = dr["ClassName"].ToString();
+                    string score = dr["Score"].ToString();
+                    navigator.SelectSingleNode("//grade/points/sub_piece[last()]").AppendChildElement(string.Empty, "flawtype_score", string.Empty, score);
+                    navigator.SelectSingleNode("//grade/points/sub_piece[last()]/flawtype_score[last()]").CreateAttribute(string.Empty, "id", string.Empty, className);
+                }
+            }
+           
+            // Remove old grade(marks)/subpiece for add new record . (_dtbGrades)
+            if (navigator.Select("//grade/marks/sub_piece").Count > 0)
+            {
+                XPathNavigator first = navigator.SelectSingleNode("//grade/marks/sub_piece[1]");
+                XPathNavigator last = navigator.SelectSingleNode("//grade/marks/sub_piece[last()]");
+                navigator.MoveTo(first);
+                navigator.DeleteRange(last);
+            }
+
+            // Marks
+            // Save is grade(marks) enable?
+            navigator.SelectSingleNode("//grade/marks/enable").SetValue(chkEnableGrade.Checked.ToString());
+
+            // save _dtbGrades
+            List<string> marksSubpieces = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
+            foreach (string subpieceName in marksSubpieces)
+            {
+                navigator.SelectSingleNode("//grade/marks").AppendChildElement(string.Empty, "sub_piece", string.Empty, null);
+                //Move to last column element and add name value.
+                navigator.SelectSingleNode("//grade/marks/sub_piece[last()]").AppendChildElement(string.Empty, "name", string.Empty, subpieceName);
+                string expr = String.Format("SubpieceName='{0}'", subpieceName);
+                // check all same
+                if (chkAllSameOfGrade.Checked)
+                {
+                    expr = String.Format("SubpieceName='{0}'", "All");
+                }
+                DataRow[] drs = _dtbGrades.Select(expr);
+                foreach (DataRow dr in drs)
+                {
+                    string className = dr["ClassName"].ToString();
+                    string score = dr["Score"].ToString();
+                    navigator.SelectSingleNode("//grade/marks/sub_piece[last()]").AppendChildElement(string.Empty, "mark", string.Empty, score);
+                    navigator.SelectSingleNode("//grade/marks/sub_piece[last()]/mark[last()]").CreateAttribute(string.Empty, "id", string.Empty, className);
+                }
+            }
+
+            // Pass or Fail
+            // Save filter score is enable?
+            navigator.SelectSingleNode("//grade/pass_fail/enable").SetValue(chkEnablePFS.Checked.ToString());
+            int filterScore = int.TryParse(txtFilterScore.Text, out filterScore) ? filterScore : 0;
+            navigator.SelectSingleNode("//grade/pass_fail/score").SetValue(filterScore.ToString());
+
+
+            // Finish Save
+            //----------------------------------------------------------------------------------//
+           
             string grade_path = PathHelper.GradeConfigFolder + cmbConfig.Text.Trim() + ".xml";
             try
             {
@@ -426,6 +531,18 @@ namespace NPxP
             // Initialize Tab of grade/pass or fail
             chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbConfig.SelectedItem.ToString().Trim());
             txtFilterScore.Text = ch.GetPassFailScore(cmbConfig.SelectedItem.ToString().Trim()).ToString();
+        }
+
+        private void txtFilterScore_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (Char.IsDigit(e.KeyChar) || Char.IsControl(e.KeyChar))
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+            }
         }
 
         

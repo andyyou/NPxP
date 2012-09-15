@@ -627,7 +627,7 @@ namespace NPxP.Helper
             }
             catch
             {
-                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawColumns()");
+                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawOrderByColumn()");
                 return false;
             }
             return true;
@@ -663,7 +663,7 @@ namespace NPxP.Helper
             }
             catch
             {
-                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawColumns()");
+                WriteHelper.ErrorLog("ConfigHelper.cs:SaveFilterType()");
                 return false;
             }
             return true;
@@ -706,7 +706,7 @@ namespace NPxP.Helper
             }
             catch
             {
-                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawColumns()");
+                WriteHelper.ErrorLog("ConfigHelper.cs:SaveMapSetupConfigFile()");
                 return false;
             }
             return true;
@@ -725,14 +725,10 @@ namespace NPxP.Helper
             }
             catch
             {
-                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawColumns()");
+                WriteHelper.ErrorLog("ConfigHelper.cs:SaveGradeSetupConfigFile()");
                 return false;
             }
             return true;
         }
-       
-
-
-
     }
 }

@@ -31,6 +31,7 @@
             this.tabGradeSetup = new System.Windows.Forms.TabControl();
             this.tpROI = new System.Windows.Forms.TabPage();
             this.pnlRoiGrid = new System.Windows.Forms.Panel();
+            this.btnReset = new System.Windows.Forms.Button();
             this.lbShowGvRow = new System.Windows.Forms.Label();
             this.lbShowGvColumn = new System.Windows.Forms.Label();
             this.dgvRows = new System.Windows.Forms.DataGridView();
@@ -68,7 +69,6 @@
             this.btnSaveGradeConfigFile = new System.Windows.Forms.Button();
             this.lblGradeConfig = new System.Windows.Forms.Label();
             this.cmbConfig = new System.Windows.Forms.ComboBox();
-            this.btnReset = new System.Windows.Forms.Button();
             this.tabGradeSetup.SuspendLayout();
             this.tpROI.SuspendLayout();
             this.pnlRoiGrid.SuspendLayout();
@@ -129,6 +129,16 @@
             this.pnlRoiGrid.Name = "pnlRoiGrid";
             this.pnlRoiGrid.Size = new System.Drawing.Size(504, 305);
             this.pnlRoiGrid.TabIndex = 1;
+            // 
+            // btnReset
+            // 
+            this.btnReset.Location = new System.Drawing.Point(326, 26);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(75, 23);
+            this.btnReset.TabIndex = 10;
+            this.btnReset.Text = "Reset";
+            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // lbShowGvRow
             // 
@@ -322,10 +332,12 @@
             // 
             // dgvPoint
             // 
-            this.dgvPoint.AllowUserToAddRows = false;
-            this.dgvPoint.AllowUserToDeleteRows = false;
+            this.dgvPoint.AllowUserToResizeColumns = false;
+            this.dgvPoint.AllowUserToResizeRows = false;
             this.dgvPoint.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvPoint.ColumnHeadersVisible = false;
             this.dgvPoint.Location = new System.Drawing.Point(23, 51);
+            this.dgvPoint.MultiSelect = false;
             this.dgvPoint.Name = "dgvPoint";
             this.dgvPoint.RowTemplate.Height = 24;
             this.dgvPoint.Size = new System.Drawing.Size(425, 268);
@@ -407,9 +419,10 @@
             // 
             // dgvGrade
             // 
-            this.dgvGrade.AllowUserToAddRows = false;
-            this.dgvGrade.AllowUserToDeleteRows = false;
+            this.dgvGrade.AllowUserToResizeColumns = false;
+            this.dgvGrade.AllowUserToResizeRows = false;
             this.dgvGrade.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvGrade.ColumnHeadersVisible = false;
             this.dgvGrade.Location = new System.Drawing.Point(23, 51);
             this.dgvGrade.Name = "dgvGrade";
             this.dgvGrade.RowTemplate.Height = 24;
@@ -463,6 +476,7 @@
             this.txtFilterScore.Name = "txtFilterScore";
             this.txtFilterScore.Size = new System.Drawing.Size(100, 22);
             this.txtFilterScore.TabIndex = 1;
+            this.txtFilterScore.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFilterScore_KeyPress);
             // 
             // chkEnablePFS
             // 
@@ -510,16 +524,6 @@
             this.cmbConfig.Name = "cmbConfig";
             this.cmbConfig.Size = new System.Drawing.Size(234, 20);
             this.cmbConfig.TabIndex = 5;
-            // 
-            // btnReset
-            // 
-            this.btnReset.Location = new System.Drawing.Point(326, 26);
-            this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(75, 23);
-            this.btnReset.TabIndex = 10;
-            this.btnReset.Text = "Reset";
-            this.btnReset.UseVisualStyleBackColor = true;
-            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // GradeSetup
             // 

@@ -711,6 +711,25 @@ namespace NPxP.Helper
             }
             return true;
         }
+        //儲存 GradeSetup Config Name to System Config
+        public bool SaveGradeSetupConfigFile(string fileName)
+        {
+            string path = PathHelper.SystemConfigFolder + "default.xml";
+            XmlDocument document = new XmlDocument();
+            document.Load(path);
+            XPathNavigator navigator = document.CreateNavigator();
+            navigator.SelectSingleNode("//system/grade_conf_name").SetValue(fileName);
+            try
+            {
+                document.Save(path);
+            }
+            catch
+            {
+                WriteHelper.ErrorLog("ConfigHelper.cs:SavedgvFlawColumns()");
+                return false;
+            }
+            return true;
+        }
        
 
 

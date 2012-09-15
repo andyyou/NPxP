@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using NPxP.Helper;
 using System.IO;
 using NPxP.Model;
+using System.Xml;
+using System.Xml.XPath;
 
 namespace NPxP
 {
@@ -19,7 +21,6 @@ namespace NPxP
         {
             InitializeComponent();
         }
-
         private void GradeSetup_Load(object sender, EventArgs e)
         {
             // Prepare cmbConfig datasource
@@ -42,7 +43,7 @@ namespace NPxP
             // Initialize Roi Mode
             RadioButton[] rdos = { rdoNoRoi, rdoSymmetrical };
             foreach (RadioButton rdo in rdos)
-            { 
+            {
                 string roiMode = ch.GetGradeNoRoiMode(cmbConfig.SelectedItem.ToString());
                 if (rdo.Text == roiMode)
                 {
@@ -104,8 +105,6 @@ namespace NPxP
             dgvRows.DataSource = _dtbRows;
 
 
-
-
             // Grade Settings
             //----------------------------------------------------------------------------------------//
 
@@ -151,7 +150,7 @@ namespace NPxP
             }
             dgvGrade.MultiSelect = false;
             dgvGrade.AutoGenerateColumns = false;
-            
+
             // Set dgvPoint datasource
             _dtbPoints = ch.GetDataTabledgvPoints(cmbConfig.SelectedItem.ToString().Trim());
             dgvPoint.DataSource = _dtbPoints;
@@ -163,7 +162,7 @@ namespace NPxP
 
             // Initialize SubPiece (cmbSubPoints)
             cmbSubMarks.DataSource = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
-            
+
             // Set dgvGrade datasource
             _dtbGrades = ch.GetDataTabledgvGrade(cmbConfig.SelectedItem.ToString().Trim());
             dgvGrade.DataSource = _dtbGrades;
@@ -251,6 +250,185 @@ namespace NPxP
             DataView dvGrade = _dtbGrades.DefaultView;
             dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
         }
+        // Save xml
+        private void btnSaveGradeConfigFile_Click(object sender, EventArgs e)
+        {
+
+            // if some data wrong will tip.
+            if (_dtbColumns.Rows.Count < 1 || _dtbRows.Rows.Count < 1 || _dtbPoints.Rows.Count < 1 || _dtbGrades.Rows.Count < 1)
+            {
+                MessageBox.Show("Input has null value.");
+                return;
+            }
+
+            DataHelper dh = new DataHelper();
+            if (dh.HasNull(_dtbColumns) || dh.HasNull(_dtbRows) || dh.HasNull(_dtbPoints) || dh.HasNull(_dtbGrades))
+            {
+                MessageBox.Show("Input has null value.");
+                return;
+            }
+
+            // Save default config file to system config
+            ConfigHelper ch = new ConfigHelper();
+            if (String.IsNullOrEmpty(cmbConfig.Text))
+            {
+                cmbConfig.Text = DateTime.Now.ToShortDateString();
+            }
+            // if save error break;
+            if (!ch.SaveGradeSetupConfigFile(cmbConfig.Text.Trim()))
+            {
+                return;
+            }
+
+            // initialize grade xml sechma
+            string sechma_path = PathHelper.SystemConfigFolder + "grade_sechma.xml";
+            XmlDocument document = new XmlDocument();
+            document.Load(sechma_path);
+            XPathNavigator navigator = document.CreateNavigator();
+
+            // save roi mode
+            RadioButton[] rdos = { rdoNoRoi, rdoSymmetrical };
+            foreach (RadioButton rdo in rdos)
+            {
+                if (rdo.Checked)
+                {
+                    navigator.SelectSingleNode("//roi/mode").SetValue(rdo.Text.Trim());
+                }
+            }
+
+            // Save roi columns , rows size
+            navigator.SelectSingleNode("//roi/columns/size").SetValue(_dtbColumns.Rows.Count.ToString());
+            navigator.SelectSingleNode("//roi/rows/size").SetValue(_dtbRows.Rows.Count.ToString());
+
+            // save roi data (start, end) of columns , rows.
+            // Remove old relative_table for add new record
+            if (navigator.Select("//roi/columns/column").Count > 0)
+            {
+                XPathNavigator first = navigator.SelectSingleNode("//roi/columns/column[1]");
+                XPathNavigator last = navigator.SelectSingleNode("//roi/columns/column[last()]");
+                navigator.MoveTo(first);
+                navigator.DeleteRange(last);
+            }
+            // save _dgvColumns data to xml
+            for (int i = 0; i < _dtbColumns.Rows.Count - 1; i++)
+            {
+
+                string name = _dtbColumns.Rows[i]["Name"].ToString();
+                string start = _dtbColumns.Rows[i]["Start"].ToString();
+                string end = _dtbColumns.Rows[i]["End"].ToString();
+                navigator.SelectSingleNode("//roi/columns").AppendChildElement(string.Empty, "column", string.Empty, null);
+                // Move to last column element and add name, start, end value.
+                navigator.SelectSingleNode("//roi/columns/column[last()]").AppendChildElement(string.Empty, "name", string.Empty, name);
+                navigator.SelectSingleNode("//roi/columns/column[last()]").AppendChildElement(string.Empty, "start", string.Empty, start);
+                navigator.SelectSingleNode("//roi/columns/column[last()]").AppendChildElement(string.Empty, "end", string.Empty, end);
+            }
+            
+
+             
+
+            // save
+            string grade_path = PathHelper.GradeConfigFolder + cmbConfig.Text.Trim() + ".xml";
+            try
+            {
+                document.Save(grade_path);
+                // Re binding cmbMapConfigName datasource
+                List<string> graeConfigs = new List<string>();
+                DirectoryInfo dirInfo = new DirectoryInfo(PathHelper.GradeConfigFolder);
+                FileInfo[] files = dirInfo.GetFiles("*.xml");
+                foreach (FileInfo file in files)
+                {
+                    graeConfigs.Add(file.Name.ToString().Substring(0, file.Name.ToString().LastIndexOf(".")));
+                }
+                // Binding datasource for cmbMapConfigName and set default value.
+                cmbConfig.DataSource = graeConfigs;
+                cmbConfig.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
+                MessageBox.Show("Success.");
+            }
+            catch
+            {
+                MessageBox.Show("Fail.");
+            }
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            // Prepare cmbConfig datasource
+            List<string> gradeConfigs = new List<string>();
+            DirectoryInfo dirInfo = new DirectoryInfo(PathHelper.GradeConfigFolder);
+            FileInfo[] files = dirInfo.GetFiles("*.xml");
+            foreach (FileInfo file in files)
+            {
+                gradeConfigs.Add(file.Name.ToString().Substring(0, file.Name.ToString().LastIndexOf(".")));
+            }
+            // Binding cmbConfig
+            cmbConfig.DataSource = gradeConfigs;
+            ConfigHelper ch = new ConfigHelper();
+            cmbConfig.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
+
+
+            //ROI Settings
+            //----------------------------------------------------------------------------------------//
+
+            // Initialize Roi Mode
+            RadioButton[] rdos = { rdoNoRoi, rdoSymmetrical };
+            foreach (RadioButton rdo in rdos)
+            {
+                string roiMode = ch.GetGradeNoRoiMode(cmbConfig.SelectedItem.ToString());
+                if (rdo.Text == roiMode)
+                {
+                    rdo.Checked = true;
+                }
+                else
+                {
+                    rdo.Checked = false;
+                }
+            }
+
+            // Initialize TextBox of Columns, Rows
+            txtColumns.Text = ch.GetGradeColumns(cmbConfig.SelectedItem.ToString()).ToString();
+            txtRows.Text = ch.GetGradeRows(cmbConfig.SelectedItem.ToString()).ToString();
+
+
+            // Initialize DataTable of dgvColumns and dgvRows
+            _dtbColumns = ch.GetDataTableOfdgvColumns(cmbConfig.SelectedItem.ToString().Trim());
+            dgvColumns.DataSource = _dtbColumns;
+            _dtbRows = ch.GetDataTableOfdgvRows(cmbConfig.SelectedItem.ToString().Trim());
+            dgvRows.DataSource = _dtbRows;
+
+
+            // Grade Settings
+            //----------------------------------------------------------------------------------------//
+
+            // Initialize Point is enable. 
+            chkEnablePonit.Checked = ch.IsGradePointEnable(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Initialize SubPiece (cmbSubPoints)
+            cmbSubPoints.DataSource = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Set dgvPoint datasource
+            _dtbPoints = ch.GetDataTabledgvPoints(cmbConfig.SelectedItem.ToString().Trim());
+            dgvPoint.DataSource = _dtbPoints;
+            DataView dvPoints = _dtbPoints.DefaultView;
+            dvPoints.RowFilter = String.Format("SubpieceName='{0}'", cmbSubPoints.SelectedItem.ToString().Trim());
+
+            // Initialize grade is enable (marks)
+            chkEnableGrade.Checked = ch.IsGradeMarksEnable(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Initialize SubPiece (cmbSubPoints)
+            cmbSubMarks.DataSource = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Set dgvGrade datasource
+            _dtbGrades = ch.GetDataTabledgvGrade(cmbConfig.SelectedItem.ToString().Trim());
+            dgvGrade.DataSource = _dtbGrades;
+            DataView dvGrade = _dtbGrades.DefaultView;
+            dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
+
+            // Initialize Tab of grade/pass or fail
+            chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbConfig.SelectedItem.ToString().Trim());
+            txtFilterScore.Text = ch.GetPassFailScore(cmbConfig.SelectedItem.ToString().Trim()).ToString();
+        }
+
+        
 
 
     }

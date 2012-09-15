@@ -24,5 +24,21 @@ namespace NPxP.Helper
             }
             return newdt;
         }
+
+        /// <summary>
+        /// 判斷 DataTable 欄位是否有空值
+        /// </summary>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        public bool HasNull(DataTable table)
+        {
+            foreach (DataColumn column in table.Columns)
+            {
+                if (table.Rows.OfType<DataRow>().Any(r => r.IsNull(column)))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

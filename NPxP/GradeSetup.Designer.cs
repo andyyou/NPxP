@@ -68,6 +68,7 @@
             this.btnSaveGradeConfigFile = new System.Windows.Forms.Button();
             this.lblGradeConfig = new System.Windows.Forms.Label();
             this.cmbConfig = new System.Windows.Forms.ComboBox();
+            this.btnReset = new System.Windows.Forms.Button();
             this.tabGradeSetup.SuspendLayout();
             this.tpROI.SuspendLayout();
             this.pnlRoiGrid.SuspendLayout();
@@ -113,6 +114,7 @@
             // 
             // pnlRoiGrid
             // 
+            this.pnlRoiGrid.Controls.Add(this.btnReset);
             this.pnlRoiGrid.Controls.Add(this.lbShowGvRow);
             this.pnlRoiGrid.Controls.Add(this.lbShowGvColumn);
             this.pnlRoiGrid.Controls.Add(this.dgvRows);
@@ -490,6 +492,7 @@
             this.btnSaveGradeConfigFile.TabIndex = 7;
             this.btnSaveGradeConfigFile.Text = "Save";
             this.btnSaveGradeConfigFile.UseVisualStyleBackColor = true;
+            this.btnSaveGradeConfigFile.Click += new System.EventHandler(this.btnSaveGradeConfigFile_Click);
             // 
             // lblGradeConfig
             // 
@@ -507,6 +510,16 @@
             this.cmbConfig.Name = "cmbConfig";
             this.cmbConfig.Size = new System.Drawing.Size(234, 20);
             this.cmbConfig.TabIndex = 5;
+            // 
+            // btnReset
+            // 
+            this.btnReset.Location = new System.Drawing.Point(326, 26);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(75, 23);
+            this.btnReset.TabIndex = 10;
+            this.btnReset.Text = "Reset";
+            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // GradeSetup
             // 
@@ -590,6 +603,7 @@
         private System.Windows.Forms.Button btnSaveGradeConfigFile;
         private System.Windows.Forms.Label lblGradeConfig;
         private System.Windows.Forms.ComboBox cmbConfig;
+        private System.Windows.Forms.Button btnReset;
 
     }
 }

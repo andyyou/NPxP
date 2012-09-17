@@ -34,51 +34,51 @@
       <enable>True</enable>
       <sub_piece>
         <name>All</name>
-        <flawtype_score id="0">1</flawtype_score>
-        <flawtype_score id="1">2</flawtype_score>
+        <flawtype_score id="A">0</flawtype_score>
+        <flawtype_score id="B">1</flawtype_score>
       </sub_piece>
       <sub_piece>
         <name>ROI-11</name>
-        <flawtype_score id="0">1</flawtype_score>
-        <flawtype_score id="1">2</flawtype_score>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
       </sub_piece>
       <sub_piece>
         <name>ROI-12</name>
-        <flawtype_score id="0">1</flawtype_score>
-        <flawtype_score id="1">2</flawtype_score>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
       </sub_piece>
       <sub_piece>
         <name>ROI-21</name>
-        <flawtype_score id="0">1</flawtype_score>
-        <flawtype_score id="1">2</flawtype_score>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
       </sub_piece>
       <sub_piece>
         <name>ROI-22</name>
-        <flawtype_score id="0">1</flawtype_score>
-        <flawtype_score id="1">2</flawtype_score>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
       </sub_piece>
     </points>
     <marks>
       <enable>True</enable>
       <sub_piece>
         <name>All</name>
-        <mark id="a">100</mark>
+        <mark id="A">0</mark>
       </sub_piece>
       <sub_piece>
         <name>ROI-11</name>
-        <mark id="a">100</mark>
+        <mark id="A">0</mark>
       </sub_piece>
       <sub_piece>
         <name>ROI-12</name>
-        <mark id="a">100</mark>
+        <mark id="A">0</mark>
       </sub_piece>
       <sub_piece>
         <name>ROI-21</name>
-        <mark id="a">100</mark>
+        <mark id="A">0</mark>
       </sub_piece>
       <sub_piece>
         <name>ROI-22</name>
-        <mark id="a">100</mark>
+        <mark id="A">0</mark>
       </sub_piece>
     </marks>
     <pass_fail>

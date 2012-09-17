@@ -62,7 +62,7 @@
             this.cmbMapSize = new System.Windows.Forms.ComboBox();
             this.lblMapSize = new System.Windows.Forms.Label();
             this.gbSeriesSetting = new System.Windows.Forms.GroupBox();
-            this.dgvFlawLegendSettings = new System.Windows.Forms.DataGridView();
+            this.dgvFlawLegends = new System.Windows.Forms.DataGridView();
             this.btnConfirm = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.grbImageSettings.SuspendLayout();
@@ -71,7 +71,7 @@
             this.grbMapSettings.SuspendLayout();
             this.pnlGridSizeSettings.SuspendLayout();
             this.gbSeriesSetting.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendSettings)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegends)).BeginInit();
             this.SuspendLayout();
             // 
             // lblMapConfig
@@ -419,7 +419,7 @@
             // 
             // gbSeriesSetting
             // 
-            this.gbSeriesSetting.Controls.Add(this.dgvFlawLegendSettings);
+            this.gbSeriesSetting.Controls.Add(this.dgvFlawLegends);
             this.gbSeriesSetting.Location = new System.Drawing.Point(278, 36);
             this.gbSeriesSetting.Name = "gbSeriesSetting";
             this.gbSeriesSetting.Size = new System.Drawing.Size(394, 409);
@@ -427,18 +427,20 @@
             this.gbSeriesSetting.TabStop = false;
             this.gbSeriesSetting.Text = "Series Settings";
             // 
-            // dgvFlawLegendSettings
+            // dgvFlawLegends
             // 
-            this.dgvFlawLegendSettings.AllowUserToAddRows = false;
-            this.dgvFlawLegendSettings.AllowUserToDeleteRows = false;
-            this.dgvFlawLegendSettings.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvFlawLegendSettings.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-            this.dgvFlawLegendSettings.Location = new System.Drawing.Point(6, 25);
-            this.dgvFlawLegendSettings.Name = "dgvFlawLegendSettings";
-            this.dgvFlawLegendSettings.RowHeadersVisible = false;
-            this.dgvFlawLegendSettings.RowTemplate.Height = 24;
-            this.dgvFlawLegendSettings.Size = new System.Drawing.Size(382, 326);
-            this.dgvFlawLegendSettings.TabIndex = 2;
+            this.dgvFlawLegends.AllowUserToAddRows = false;
+            this.dgvFlawLegends.AllowUserToDeleteRows = false;
+            this.dgvFlawLegends.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvFlawLegends.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvFlawLegends.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.dgvFlawLegends.Location = new System.Drawing.Point(6, 25);
+            this.dgvFlawLegends.Name = "dgvFlawLegends";
+            this.dgvFlawLegends.RowHeadersVisible = false;
+            this.dgvFlawLegends.RowTemplate.Height = 24;
+            this.dgvFlawLegends.Size = new System.Drawing.Size(382, 326);
+            this.dgvFlawLegends.TabIndex = 2;
+            this.dgvFlawLegends.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvFlawLegends_CellFormatting);
             // 
             // btnConfirm
             // 
@@ -484,7 +486,7 @@
             this.pnlGridSizeSettings.ResumeLayout(false);
             this.pnlGridSizeSettings.PerformLayout();
             this.gbSeriesSetting.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendSettings)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegends)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -526,7 +528,7 @@
         private System.Windows.Forms.ComboBox cmbMapSize;
         private System.Windows.Forms.Label lblMapSize;
         private System.Windows.Forms.GroupBox gbSeriesSetting;
-        private System.Windows.Forms.DataGridView dgvFlawLegendSettings;
+        private System.Windows.Forms.DataGridView dgvFlawLegends;
         private System.Windows.Forms.Button btnConfirm;
         private System.Windows.Forms.Button btnSave;
     }

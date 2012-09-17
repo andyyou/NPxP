@@ -30,14 +30,14 @@
       <name>Not Classified</name>
       <color>#0000FF</color>
       <shape>Cross</shape>
-      <checked>1</checked>
+      <checked>true</checked>
     </flaw_legend>
     <flaw_legend>
       <flaw_type>1</flaw_type>
-      <name>Not Classified</name>
+      <name>dark   spot</name>
       <color>#00FF00</color>
       <shape>Cross</shape>
-      <checked>1</checked>
+      <checked>true</checked>
     </flaw_legend>
   </map_window>
 </config>

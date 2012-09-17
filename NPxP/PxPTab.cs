@@ -177,6 +177,7 @@ namespace NPxP
         {
             WriteHelper.Log("OnSetFlawLegend()");
             _mp.SetFlawLegend(legend);  // 把 MapWindow 需要的資料傳過去. 
+            
         }
         // (14)
         public void OnInitializeGlassEdges(int glassLeftMarginToROI, int glassRightMarginToROI)

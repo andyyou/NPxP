@@ -11,6 +11,7 @@ using System.IO;
 using NPxP.Model;
 using System.Xml;
 using System.Xml.XPath;
+using WRPlugIn;
 
 namespace NPxP
 {
@@ -20,6 +21,7 @@ namespace NPxP
         public GradeSetup()
         {
             InitializeComponent();
+
         }
         private void GradeSetup_Load(object sender, EventArgs e)
         {
@@ -544,9 +546,5 @@ namespace NPxP
                 e.Handled = true;
             }
         }
-
-        
-
-
     }
 }

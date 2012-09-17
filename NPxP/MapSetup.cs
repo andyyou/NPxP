@@ -12,10 +12,12 @@ using NPxP.Helper;
 using System.Xml;
 using System.Xml.XPath;
 using System.Text.RegularExpressions;
+using NPxP.Model;
 namespace NPxP
 {
     public partial class MapSetup : Form
     {
+        private DataTable _dtbFlawLegends;
         public MapSetup()
         {
             InitializeComponent();
@@ -95,6 +97,67 @@ namespace NPxP
             int x = ch.GetMapProportion_X(cmbMapConfigName.SelectedItem.ToString());
             int y = ch.GetMapProportion_Y(cmbMapConfigName.SelectedItem.ToString());
             cmbMapSize.SelectedItem = String.Format("{0}:{1}", x, y);
+
+
+            // prepare shape list
+            Dictionary<string, string> shapes = new Dictionary<string, string>();
+            shapes.Add("Triangle", "▲");
+            shapes.Add("Ellipse", "▼");
+            shapes.Add("Square", "■");
+            shapes.Add("Cone", "●");
+            shapes.Add("Cross", "+");
+            shapes.Add("LineDiagonalCross", "╳");
+            shapes.Add("Star", "★");
+           
+            // Initialize FlawLegend (dgvFlawLegends)
+
+            List<Column> columns = new List<Column>();
+            Column flawType = new Column(0, "FlawType", 60);
+            Column name = new Column(1, "Name", 120);
+            Column shape = new Column(2, "Shape", 80);
+            Column color = new Column(3, "Color", 80);
+            columns.Add(flawType);
+            columns.Add(name);
+            columns.Add(shape);
+            columns.Add(color);
+            foreach (Column c in columns)
+            {
+                if (c.Name == "Shape")
+                {
+                    DataGridViewComboBoxColumn cmbShape = new DataGridViewComboBoxColumn();
+                    cmbShape.HeaderText = c.Name;
+                    cmbShape.DisplayIndex = c.Index;
+                    cmbShape.DataPropertyName = c.Name;
+                    cmbShape.Width = c.Width;
+                    cmbShape.DataSource = new BindingSource(shapes, null);
+                    cmbShape.DisplayMember = "Value";
+                    cmbShape.ValueMember = "Key";
+                    dgvFlawLegends.Columns.Add(cmbShape);
+                }
+                else
+                {
+                    DataGridViewCell cell = new DataGridViewTextBoxCell();
+                    DataGridViewColumn column = new DataGridViewColumn();
+                    column.CellTemplate = cell;
+                    column.Name = c.Name;
+                    column.HeaderText = c.Name;
+                    column.Width = c.Width;
+                    column.DataPropertyName = c.Name;
+                    column.SortMode = DataGridViewColumnSortMode.Automatic;
+                    if (c.Name == "FlawType" || c.Name == "Name")
+                    {
+                        column.ReadOnly = true;
+                    }
+                    dgvFlawLegends.Columns.Add(column);
+                }
+            }
+            dgvFlawLegends.MultiSelect = false;
+            dgvFlawLegends.AutoGenerateColumns = false;
+
+
+            // Get datatable of _dtbFlawLegends
+            _dtbFlawLegends = ch.GetDataTablePrevFlawLegend(cmbMapConfigName.SelectedItem.ToString());
+            dgvFlawLegends.DataSource = _dtbFlawLegends;
 
         }
 
@@ -369,6 +432,49 @@ namespace NPxP
             {
                 txt.Text = "";
 
+            }
+        }
+
+        private void dgvFlawLegends_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.ColumnIndex == 2)
+            {
+                DataGridViewCell dgvc = sender as DataGridViewCell;
+
+                string color = _dtbFlawLegends.Rows[e.RowIndex]["Color"].ToString();
+                e.CellStyle.ForeColor = System.Drawing.ColorTranslator.FromHtml(color);
+                switch (e.Value.ToString())
+                {
+                    case "Triangle":
+                        e.Value = "▲";
+                        break;
+                    case "Ellipse":
+                        e.Value = "▼";
+                        break;
+                    case "Square":
+                        e.Value = "■";
+                        break;
+                    case "Cone":
+                        e.Value = "●";
+                        break;
+                    case "Cross":
+                        e.Value = "+";
+                        break;
+                    case "LineDiagonalCross":
+                        e.Value = "╳";
+                        break;
+                    case "Star":
+                        e.Value = "★";
+                        break;
+                }
+            }
+            else if (e.ColumnIndex == 3)
+            {
+                string color = e.Value.ToString();
+                e.CellStyle.BackColor = System.Drawing.ColorTranslator.FromHtml(color);
+                e.CellStyle.ForeColor = System.Drawing.ColorTranslator.FromHtml(color);
+                e.Value = "";
+               
             }
         }
        

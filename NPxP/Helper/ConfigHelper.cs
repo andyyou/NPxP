@@ -313,6 +313,60 @@ namespace NPxP.Helper
                 return value;
             }
         }
+        // 取得 Map Setup FlawLegend List
+        public List<string> GetPrevFlawLegendList(string fileName)
+        {
+            List<string> legends = new List<string>();
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//map_window/flaw_legend");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    legends.Add(name);
+                }
+                return legends;
+            }
+        }
+        // 取得 Map Setup FlawLegend(FlawType) DataTable
+        public DataTable GetDataTablePrevFlawLegend(string fileName)
+        {
+            DataTable dtb = new DataTable("FlawLegends");
+            dtb.Columns.Add("FlawType", typeof(int));
+            dtb.Columns.Add("Name", typeof(string));
+            dtb.Columns.Add("Color", typeof(string));
+            dtb.Columns.Add("Shape", typeof(string));
+            dtb.Columns.Add("Checked", typeof(bool));
+
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//map_window/flaw_legend");
+                while (node.MoveNext())
+                {
+                    int flawType = Convert.ToInt32(node.Current.SelectSingleNode("flaw_type").Value);
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    string color = node.Current.SelectSingleNode("color").Value;
+                    string shape = node.Current.SelectSingleNode("shape").Value;
+                    bool isChecked = Convert.ToBoolean(node.Current.SelectSingleNode("checked").Value);
+                    DataRow dr = dtb.NewRow();
+                    dr["FlawType"] = flawType;
+                    dr["Name"] = name;
+                    dr["Color"] = color;
+                    dr["Shape"] = shape;
+                    dr["Checked"] = isChecked;
+
+                    dtb.Rows.Add(dr);
+                }
+                return dtb;
+            }
+
+        }
         // 取得 Grade Mode 
         public string GetGradeNoRoiMode(string fileName)
         {

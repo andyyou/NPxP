@@ -596,7 +596,7 @@ namespace NPxP.Helper
         {
             DataTable dtb = new DataTable();
             dtb.Columns.Add("SubpieceName", typeof(string));
-            dtb.Columns.Add("ClassName", typeof(string));
+            dtb.Columns.Add("GradeName", typeof(string));
             dtb.Columns.Add("Score", typeof(int));
 
             string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
@@ -616,7 +616,7 @@ namespace NPxP.Helper
                         int score = Convert.ToInt32(subNode.Current.Value);
                         DataRow dr = dtb.NewRow();
                         dr["SubpieceName"] = subpieceName;
-                        dr["ClassName"] = flawtypeID;
+                        dr["GradeName"] = flawtypeID;
                         dr["Score"] = score;
 
                         dtb.Rows.Add(dr);

@@ -19,13 +19,14 @@ namespace NPxP
         #region Local Objects
 
         private List<FlawLegend> _legend;
-
+        private DataTable _dtbFlaws;
         #endregion
 
-        public MapWindow()
+        public MapWindow(ref DataTable dtbFlaws)
         {
             WriteHelper.Log("MapWindow()");
             InitializeComponent();
+            _dtbFlaws = dtbFlaws;
         }
 
         public void SetFlawLegend(List<FlawLegend> legned)

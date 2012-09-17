@@ -423,16 +423,21 @@
             // 
             // dgvGrade
             // 
+            this.dgvGrade.AllowUserToAddRows = false;
             this.dgvGrade.AllowUserToResizeColumns = false;
             this.dgvGrade.AllowUserToResizeRows = false;
             this.dgvGrade.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvGrade.ColumnHeadersVisible = false;
             this.dgvGrade.Location = new System.Drawing.Point(23, 51);
             this.dgvGrade.Name = "dgvGrade";
             this.dgvGrade.RowTemplate.Height = 24;
+            this.dgvGrade.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvGrade.Size = new System.Drawing.Size(425, 268);
             this.dgvGrade.TabIndex = 2;
+            this.dgvGrade.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dgvGrade_UserDeletingRow);
+            this.dgvGrade.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgvGrade_CellValidating);
+            this.dgvGrade.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvGrade_CellEndEdit);
             this.dgvGrade.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgvGrade_DataError);
+            this.dgvGrade.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dgvGrade_RowsRemoved);
             // 
             // lbSubPieceOfGrade
             // 

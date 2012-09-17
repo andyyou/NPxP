@@ -148,6 +148,11 @@ namespace NPxP
             dgvPoint.AutoGenerateColumns = false;
 
             // Initialize dgvGrade without data
+            Column gradeName = new Column(0, "GradeName", 200);
+            score = new Column(1, "Score", 200);
+            columns = new List<Column>();
+            columns.Add(gradeName);
+            columns.Add(score);
             foreach (Column c in columns)
             {
                 DataGridViewCell cell = new DataGridViewTextBoxCell();
@@ -159,6 +164,10 @@ namespace NPxP
                 column.DataPropertyName = c.Name;
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                if (c.Name == "GradeName")
+                {
+                    column.ReadOnly = true;
+                }
                 dgvGrade.Columns.Add(column);
             }
             dgvGrade.MultiSelect = false;
@@ -431,7 +440,7 @@ namespace NPxP
                 DataRow[] drs = _dtbGrades.Select(expr);
                 foreach (DataRow dr in drs)
                 {
-                    string className = dr["ClassName"].ToString();
+                    string className = dr["GradeName"].ToString();
                     string score = dr["Score"].ToString();
                     navigator.SelectSingleNode("//grade/marks/sub_piece[last()]").AppendChildElement(string.Empty, "mark", string.Empty, score);
                     navigator.SelectSingleNode("//grade/marks/sub_piece[last()]/mark[last()]").CreateAttribute(string.Empty, "id", string.Empty, className);
@@ -583,7 +592,6 @@ namespace NPxP
 
         private void dgvPoint_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-
             if (String.IsNullOrEmpty(e.FormattedValue.ToString()))
             {
                 e.Cancel = true;
@@ -595,6 +603,80 @@ namespace NPxP
             e.Cancel = false;
             MessageBox.Show("Input value format error.");
         }
-       
+
+        private void dgvGrade_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            if (String.IsNullOrEmpty(e.FormattedValue.ToString()))
+            {
+                e.Cancel = true;
+            }
+        }
+
+
+        private void dgvGrade_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            if (dgvGrade.Rows.Count <= 1)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+               
+            }
+
+
+        }
+
+        // 轉換 ASCII Number
+        public static char Chr(int Num)
+        {
+            char C = Convert.ToChar(Num);
+            return C;
+        }
+
+        // 轉換 Char to ASCnumber
+        public static int ASC(string S)
+        {
+            int N = Convert.ToInt32(S[0]);
+            return N;
+        }
+
+        private void dgvGrade_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == dgvGrade.Rows.Count - 1)
+            {
+                string subpieceName = cmbSubMarks.SelectedItem.ToString().Trim();
+                string expr = String.Format("SubpieceName='{0}'", subpieceName);
+                DataRow dr = _dtbGrades.NewRow();
+                dr["SubpieceName"] = subpieceName;
+                dr["GradeName"] = "A";
+                dr["Score"] = 0;
+                _dtbGrades.Rows.Add(dr);
+                DataRow[] drs = _dtbGrades.Select(expr);
+                int chrNo = 65;
+                
+                foreach (DataRow d in drs)
+                {
+                    d["GradeName"] = Chr(chrNo).ToString();
+                    chrNo++;
+                }
+            }
+            
+ 
+        }
+
+        private void dgvGrade_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            string subpieceName = cmbSubMarks.SelectedItem.ToString().Trim();
+            string expr = String.Format("SubpieceName='{0}'", subpieceName);
+            DataRow[] drs = _dtbGrades.Select(expr);
+            int chrNo = 65;
+
+            foreach (DataRow d in drs)
+            {
+                d["GradeName"] = Chr(chrNo).ToString();
+                chrNo++;
+            }
+        } 
     }
 }

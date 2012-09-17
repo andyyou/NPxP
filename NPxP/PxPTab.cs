@@ -151,8 +151,9 @@ namespace NPxP
         public void GetMapControlHandle(out IntPtr hndl)
         {
             WriteHelper.Log("GetMapControlHandle()");
-            _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
+            _mp = new MapWindow(ref _dtbFlaws); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
+
         }
         // (10) :設定 MapWindow Position with Job object.
         public void SetMapPosition(int w, int h)

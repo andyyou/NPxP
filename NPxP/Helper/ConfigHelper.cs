@@ -331,6 +331,44 @@ namespace NPxP.Helper
                 return legends;
             }
         }
+        // 取得 Map Setup FlawLegend Dictionary (key=ClassID)
+        public Dictionary<int,string> GetPrevFlawLegendDictionary(string fileName)
+        {
+            Dictionary<int, string> legends = new Dictionary<int, string>();
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//map_window/flaw_legend");
+                while (node.MoveNext())
+                {
+                    int flawtype = Convert.ToInt32(node.Current.SelectSingleNode("flaw_type").Value);
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    legends.Add(flawtype, name);
+                }
+                return legends;
+            }
+        }
+        // 取得 Map Setup FlawLegend Dictionary (key=ClassName)
+        public Dictionary<string, int> GetPrevFlawLegendDictionaryID(string fileName)
+        {
+            Dictionary<string, int> legends = new Dictionary<string, int>();
+            string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//map_window/flaw_legend");
+                while (node.MoveNext())
+                {
+                    int flawtype = Convert.ToInt32(node.Current.SelectSingleNode("flaw_type").Value);
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    legends.Add(name, flawtype);
+                }
+                return legends;
+            }
+        }
         // 取得 Map Setup FlawLegend(FlawType) DataTable
         public DataTable GetDataTablePrevFlawLegend(string fileName)
         {
@@ -524,6 +562,8 @@ namespace NPxP.Helper
             dtb.Columns.Add("ClassName", typeof(string));
             dtb.Columns.Add("Score", typeof(int));
 
+            Dictionary<int, string> flawTypeNames = GetPrevFlawLegendDictionary(fileName); //<flawtype, name> ex : <0, Not Classified>
+
             string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
             using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
             {
@@ -537,11 +577,12 @@ namespace NPxP.Helper
                     XPathNodeIterator subNode = node.Current.Select("flawtype_score");
                     while (subNode.MoveNext())
                     {
-                        string flawtypeID = subNode.Current.SelectSingleNode("@id").Value;
+                        int flawtypeID = int.TryParse(subNode.Current.SelectSingleNode("@id").Value, out flawtypeID) ? flawtypeID : 0;
+                        string flawtypeName = flawTypeNames[flawtypeID];
                         int score = Convert.ToInt32(subNode.Current.Value);
                         DataRow dr = dtb.NewRow();
                         dr["SubpieceName"] = subpieceName;
-                        dr["ClassName"] = flawtypeID;
+                        dr["ClassName"] = flawtypeName;
                         dr["Score"] = score;
 
                         dtb.Rows.Add(dr);

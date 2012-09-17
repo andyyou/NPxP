@@ -332,16 +332,20 @@
             // 
             // dgvPoint
             // 
+            this.dgvPoint.AllowUserToAddRows = false;
+            this.dgvPoint.AllowUserToDeleteRows = false;
             this.dgvPoint.AllowUserToResizeColumns = false;
             this.dgvPoint.AllowUserToResizeRows = false;
             this.dgvPoint.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPoint.ColumnHeadersVisible = false;
             this.dgvPoint.Location = new System.Drawing.Point(23, 51);
             this.dgvPoint.MultiSelect = false;
             this.dgvPoint.Name = "dgvPoint";
             this.dgvPoint.RowTemplate.Height = 24;
             this.dgvPoint.Size = new System.Drawing.Size(425, 268);
             this.dgvPoint.TabIndex = 2;
+            this.dgvPoint.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgvPoint_CellValidating);
+            this.dgvPoint.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgvPoint_DataError);
+            this.dgvPoint.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dgvPoint_KeyPress);
             // 
             // lbSubPieceOfPoint
             // 
@@ -428,6 +432,7 @@
             this.dgvGrade.RowTemplate.Height = 24;
             this.dgvGrade.Size = new System.Drawing.Size(425, 268);
             this.dgvGrade.TabIndex = 2;
+            this.dgvGrade.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgvGrade_DataError);
             // 
             // lbSubPieceOfGrade
             // 

@@ -138,6 +138,10 @@ namespace NPxP
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
                 column.FillWeight = c.Width;
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                if (c.Name == "ClassName")
+                {
+                    column.ReadOnly = true;
+                }
                 dgvPoint.Columns.Add(column);
             }
             dgvPoint.MultiSelect = false;
@@ -373,6 +377,8 @@ namespace NPxP
             }
             // save _dtbPoints
             List<string> pointsSubpieces = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+            // prepare flawtype convert dictionary
+            Dictionary<string, int> flawlegends = ch.GetPrevFlawLegendDictionaryID(cmbConfig.SelectedItem.ToString().Trim());
             foreach (string subpieceName in pointsSubpieces)
             {
                 navigator.SelectSingleNode("//grade/points").AppendChildElement(string.Empty, "sub_piece", string.Empty, null);
@@ -389,9 +395,10 @@ namespace NPxP
                 foreach (DataRow dr in drs)
                 {
                     string className = dr["ClassName"].ToString();
+                    int classID = flawlegends[className];
                     string score = dr["Score"].ToString();
                     navigator.SelectSingleNode("//grade/points/sub_piece[last()]").AppendChildElement(string.Empty, "flawtype_score", string.Empty, score);
-                    navigator.SelectSingleNode("//grade/points/sub_piece[last()]/flawtype_score[last()]").CreateAttribute(string.Empty, "id", string.Empty, className);
+                    navigator.SelectSingleNode("//grade/points/sub_piece[last()]/flawtype_score[last()]").CreateAttribute(string.Empty, "id", string.Empty, classID.ToString());
                 }
             }
            
@@ -553,5 +560,41 @@ namespace NPxP
                 e.Handled = true;
             }
         }
+
+
+        private void dgvPoint_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.Cancel = false;
+            MessageBox.Show("Input value format error.");
+        }
+
+        private void dgvPoint_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (Char.IsDigit(e.KeyChar) || Char.IsControl(e.KeyChar))
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
+
+
+        private void dgvPoint_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+
+            if (String.IsNullOrEmpty(e.FormattedValue.ToString()))
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void dgvGrade_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.Cancel = false;
+            MessageBox.Show("Input value format error.");
+        }
+       
     }
 }

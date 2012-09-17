@@ -79,6 +79,8 @@ namespace NPxP
                 column.Width = c.Width;
                 column.DataPropertyName = c.Name;
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
+                column.FillWeight = c.Width;
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dgvColumns.Columns.Add(column);
             }
             dgvColumns.MultiSelect = false;
@@ -95,6 +97,8 @@ namespace NPxP
                 column.Width = c.Width;
                 column.DataPropertyName = c.Name;
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
+                column.FillWeight = c.Width;
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dgvRows.Columns.Add(column);
             }
             dgvRows.MultiSelect = false;
@@ -132,6 +136,8 @@ namespace NPxP
                 column.Width = c.Width;
                 column.DataPropertyName = c.Name;
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
+                column.FillWeight = c.Width;
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dgvPoint.Columns.Add(column);
             }
             dgvPoint.MultiSelect = false;
@@ -148,6 +154,7 @@ namespace NPxP
                 column.Width = c.Width;
                 column.DataPropertyName = c.Name;
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 dgvGrade.Columns.Add(column);
             }
             dgvGrade.MultiSelect = false;

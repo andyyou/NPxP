@@ -144,7 +144,7 @@ namespace NPxP
                     column.Width = c.Width;
                     column.DataPropertyName = c.Name;
                     column.SortMode = DataGridViewColumnSortMode.Automatic;
-                    if (c.Name == "FlawType" || c.Name == "Name")
+                    if (c.Name == "FlawType" || c.Name == "Name" || c.Name == "Color")
                     {
                         column.ReadOnly = true;
                     }
@@ -349,6 +349,30 @@ namespace NPxP
                 navigator.SelectSingleNode("//map_window/map_chart/cd_inver").SetValue("false");
             }
             
+            // save flawlegends 
+            // remove old flawlegend for add records
+            if (navigator.Select("//map_window/flaw_legend").Count > 0 && _dtbFlawLegends.Rows.Count > 0)
+            {
+                XPathNavigator first = navigator.SelectSingleNode("//map_window/flaw_legend[1]");
+                XPathNavigator last = navigator.SelectSingleNode("//map_window/flaw_legend[last()]");
+                navigator.MoveTo(first);
+                navigator.DeleteRange(last);
+            }
+            // save _dtbFlawLegends to xml
+            for (int i = 0; i < _dtbFlawLegends.Rows.Count; i++)
+            {
+                string flawType = _dtbFlawLegends.Rows[i]["FlawType"].ToString();
+                string flawName = _dtbFlawLegends.Rows[i]["Name"].ToString();
+                string shape = _dtbFlawLegends.Rows[i]["Shape"].ToString();
+                string color = _dtbFlawLegends.Rows[i]["Color"].ToString();
+                navigator.SelectSingleNode("//config/map_window").AppendChildElement(string.Empty, "flaw_legend", string.Empty, null);
+                // Move to last column element and add name, start, end value.
+                navigator.SelectSingleNode("//config/map_window/flaw_legend[last()]").AppendChildElement(string.Empty, "flaw_type", string.Empty, flawType);
+                navigator.SelectSingleNode("//config/map_window/flaw_legend[last()]").AppendChildElement(string.Empty, "name", string.Empty, flawName);
+                navigator.SelectSingleNode("//config/map_window/flaw_legend[last()]").AppendChildElement(string.Empty, "color", string.Empty, color);
+                navigator.SelectSingleNode("//config/map_window/flaw_legend[last()]").AppendChildElement(string.Empty, "shape", string.Empty, shape);
+            }
+
             // save
             string map_path = PathHelper.MapConfigFolder + cmbMapConfigName.Text.Trim() + ".xml";
             try
@@ -458,10 +482,10 @@ namespace NPxP
                         e.Value = "●";
                         break;
                     case "Cross":
-                        e.Value = "+";
+                        e.Value = "✚";
                         break;
                     case "LineDiagonalCross":
-                        e.Value = "╳";
+                        e.Value = "✖";
                         break;
                     case "Star":
                         e.Value = "★";
@@ -475,6 +499,21 @@ namespace NPxP
                 e.CellStyle.ForeColor = System.Drawing.ColorTranslator.FromHtml(color);
                 e.Value = "";
                
+            }
+        }
+
+        private void dgvFlawLegends_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 3)
+            {
+                ColorDialog cd = new ColorDialog();
+                DialogResult dr = cd.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    _dtbFlawLegends.Rows[e.RowIndex]["Color"] = String.Format("#{0:X2}{1:X2}{2:X2}", cd.Color.R, cd.Color.G, cd.Color.B);
+                    dgvFlawLegends.EndEdit();
+                    dgvFlawLegends.ClearSelection();
+                }
             }
         }
        

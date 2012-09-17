@@ -339,7 +339,6 @@ namespace NPxP.Helper
             dtb.Columns.Add("Name", typeof(string));
             dtb.Columns.Add("Color", typeof(string));
             dtb.Columns.Add("Shape", typeof(string));
-            dtb.Columns.Add("Checked", typeof(bool));
 
             string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
             using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
@@ -353,13 +352,11 @@ namespace NPxP.Helper
                     string name = node.Current.SelectSingleNode("name").Value;
                     string color = node.Current.SelectSingleNode("color").Value;
                     string shape = node.Current.SelectSingleNode("shape").Value;
-                    bool isChecked = Convert.ToBoolean(node.Current.SelectSingleNode("checked").Value);
                     DataRow dr = dtb.NewRow();
                     dr["FlawType"] = flawType;
                     dr["Name"] = name;
                     dr["Color"] = color;
                     dr["Shape"] = shape;
-                    dr["Checked"] = isChecked;
 
                     dtb.Rows.Add(dr);
                 }

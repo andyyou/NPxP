@@ -35,16 +35,14 @@
     <flaw_legend>
       <flaw_type>0</flaw_type>
       <name>Not Classified</name>
-      <color>#0000FF</color>
-      <shape>Cross</shape>
-      <checked>true</checked>
+      <color>#FF0000</color>
+      <shape>Triangle</shape>
     </flaw_legend>
     <flaw_legend>
       <flaw_type>1</flaw_type>
       <name>dark   spot</name>
-      <color>#00FF00</color>
-      <shape>Cross</shape>
-      <checked>true</checked>
+      <color>#000000</color>
+      <shape>Square</shape>
     </flaw_legend>
   </map_window>
 </config>

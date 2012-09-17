@@ -440,6 +440,7 @@
             this.dgvFlawLegends.RowTemplate.Height = 24;
             this.dgvFlawLegends.Size = new System.Drawing.Size(382, 326);
             this.dgvFlawLegends.TabIndex = 2;
+            this.dgvFlawLegends.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvFlawLegends_CellDoubleClick);
             this.dgvFlawLegends.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvFlawLegends_CellFormatting);
             // 
             // btnConfirm

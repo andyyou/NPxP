@@ -337,8 +337,8 @@ namespace NPxP.Helper
             DataTable dtb = new DataTable("FlawLegends");
             dtb.Columns.Add("FlawType", typeof(int));
             dtb.Columns.Add("Name", typeof(string));
-            dtb.Columns.Add("Color", typeof(string));
             dtb.Columns.Add("Shape", typeof(string));
+            dtb.Columns.Add("Color", typeof(string));
 
             string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
             using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
@@ -355,8 +355,8 @@ namespace NPxP.Helper
                     DataRow dr = dtb.NewRow();
                     dr["FlawType"] = flawType;
                     dr["Name"] = name;
-                    dr["Color"] = color;
                     dr["Shape"] = shape;
+                    dr["Color"] = color;
 
                     dtb.Rows.Add(dr);
                 }

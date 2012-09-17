@@ -90,7 +90,7 @@
             this.cmbMapConfigName.Name = "cmbMapConfigName";
             this.cmbMapConfigName.Size = new System.Drawing.Size(150, 20);
             this.cmbMapConfigName.TabIndex = 1;
-            this.cmbMapConfigName.SelectedIndexChanged += new System.EventHandler(this.cmbMapConfigName_SelectedIndexChanged);
+            this.cmbMapConfigName.DropDownClosed += new System.EventHandler(this.cmbMapConfigName_DropDownClosed);
             // 
             // grbImageSettings
             // 

@@ -189,68 +189,6 @@ namespace NPxP
             txtFixSizeMD.Enabled = false;
         }
 
-        private void cmbMapConfigName_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ConfigHelper ch = new ConfigHelper();
-            // Set nudImageColumns, nudImageRows value.
-            nudImageColumns.Value = ch.GettlpFlawImagesColumns(cmbMapConfigName.SelectedItem.ToString());
-            nudImageRows.Value = ch.GettlpFlawImagesRows(cmbMapConfigName.SelectedItem.ToString());
-
-            // Set rdoMapGridOn,rdoMapGridOff
-            rdoMapGridOn.Checked = ch.GetIsDisplayMapGrid(cmbMapConfigName.SelectedItem.ToString());
-            rdoMapGridOff.Checked = !ch.GetIsDisplayMapGrid(cmbMapConfigName.SelectedItem.ToString());
-
-            // Set rdoFixCellSize, rdoCountSize
-            rdoFixCellSize.Checked = ch.GetIsFixCellSizeMode(cmbMapConfigName.SelectedItem.ToString());
-            rdoCountSize.Checked = !ch.GetIsFixCellSizeMode(cmbMapConfigName.SelectedItem.ToString());
-
-            if (rdoFixCellSize.Checked)
-            {
-                txtFixSizeCD.Text = ch.GetFixCellSizeCD(cmbMapConfigName.SelectedItem.ToString()).ToString();
-                txtFixSizeCD.Enabled = true;
-                txtFixSizeMD.Text = ch.GetFixCellSizeMD(cmbMapConfigName.SelectedItem.ToString()).ToString();
-                txtFixSizeMD.Enabled = true;
-                txtCountSizeCD.Text = "";
-                txtCountSizeCD.Enabled = false;
-                txtCountSizeMD.Text = "";
-                txtCountSizeMD.Enabled = false;
-                lblSCMD.Text = ch.GetFixCellSizeSmybol(cmbMapConfigName.SelectedItem.ToString());
-                lblSCCD.Text = ch.GetFixCellSizeSmybol(cmbMapConfigName.SelectedItem.ToString());
-            }
-            else if (rdoCountSize.Checked)
-            {
-                txtCountSizeCD.Text = ch.GetCountSizeCD(cmbMapConfigName.SelectedItem.ToString()).ToString();
-                txtCountSizeCD.Enabled = true;
-                txtCountSizeMD.Text = ch.GetCountSizeMD(cmbMapConfigName.SelectedItem.ToString()).ToString();
-                txtCountSizeMD.Enabled = true;
-                txtFixSizeCD.Text = "";
-                txtFixSizeCD.Enabled = false;
-                txtFixSizeMD.Text = "";
-                txtFixSizeMD.Enabled = false;
-            }
-            else
-            {
-                TextBox[] txts = { txtFixSizeCD, txtFixSizeMD, txtCountSizeCD, txtCountSizeMD };
-                foreach (TextBox txt in txts)
-                {
-                    txt.Enabled = false;
-                    txt.Text = "";
-                }
-            }
-
-            // Set cmbBottomAxes default selected
-            cmbBottomAxes.SelectedItem = ch.GetBottomAxes(cmbMapConfigName.SelectedItem.ToString());
-
-            // Set chkCDInverse, chkMDInverse
-            chkCDInverse.Checked = ch.IsCdInver_X(cmbMapConfigName.SelectedItem.ToString());
-            chkMDInverse.Checked = ch.IsMdInver_Y(cmbMapConfigName.SelectedItem.ToString());
-
-            // Set cmbMapSize default. (x:y)
-            int x = ch.GetMapProportion_X(cmbMapConfigName.SelectedItem.ToString());
-            int y = ch.GetMapProportion_Y(cmbMapConfigName.SelectedItem.ToString());
-            cmbMapSize.SelectedItem = String.Format("{0}:{1}", x, y);
-        }
-
         private void btnConfirm_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -498,7 +436,7 @@ namespace NPxP
                 e.CellStyle.BackColor = System.Drawing.ColorTranslator.FromHtml(color);
                 e.CellStyle.ForeColor = System.Drawing.ColorTranslator.FromHtml(color);
                 e.Value = "";
-               
+
             }
         }
 
@@ -514,6 +452,81 @@ namespace NPxP
                     dgvFlawLegends.EndEdit();
                     dgvFlawLegends.ClearSelection();
                 }
+            }
+        }
+
+        private void cmbMapConfigName_DropDownClosed(object sender, EventArgs e)
+        {
+            ConfigHelper ch = new ConfigHelper();
+            // Set nudImageColumns, nudImageRows value.
+            nudImageColumns.Value = ch.GettlpFlawImagesColumns(cmbMapConfigName.SelectedItem.ToString());
+            nudImageRows.Value = ch.GettlpFlawImagesRows(cmbMapConfigName.SelectedItem.ToString());
+
+            // Set rdoMapGridOn,rdoMapGridOff
+            rdoMapGridOn.Checked = ch.GetIsDisplayMapGrid(cmbMapConfigName.SelectedItem.ToString());
+            rdoMapGridOff.Checked = !ch.GetIsDisplayMapGrid(cmbMapConfigName.SelectedItem.ToString());
+
+            // Set rdoFixCellSize, rdoCountSize
+            rdoFixCellSize.Checked = ch.GetIsFixCellSizeMode(cmbMapConfigName.SelectedItem.ToString());
+            rdoCountSize.Checked = !ch.GetIsFixCellSizeMode(cmbMapConfigName.SelectedItem.ToString());
+
+            if (rdoFixCellSize.Checked)
+            {
+                txtFixSizeCD.Text = ch.GetFixCellSizeCD(cmbMapConfigName.SelectedItem.ToString()).ToString();
+                txtFixSizeCD.Enabled = true;
+                txtFixSizeMD.Text = ch.GetFixCellSizeMD(cmbMapConfigName.SelectedItem.ToString()).ToString();
+                txtFixSizeMD.Enabled = true;
+                txtCountSizeCD.Text = "";
+                txtCountSizeCD.Enabled = false;
+                txtCountSizeMD.Text = "";
+                txtCountSizeMD.Enabled = false;
+                lblSCMD.Text = ch.GetFixCellSizeSmybol(cmbMapConfigName.SelectedItem.ToString());
+                lblSCCD.Text = ch.GetFixCellSizeSmybol(cmbMapConfigName.SelectedItem.ToString());
+            }
+            else if (rdoCountSize.Checked)
+            {
+                txtCountSizeCD.Text = ch.GetCountSizeCD(cmbMapConfigName.SelectedItem.ToString()).ToString();
+                txtCountSizeCD.Enabled = true;
+                txtCountSizeMD.Text = ch.GetCountSizeMD(cmbMapConfigName.SelectedItem.ToString()).ToString();
+                txtCountSizeMD.Enabled = true;
+                txtFixSizeCD.Text = "";
+                txtFixSizeCD.Enabled = false;
+                txtFixSizeMD.Text = "";
+                txtFixSizeMD.Enabled = false;
+            }
+            else
+            {
+                TextBox[] txts = { txtFixSizeCD, txtFixSizeMD, txtCountSizeCD, txtCountSizeMD };
+                foreach (TextBox txt in txts)
+                {
+                    txt.Enabled = false;
+                    txt.Text = "";
+                }
+            }
+
+            // Set cmbBottomAxes default selected
+            cmbBottomAxes.SelectedItem = ch.GetBottomAxes(cmbMapConfigName.SelectedItem.ToString());
+
+            // Set chkCDInverse, chkMDInverse
+            chkCDInverse.Checked = ch.IsCdInver_X(cmbMapConfigName.SelectedItem.ToString());
+            chkMDInverse.Checked = ch.IsMdInver_Y(cmbMapConfigName.SelectedItem.ToString());
+
+            // Set cmbMapSize default. (x:y)
+            int x = ch.GetMapProportion_X(cmbMapConfigName.SelectedItem.ToString());
+            int y = ch.GetMapProportion_Y(cmbMapConfigName.SelectedItem.ToString());
+            cmbMapSize.SelectedItem = String.Format("{0}:{1}", x, y);
+
+            // Set FlawLegends 
+            _dtbFlawLegends.Rows.Clear();
+            DataTable dtb = ch.GetDataTablePrevFlawLegend(cmbMapConfigName.SelectedItem.ToString());
+            foreach (DataRow dr in dtb.Rows)
+            {
+                DataRow newDr = _dtbFlawLegends.NewRow();
+                newDr["FlawType"] = dr["FlawType"];
+                newDr["Name"] = dr["Name"];
+                newDr["Shape"] = dr["Shape"];
+                newDr["Color"] = dr["Color"];
+                _dtbFlawLegends.Rows.Add(newDr); 
             }
         }
        

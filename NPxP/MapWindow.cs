@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using NPxP.Helper;
+using NPxP.Model;
 using WRPlugIn;
 using System.ComponentModel.Composition;
 using System.IO;
+
 //using DevExpress.XtraCharts;
 
 namespace NPxP
@@ -32,6 +34,7 @@ namespace NPxP
         public void SetFlawLegend(List<FlawLegend> legned)
         {
             _legend = legned;
+
         }
         public void InitJobInfo(IJobInfo jobInfo)
         {
@@ -81,8 +84,10 @@ namespace NPxP
 
         private void btnGradeSetting_Click(object sender, EventArgs e)
         {
+            ConfigHelper ch = new ConfigHelper();
             GradeSetup gs = new GradeSetup();
             gs.ShowDialog();
+            cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
         }
 
         private void MapWindow_Load(object sender, EventArgs e)
@@ -99,7 +104,63 @@ namespace NPxP
             }
             // Binding cmbGradeConfigFiles
             cmbGradeConfigFiles.DataSource = gradeConfigs;
-            cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim(); 
+            cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
+
+            // Initialize dgvFlawLegend without data.
+            List<Column> columns = new List<Column>();
+            Column display = new Column(0, "Display", 60);
+            Column name = new Column(1, "Name", 60);
+            Column shape = new Column(2, "Shape", 60);
+            columns.Add(display);
+            columns.Add(name);
+            columns.Add(shape);
+            foreach (Column c in columns)
+            {
+                DataGridViewCell cell = new DataGridViewTextBoxCell();
+                DataGridViewColumn column = new DataGridViewColumn();
+                column.CellTemplate = cell;
+                column.Name = c.Name;
+                column.HeaderText = c.Name;
+                column.Width = c.Width;
+                column.DataPropertyName = c.Name;
+                column.SortMode = DataGridViewColumnSortMode.Automatic;
+                column.FillWeight = c.Width;
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dgvFlawLegend.Columns.Add(column);
+            }
+            dgvFlawLegend.MultiSelect = false;
+            dgvFlawLegend.AutoGenerateColumns = false;
+
+
+            columns = new List<Column>();
+            Column flawType = new Column(1, "FlawType", 60);
+            name = new Column(1, "Name", 60);
+            shape = new Column(2, "Shape", 60);
+            Column pieceDoff = new Column(1, "PieceDoffNum", 60);
+            Column jobDoff = new Column(1, "JobDoffNum", 60);
+            columns.Add(flawType);
+            columns.Add(name);
+            columns.Add(shape);
+            columns.Add(pieceDoff);
+            columns.Add(jobDoff);
+            foreach (Column c in columns)
+            {
+                DataGridViewCell cell = new DataGridViewTextBoxCell();
+                DataGridViewColumn column = new DataGridViewColumn();
+                column.CellTemplate = cell;
+                column.Name = c.Name;
+                column.HeaderText = c.Name;
+                column.Width = c.Width;
+                column.DataPropertyName = c.Name;
+                column.SortMode = DataGridViewColumnSortMode.Automatic;
+                column.FillWeight = c.Width;
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dgvFlawLegendDetial.Columns.Add(column);
+            }
+            dgvFlawLegendDetial.MultiSelect = false;
+            dgvFlawLegendDetial.AutoGenerateColumns = false;
+
+
         }
 
         private void cmbFilterType_SelectedIndexChanged(object sender, EventArgs e)
@@ -109,6 +170,12 @@ namespace NPxP
             ch.SaveFilterType(cmbFilterType.SelectedItem.ToString());
 
 
+        }
+
+        private void cmbGradeConfigFiles_DropDownClosed(object sender, EventArgs e)
+        {
+            ConfigHelper ch = new ConfigHelper();
+            ch.SaveGradeSetupConfigFile(cmbGradeConfigFiles.Text.Trim());
         }
     }
 }

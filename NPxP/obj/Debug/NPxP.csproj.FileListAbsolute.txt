@@ -13,3 +13,4 @@ C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.csproj.GenerateResource.Cache
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.dll
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.pdb
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.GradeSetup.resources
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.dll.licenses

@@ -677,6 +677,177 @@ namespace NPxP
                 d["GradeName"] = Chr(chrNo).ToString();
                 chrNo++;
             }
-        } 
+        }
+
+        private void cmbConfig_DropDownClosed(object sender, EventArgs e)
+        {
+            ConfigHelper ch = new ConfigHelper();
+
+            //ROI Settings
+            //----------------------------------------------------------------------------------------//
+
+            // Set Roi Mode
+            RadioButton[] rdos = { rdoNoRoi, rdoSymmetrical };
+            foreach (RadioButton rdo in rdos)
+            {
+                string roiMode = ch.GetGradeNoRoiMode(cmbConfig.SelectedItem.ToString());
+                if (rdo.Text == roiMode)
+                {
+                    rdo.Checked = true;
+                }
+                else
+                {
+                    rdo.Checked = false;
+                }
+            }
+
+            // Set TextBox of Columns, Rows
+            txtColumns.Text = ch.GetGradeColumns(cmbConfig.SelectedItem.ToString()).ToString();
+            txtRows.Text = ch.GetGradeRows(cmbConfig.SelectedItem.ToString()).ToString();
+
+            // Reload DataTable of dgvColumns and dgvRows
+            _dtbColumns.Clear();
+            DataTable tmpColumns = ch.GetDataTableOfdgvColumns(cmbConfig.SelectedItem.ToString().Trim());
+            foreach (DataRow dr in tmpColumns.Rows)
+            {
+                DataRow d = _dtbColumns.NewRow();
+                d["Name"] = dr["Name"];
+                d["Start"] = dr["Start"];
+                d["End"] = dr["End"];
+                _dtbColumns.Rows.Add(d);
+            }
+            tmpColumns.Dispose();
+            _dtbRows.Clear();
+            DataTable tmpRows = ch.GetDataTableOfdgvRows(cmbConfig.SelectedItem.ToString().Trim());
+            foreach (DataRow dr in tmpRows.Rows)
+            {
+                DataRow d = _dtbRows.NewRow();
+                d["Name"] = dr["Name"];
+                d["Start"] = dr["Start"];
+                d["End"] = dr["End"];
+                _dtbRows.Rows.Add(d);
+            }
+            tmpRows.Dispose();
+
+            // Grade Settings
+            //----------------------------------------------------------------------------------------//
+
+            // Initialize Point is enable. 
+            chkEnablePonit.Checked = ch.IsGradePointEnable(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Initialize SubPiece (cmbSubPoints)
+            cmbSubPoints.DataSource = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Set dgvPoint datasource
+            _dtbPoints.Clear();
+            DataTable tmpPoints = ch.GetDataTabledgvPoints(cmbConfig.SelectedItem.ToString().Trim());
+            foreach (DataRow dr in tmpPoints.Rows)
+            {
+                DataRow d = _dtbPoints.NewRow();
+                d["SubpieceName"] = dr["SubpieceName"];
+                d["ClassName"] = dr["ClassName"];
+                d["Score"] = dr["Score"];
+                _dtbPoints.Rows.Add(d);
+            }
+            DataView dvPoints = _dtbPoints.DefaultView;
+            dvPoints.RowFilter = String.Format("SubpieceName='{0}'", cmbSubPoints.SelectedItem.ToString().Trim());
+            tmpPoints.Dispose();
+
+            // Initialize grade is enable (marks)
+            chkEnableGrade.Checked = ch.IsGradeMarksEnable(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Initialize SubPiece (cmbSubPoints)
+            cmbSubMarks.DataSource = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
+
+            // Set dgvGrade datasource
+            _dtbGrades.Clear();
+            DataTable tmpGrades = ch.GetDataTabledgvGrade(cmbConfig.SelectedItem.ToString().Trim());
+            foreach (DataRow dr in tmpGrades.Rows)
+            {
+                DataRow d = _dtbGrades.NewRow();
+                d["SubpieceName"] = dr["SubpieceName"];
+                d["GradeName"] = dr["GradeName"];
+                d["Score"] = dr["Score"];
+                _dtbGrades.Rows.Add(d);
+            }
+            DataView dvGrade = _dtbGrades.DefaultView;
+            dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
+            tmpGrades.Dispose();
+
+            // Initialize Tab of grade/pass or fail
+            chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbConfig.SelectedItem.ToString().Trim());
+            txtFilterScore.Text = ch.GetPassFailScore(cmbConfig.SelectedItem.ToString().Trim()).ToString();
+        }
+
+        private void chkEnablePonit_CheckedChanged(object sender, EventArgs e)
+        {
+            grbPointSetting.Enabled = chkEnablePonit.Checked;
+            if (!chkEnablePonit.Checked)
+            {
+                chkEnableGrade.Checked = false;
+                chkEnableGrade.Enabled = false;
+                chkEnablePFS.Checked = false;
+                chkEnablePFS.Enabled = false;
+            }
+            else
+            {
+                chkEnableGrade.Enabled = true;
+                chkEnablePFS.Enabled = true;
+            }
+        }
+
+        private void chkEnableGrade_CheckedChanged(object sender, EventArgs e)
+        {
+            grbGradeSetting.Enabled = chkEnableGrade.Checked;
+            if (!chkEnableGrade.Checked)
+            {
+                chkEnablePonit.Enabled = true;
+              
+            }
+            else
+            {
+                chkEnablePFS.Enabled = true;
+                chkEnablePonit.Checked = true;
+                chkEnablePonit.Enabled = false;
+            }
+        }
+
+        private void chkEnablePFS_CheckedChanged(object sender, EventArgs e)
+        {
+            txtFilterScore.Enabled = chkEnablePFS.Checked;
+            if (chkEnablePFS.Checked)
+            {
+                chkEnablePonit.Checked = true;
+                chkEnablePonit.Enabled = false;
+
+            }
+            else
+            {
+                chkEnableGrade.Enabled = true;
+            }
+        }
+        private void RoiMode_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButton rdo = sender as RadioButton;
+            if (rdo.Text == "No ROI" && rdo.Checked)
+            {
+                pnlRoiGrid.Visible = false;
+                tabGradeSetting.Visible = false;
+            }
+            else
+            {
+                pnlRoiGrid.Visible = true;
+                tabGradeSetting.Visible = true;
+            }
+        }
+
+        private void tabGradeSetup_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+       
+
+       
     }
 }

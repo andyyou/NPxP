@@ -29,8 +29,8 @@
       <enable>true</enable>
       <sub_piece>
         <name>All</name>
-        <flawtype_score id="A">0</flawtype_score>
-        <flawtype_score id="B">1</flawtype_score>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
       </sub_piece>
       <sub_piece>
         <name>ROI-11</name>

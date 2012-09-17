@@ -1,31 +1,41 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <config>
   <roi>
-    <mode>Symmetrical</mode>
+    <mode>No ROI</mode>
     <columns>
-      <size>2</size>
+      <size>3</size>
       <column>
-        <name>A</name>
+        <name>1</name>
         <start>1</start>
         <end>2</end>
       </column>
       <column>
-        <name>B</name>
+        <name>2</name>
         <start>3</start>
         <end>4</end>
       </column>
-    </columns>
-    <rows>
-      <size>2</size>
-      <row>
-        <name>A</name>
+      <column>
+        <name>3</name>
         <start>5</start>
         <end>6</end>
+      </column>
+    </columns>
+    <rows>
+      <size>3</size>
+      <row>
+        <name>1</name>
+        <start>1</start>
+        <end>2</end>
       </row>
       <row>
-        <name>B</name>
-        <start>7</start>
-        <end>8</end>
+        <name>2</name>
+        <start>3</start>
+        <end>4</end>
+      </row>
+      <row>
+        <name>3</name>
+        <start>5</start>
+        <end>6</end>
       </row>
     </rows>
   </roi>
@@ -59,18 +69,14 @@
       </sub_piece>
     </points>
     <marks>
-      <enable>True</enable>
+      <enable>False</enable>
       <sub_piece>
         <name>All</name>
         <mark id="A">1</mark>
-        <mark id="B">2</mark>
-        <mark id="C">4</mark>
-        <mark id="D">5</mark>
       </sub_piece>
       <sub_piece>
         <name>ROI-11</name>
         <mark id="A">2</mark>
-        <mark id="B">0</mark>
       </sub_piece>
       <sub_piece>
         <name>ROI-12</name>
@@ -87,7 +93,7 @@
     </marks>
     <pass_fail>
       <enable>True</enable>
-      <score>5</score>
+      <score>100</score>
     </pass_fail>
   </grade>
 </config>

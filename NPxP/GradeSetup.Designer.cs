@@ -48,7 +48,7 @@
             this.tpGradeGroup = new System.Windows.Forms.TabPage();
             this.tabGradeSetting = new System.Windows.Forms.TabControl();
             this.tpPoint = new System.Windows.Forms.TabPage();
-            this.gbPointSetting = new System.Windows.Forms.GroupBox();
+            this.grbPointSetting = new System.Windows.Forms.GroupBox();
             this.chkAllSameOfPoint = new System.Windows.Forms.CheckBox();
             this.dgvPoint = new System.Windows.Forms.DataGridView();
             this.lbSubPieceOfPoint = new System.Windows.Forms.Label();
@@ -56,7 +56,7 @@
             this.chkEnablePonit = new System.Windows.Forms.CheckBox();
             this.tpGradeLevel = new System.Windows.Forms.TabPage();
             this.chkEnableGrade = new System.Windows.Forms.CheckBox();
-            this.gbGradeSetting = new System.Windows.Forms.GroupBox();
+            this.grbGradeSetting = new System.Windows.Forms.GroupBox();
             this.chkAllSameOfGrade = new System.Windows.Forms.CheckBox();
             this.dgvGrade = new System.Windows.Forms.DataGridView();
             this.lbSubPieceOfGrade = new System.Windows.Forms.Label();
@@ -78,10 +78,10 @@
             this.tpGradeGroup.SuspendLayout();
             this.tabGradeSetting.SuspendLayout();
             this.tpPoint.SuspendLayout();
-            this.gbPointSetting.SuspendLayout();
+            this.grbPointSetting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPoint)).BeginInit();
             this.tpGradeLevel.SuspendLayout();
-            this.gbGradeSetting.SuspendLayout();
+            this.grbGradeSetting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvGrade)).BeginInit();
             this.tpPassOrFail.SuspendLayout();
             this.SuspendLayout();
@@ -98,6 +98,7 @@
             this.tabGradeSetup.SelectedIndex = 0;
             this.tabGradeSetup.Size = new System.Drawing.Size(527, 451);
             this.tabGradeSetup.TabIndex = 1;
+            this.tabGradeSetup.SelectedIndexChanged += new System.EventHandler(this.tabGradeSetup_SelectedIndexChanged);
             // 
             // tpROI
             // 
@@ -260,6 +261,7 @@
             this.rdoSymmetrical.TabStop = true;
             this.rdoSymmetrical.Text = "Symmetrical";
             this.rdoSymmetrical.UseVisualStyleBackColor = true;
+            this.rdoSymmetrical.CheckedChanged += new System.EventHandler(this.RoiMode_CheckedChanged);
             // 
             // rdoNoRoi
             // 
@@ -271,6 +273,7 @@
             this.rdoNoRoi.TabStop = true;
             this.rdoNoRoi.Text = "No ROI";
             this.rdoNoRoi.UseVisualStyleBackColor = true;
+            this.rdoNoRoi.CheckedChanged += new System.EventHandler(this.RoiMode_CheckedChanged);
             // 
             // tpGradeGroup
             // 
@@ -297,7 +300,7 @@
             // 
             // tpPoint
             // 
-            this.tpPoint.Controls.Add(this.gbPointSetting);
+            this.tpPoint.Controls.Add(this.grbPointSetting);
             this.tpPoint.Controls.Add(this.chkEnablePonit);
             this.tpPoint.Location = new System.Drawing.Point(4, 25);
             this.tpPoint.Name = "tpPoint";
@@ -307,18 +310,18 @@
             this.tpPoint.Text = "Point";
             this.tpPoint.UseVisualStyleBackColor = true;
             // 
-            // gbPointSetting
+            // grbPointSetting
             // 
-            this.gbPointSetting.Controls.Add(this.chkAllSameOfPoint);
-            this.gbPointSetting.Controls.Add(this.dgvPoint);
-            this.gbPointSetting.Controls.Add(this.lbSubPieceOfPoint);
-            this.gbPointSetting.Controls.Add(this.cmbSubPoints);
-            this.gbPointSetting.Location = new System.Drawing.Point(13, 36);
-            this.gbPointSetting.Name = "gbPointSetting";
-            this.gbPointSetting.Size = new System.Drawing.Size(472, 340);
-            this.gbPointSetting.TabIndex = 1;
-            this.gbPointSetting.TabStop = false;
-            this.gbPointSetting.Text = "Point setting";
+            this.grbPointSetting.Controls.Add(this.chkAllSameOfPoint);
+            this.grbPointSetting.Controls.Add(this.dgvPoint);
+            this.grbPointSetting.Controls.Add(this.lbSubPieceOfPoint);
+            this.grbPointSetting.Controls.Add(this.cmbSubPoints);
+            this.grbPointSetting.Location = new System.Drawing.Point(13, 36);
+            this.grbPointSetting.Name = "grbPointSetting";
+            this.grbPointSetting.Size = new System.Drawing.Size(472, 340);
+            this.grbPointSetting.TabIndex = 1;
+            this.grbPointSetting.TabStop = false;
+            this.grbPointSetting.Text = "Point setting";
             // 
             // chkAllSameOfPoint
             // 
@@ -375,11 +378,12 @@
             this.chkEnablePonit.TabIndex = 0;
             this.chkEnablePonit.Text = "Enable Points";
             this.chkEnablePonit.UseVisualStyleBackColor = true;
+            this.chkEnablePonit.CheckedChanged += new System.EventHandler(this.chkEnablePonit_CheckedChanged);
             // 
             // tpGradeLevel
             // 
             this.tpGradeLevel.Controls.Add(this.chkEnableGrade);
-            this.tpGradeLevel.Controls.Add(this.gbGradeSetting);
+            this.tpGradeLevel.Controls.Add(this.grbGradeSetting);
             this.tpGradeLevel.Location = new System.Drawing.Point(4, 25);
             this.tpGradeLevel.Name = "tpGradeLevel";
             this.tpGradeLevel.Padding = new System.Windows.Forms.Padding(3);
@@ -397,19 +401,20 @@
             this.chkEnableGrade.TabIndex = 2;
             this.chkEnableGrade.Text = "Enable Grade";
             this.chkEnableGrade.UseVisualStyleBackColor = true;
+            this.chkEnableGrade.CheckedChanged += new System.EventHandler(this.chkEnableGrade_CheckedChanged);
             // 
-            // gbGradeSetting
+            // grbGradeSetting
             // 
-            this.gbGradeSetting.Controls.Add(this.chkAllSameOfGrade);
-            this.gbGradeSetting.Controls.Add(this.dgvGrade);
-            this.gbGradeSetting.Controls.Add(this.lbSubPieceOfGrade);
-            this.gbGradeSetting.Controls.Add(this.cmbSubMarks);
-            this.gbGradeSetting.Location = new System.Drawing.Point(13, 36);
-            this.gbGradeSetting.Name = "gbGradeSetting";
-            this.gbGradeSetting.Size = new System.Drawing.Size(472, 340);
-            this.gbGradeSetting.TabIndex = 3;
-            this.gbGradeSetting.TabStop = false;
-            this.gbGradeSetting.Text = "Grade setting";
+            this.grbGradeSetting.Controls.Add(this.chkAllSameOfGrade);
+            this.grbGradeSetting.Controls.Add(this.dgvGrade);
+            this.grbGradeSetting.Controls.Add(this.lbSubPieceOfGrade);
+            this.grbGradeSetting.Controls.Add(this.cmbSubMarks);
+            this.grbGradeSetting.Location = new System.Drawing.Point(13, 36);
+            this.grbGradeSetting.Name = "grbGradeSetting";
+            this.grbGradeSetting.Size = new System.Drawing.Size(472, 340);
+            this.grbGradeSetting.TabIndex = 3;
+            this.grbGradeSetting.TabStop = false;
+            this.grbGradeSetting.Text = "Grade setting";
             // 
             // chkAllSameOfGrade
             // 
@@ -497,6 +502,7 @@
             this.chkEnablePFS.TabIndex = 0;
             this.chkEnablePFS.Text = "Enable Pass Or Fail Filter Score";
             this.chkEnablePFS.UseVisualStyleBackColor = true;
+            this.chkEnablePFS.CheckedChanged += new System.EventHandler(this.chkEnablePFS_CheckedChanged);
             // 
             // btnCancel
             // 
@@ -534,6 +540,7 @@
             this.cmbConfig.Name = "cmbConfig";
             this.cmbConfig.Size = new System.Drawing.Size(234, 20);
             this.cmbConfig.TabIndex = 5;
+            this.cmbConfig.DropDownClosed += new System.EventHandler(this.cmbConfig_DropDownClosed);
             // 
             // GradeSetup
             // 
@@ -560,13 +567,13 @@
             this.tabGradeSetting.ResumeLayout(false);
             this.tpPoint.ResumeLayout(false);
             this.tpPoint.PerformLayout();
-            this.gbPointSetting.ResumeLayout(false);
-            this.gbPointSetting.PerformLayout();
+            this.grbPointSetting.ResumeLayout(false);
+            this.grbPointSetting.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPoint)).EndInit();
             this.tpGradeLevel.ResumeLayout(false);
             this.tpGradeLevel.PerformLayout();
-            this.gbGradeSetting.ResumeLayout(false);
-            this.gbGradeSetting.PerformLayout();
+            this.grbGradeSetting.ResumeLayout(false);
+            this.grbGradeSetting.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvGrade)).EndInit();
             this.tpPassOrFail.ResumeLayout(false);
             this.tpPassOrFail.PerformLayout();
@@ -596,7 +603,7 @@
         private System.Windows.Forms.TabPage tpGradeGroup;
         private System.Windows.Forms.TabControl tabGradeSetting;
         private System.Windows.Forms.TabPage tpPoint;
-        private System.Windows.Forms.GroupBox gbPointSetting;
+        private System.Windows.Forms.GroupBox grbPointSetting;
         private System.Windows.Forms.CheckBox chkAllSameOfPoint;
         private System.Windows.Forms.DataGridView dgvPoint;
         private System.Windows.Forms.Label lbSubPieceOfPoint;
@@ -604,7 +611,7 @@
         private System.Windows.Forms.CheckBox chkEnablePonit;
         private System.Windows.Forms.TabPage tpGradeLevel;
         private System.Windows.Forms.CheckBox chkEnableGrade;
-        private System.Windows.Forms.GroupBox gbGradeSetting;
+        private System.Windows.Forms.GroupBox grbGradeSetting;
         private System.Windows.Forms.CheckBox chkAllSameOfGrade;
         private System.Windows.Forms.DataGridView dgvGrade;
         private System.Windows.Forms.Label lbSubPieceOfGrade;

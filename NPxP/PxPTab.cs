@@ -22,7 +22,7 @@ namespace NPxP
     [Export(typeof(IWRPlugIn))]
     public partial class PxPTab : UserControl, IWRPlugIn, IWRMapWindow, IOnFlaws, IOnEvents, IOnCut, IOnJobLoaded,
                                   IOnJobStarted, IOnLanguageChanged, IOnJobStopped, IOnWebDBConnected, 
-                                  IOnOnline, IOnUserTermsChanged, IOnDoffResult, IOnPxPConfig,
+                                  IOnOnline, IOnUserTermsChanged, IOnDoffResult, IOnPxPConfig,IOnClassifyFlaw,
                                   IOnRollResult, IOnOpenHistory, 
                                   IOnUnitsChanged
     {
@@ -177,7 +177,7 @@ namespace NPxP
         public void OnSetFlawLegend(List<FlawLegend> legend)
         {
             WriteHelper.Log("OnSetFlawLegend()");
-            _mp.SetFlawLegend(legend);  // 把 MapWindow 需要的資料傳過去. 
+            _mp.InitFlawLegendValue(legend);  // 把 MapWindow 需要的資料傳過去. 
             
         }
         // (14)
@@ -214,6 +214,7 @@ namespace NPxP
 
             // update MapWindow JobInfo
             _mp.InitJobInfo(jobInfo);
+            _mp.InitFlawLegendGrid();
 
             //update dgvFlaw HeaderText + (Unit)
             NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
@@ -257,6 +258,12 @@ namespace NPxP
             
             // set dgvFlaws datasource 
             dgvFlaw.DataSource = _dtbFlaws;
+
+            // For MapWindow.cs
+            //---------------------------------------------------------------------------------------------//
+
+            // Initialize FlawLegend
+
 
             //// Initial Flaw Chart
             //NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
@@ -769,9 +776,18 @@ namespace NPxP
         }
         #endregion
 
-        
 
-        
+
+
+
+        #region IOnClassifyFlaw 成員
+
+        public void OnClassifyFlaw(ref IFlawInfo flaw, ref bool deleteFlaw)
+        {
+            WriteHelper.Log("OnClassifyFlaw()");
+        }
+
+        #endregion
     }
 
     // Extend class 

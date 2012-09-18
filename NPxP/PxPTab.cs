@@ -215,6 +215,7 @@ namespace NPxP
             // update MapWindow JobInfo
             _mp.InitJobInfo(jobInfo);
             _mp.InitFlawLegendGrid();
+            _mp.InitCutList(ref _cuts);
 
             //update dgvFlaw HeaderText + (Unit)
             NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");

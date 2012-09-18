@@ -24,6 +24,7 @@ namespace NPxP
 
         private List<FlawLegend> _legend;
         private DataTable _dtbFlaws, _dtbFlawLegends;
+        private List<double> _cuts;
         #endregion
 
         public MapWindow(ref DataTable dtbFlaws)
@@ -38,7 +39,12 @@ namespace NPxP
             _legend = new List<FlawLegend>();
             _legend.AddRange(legned);
         }
-
+        // Just for Initialize once 
+        public void InitCutList(ref List<double> cuts)
+        {
+            _cuts = new List<double>();
+            _cuts.AddRange(cuts);
+        }
         public void InitFlawLegendGrid()
         {
             _dtbFlawLegends.Rows.Clear();

@@ -18,6 +18,7 @@ namespace NPxP
     public partial class GradeSetup : Form
     {
         private DataTable _dtbColumns, _dtbRows, _dtbPoints, _dtbGrades;
+        private List<string> _pointsSubpieceNames, _marksSubpieceNames;
         public GradeSetup()
         {
             InitializeComponent();
@@ -118,7 +119,9 @@ namespace NPxP
             chkEnablePonit.Checked = ch.IsGradePointEnable(cmbConfig.SelectedItem.ToString().Trim());
 
             // Initialize SubPiece (cmbSubPoints)
-            cmbSubPoints.DataSource = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+            _pointsSubpieceNames = new List<string>();
+            _pointsSubpieceNames = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+            cmbSubPoints.DataSource = _pointsSubpieceNames;
 
             // Initialize dgvPoint without data
             Column className = new Column(0, "ClassName", 200);
@@ -183,7 +186,8 @@ namespace NPxP
             chkEnableGrade.Checked = ch.IsGradeMarksEnable(cmbConfig.SelectedItem.ToString().Trim());
 
             // Initialize SubPiece (cmbSubPoints)
-            cmbSubMarks.DataSource = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
+            _marksSubpieceNames = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
+            cmbSubMarks.DataSource = _marksSubpieceNames;
 
             // Set dgvGrade datasource
             _dtbGrades = ch.GetDataTabledgvGrade(cmbConfig.SelectedItem.ToString().Trim());
@@ -219,7 +223,50 @@ namespace NPxP
                 dr["Name"] = i + 1;
                 _dtbRows.Rows.Add(dr);
             }
-            
+
+            // SubpieceName Reset
+
+
+            _pointsSubpieceNames = new List<string>();
+            _marksSubpieceNames = new List<string>();
+            _pointsSubpieceNames.Add("All");
+            _marksSubpieceNames.Add("All");
+            for (int i = 0; i < x; i++)
+            {
+                for (int j = 0; j < y; j++)
+                {
+                    string name = String.Format("ROI-{0}{1}", i + 1, j + 1);
+                    _pointsSubpieceNames.Add(name);
+                    _marksSubpieceNames.Add(name);
+                }
+            }
+            cmbSubMarks.DataSource = null;
+            cmbSubMarks.DataSource = _marksSubpieceNames;
+            cmbSubPoints.DataSource = null;
+            cmbSubPoints.DataSource = _pointsSubpieceNames;
+
+            // Add Points set
+            ConfigHelper ch = new ConfigHelper();
+            string map_path = ch.GetDefaultMapConfigName();
+            Dictionary<int, string> legends = ch.GetPrevFlawLegendDictionary(map_path);
+            _dtbPoints.Rows.Clear();
+            foreach (string subpiece in _pointsSubpieceNames)
+            {
+                foreach (KeyValuePair<int, string> l in legends)
+                {
+                    // SubpieceName, ClassName, Score
+                    DataRow dr = _dtbPoints.NewRow();
+                    dr["SubpieceName"] = subpiece;
+                    dr["ClassName"] = l.Value;
+                    dr["Score"] = 0;
+                    _dtbPoints.Rows.Add(dr);
+                }
+            }
+
+            // Refresh Mark
+
+
+
         }
 
         private void txtColumns_KeyPress(object sender, KeyPressEventArgs e)
@@ -385,9 +432,10 @@ namespace NPxP
                 navigator.DeleteRange(last);
             }
             // save _dtbPoints
-            List<string> pointsSubpieces = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+            List<string> pointsSubpieces = _pointsSubpieceNames;
             // prepare flawtype convert dictionary
-            Dictionary<string, int> flawlegends = ch.GetPrevFlawLegendDictionaryID(cmbConfig.SelectedItem.ToString().Trim());
+            string map_config_path = ch.GetDefaultMapConfigName();
+            Dictionary<string, int> flawlegends = ch.GetPrevFlawLegendDictionaryID(map_config_path);
             foreach (string subpieceName in pointsSubpieces)
             {
                 navigator.SelectSingleNode("//grade/points").AppendChildElement(string.Empty, "sub_piece", string.Empty, null);
@@ -425,7 +473,7 @@ namespace NPxP
             navigator.SelectSingleNode("//grade/marks/enable").SetValue(chkEnableGrade.Checked.ToString());
 
             // save _dtbGrades
-            List<string> marksSubpieces = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
+            List<string> marksSubpieces = _marksSubpieceNames;
             foreach (string subpieceName in marksSubpieces)
             {
                 navigator.SelectSingleNode("//grade/marks").AppendChildElement(string.Empty, "sub_piece", string.Empty, null);
@@ -533,7 +581,7 @@ namespace NPxP
             chkEnablePonit.Checked = ch.IsGradePointEnable(cmbConfig.SelectedItem.ToString().Trim());
 
             // Initialize SubPiece (cmbSubPoints)
-            cmbSubPoints.DataSource = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+            _pointsSubpieceNames = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
 
             // Set dgvPoint datasource
             _dtbPoints = ch.GetDataTabledgvPoints(cmbConfig.SelectedItem.ToString().Trim());
@@ -736,7 +784,7 @@ namespace NPxP
             chkEnablePonit.Checked = ch.IsGradePointEnable(cmbConfig.SelectedItem.ToString().Trim());
 
             // Initialize SubPiece (cmbSubPoints)
-            cmbSubPoints.DataSource = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+            cmbSubPoints.DataSource = _pointsSubpieceNames;
 
             // Set dgvPoint datasource
             _dtbPoints.Clear();

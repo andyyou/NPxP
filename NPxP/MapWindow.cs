@@ -111,6 +111,69 @@ namespace NPxP
             {
                 MessageBox.Show("Fail.");
             }
+
+            //// check grade flawtype ID value.
+            //string gradeConfig = ch.GetDefaultGradeConfigName().Trim();
+
+            //// prepare flawtype  dictionary
+            //List<string> pointsSubpieces = ch.GetSubPointsNameList(mapConfig);
+            //Dictionary<int, string> flawlegendNames = ch.GetPrevFlawLegendDictionary(mapConfig);
+          
+            //DataTable dtbPoints = new DataTable();
+            //dtbPoints.Columns.Add("SubpieceName", typeof(string));
+            //dtbPoints.Columns.Add("ClassName", typeof(string));
+            //dtbPoints.Columns.Add("Score", typeof(int));
+            //foreach (string subpieceName in pointsSubpieces)
+            //{
+            //    foreach (FlawLegend f in _legend)
+            //    {
+            //        DataRow dr = dtbPoints.NewRow();
+            //        dr["SubpieceName"] = subpieceName;
+            //        dr["ClassName"] = f.Name;
+            //        dr["Score"] = subpieceName;
+            //    }
+            //}
+            //foreach (DataRow dr in dtbPoints.Rows)
+            //{
+            //    string name = dr["ClassName"].ToString().Trim();
+            //    int id = Convert.ToInt32(dr["FlawType"].ToString().Trim());
+            //    if (!flawlegendNames.ContainsKey(id))
+            //    {
+                     
+            //        break;
+            //    }
+            //    else
+            //    {
+                   
+            //    }
+
+            //}
+            //      DataTable dtbPointsConfig = ch.GetDataTabledgvPoints(gradeConfig);
+
+
+            //// document is grade config.
+            //XmlDocument document = new XmlDocument();
+            //document.Load(gradeConfig);
+            //XPathNavigator navigator = document.CreateNavigator();
+            //foreach (string subpieceName in pointsSubpieces)
+            //{
+            //    navigator.SelectSingleNode("//grade/points").AppendChildElement(string.Empty, "sub_piece", string.Empty, null);
+            //    // Move to last column element and add name value.
+            //    navigator.SelectSingleNode("//grade/points/sub_piece[last()]").AppendChildElement(string.Empty, "name", string.Empty, subpieceName);
+            //    string expr = String.Format("SubpieceName='{0}'", subpieceName);
+
+            //    DataRow[] drs = dtbPoints.Select(expr);
+            //    foreach (DataRow dr in drs)
+            //    {
+            //        string className = dr["ClassName"].ToString();
+            //        int classID = flawlegends[className];
+            //        string score = dr["Score"].ToString();
+            //        navigator.SelectSingleNode("//grade/points/sub_piece[last()]").AppendChildElement(string.Empty, "flawtype_score", string.Empty, score);
+            //        navigator.SelectSingleNode("//grade/points/sub_piece[last()]/flawtype_score[last()]").CreateAttribute(string.Empty, "id", string.Empty, classID.ToString());
+            //    }
+            //}
+           
+
         }
         public void InitJobInfo(IJobInfo jobInfo)
         {
@@ -199,7 +262,10 @@ namespace NPxP
 
         private void btnGradeSetting_Click(object sender, EventArgs e)
         {
+            
             ConfigHelper ch = new ConfigHelper();
+           
+            //
             GradeSetup gs = new GradeSetup();
             gs.ShowDialog();
             cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();

@@ -561,8 +561,8 @@ namespace NPxP.Helper
             dtb.Columns.Add("SubpieceName", typeof(string));
             dtb.Columns.Add("ClassName", typeof(string));
             dtb.Columns.Add("Score", typeof(int));
-
-            Dictionary<int, string> flawTypeNames = GetPrevFlawLegendDictionary(fileName); //<flawtype, name> ex : <0, Not Classified>
+            string map_path = GetDefaultMapConfigName();
+            Dictionary<int, string> flawTypeNames = GetPrevFlawLegendDictionary(map_path); //<flawtype, name> ex : <0, Not Classified>
 
             string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
             using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
@@ -578,7 +578,15 @@ namespace NPxP.Helper
                     while (subNode.MoveNext())
                     {
                         int flawtypeID = int.TryParse(subNode.Current.SelectSingleNode("@id").Value, out flawtypeID) ? flawtypeID : 0;
-                        string flawtypeName = flawTypeNames[flawtypeID];
+                        string flawtypeName = "";
+                        if (flawTypeNames.ContainsKey(flawtypeID))
+                        {
+                            flawtypeName = flawTypeNames[flawtypeID];
+                        }
+                        else
+                        {
+                            flawtypeName =  "* FlawType ID not match, Pleash check grade config";
+                        }
                         int score = Convert.ToInt32(subNode.Current.Value);
                         DataRow dr = dtb.NewRow();
                         dr["SubpieceName"] = subpieceName;

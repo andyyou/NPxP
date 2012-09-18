@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<config>
+  <roi>
+    <mode>No ROI</mode>
+
+    <columns>
+      <size>2</size>
+      <column>
+        <name>1</name> <start>0.01</start> <end>0.07</end>
+      </column>
+      <column>
+        <name>2</name> <start>0.1</start> <end>0.16</end>
+      </column>
+    </columns>
+
+    <rows>
+      <size>2</size>
+      <row>
+        <name>1</name> <start>0.01</start> <end>0.08</end>
+      </row>  
+      <row>
+        <name>2</name> <start>0.1</start> <end>0.17</end>
+      </row>  
+    </rows>
+  </roi>
+
+  <grade>
+    <points>
+      <enable>true</enable>
+      <sub_piece>
+        <name>All</name>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-11</name>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-12</name>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-21</name>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-22</name>
+        <flawtype_score id="0">0</flawtype_score>
+        <flawtype_score id="1">1</flawtype_score>
+      </sub_piece>
+    </points>
+
+    <marks>
+      <enable>true</enable>
+      <sub_piece>
+        <name>All</name>
+        <mark id="A">0</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-11</name>
+        <mark id="A">0</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-12</name>
+        <mark id="A">0</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-21</name>
+        <mark id="A">0</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-22</name>
+        <mark id="A">0</mark>
+      </sub_piece>
+    </marks>
+
+    <pass_fail>
+      <enable>true</enable>
+      <score>2</score>
+    </pass_fail>
+  </grade>
+</config>

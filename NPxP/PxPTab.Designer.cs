@@ -56,7 +56,7 @@
             this.dgvFlaw.Size = new System.Drawing.Size(735, 140);
             this.dgvFlaw.TabIndex = 0;
             this.dgvFlaw.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvFlaw_CellDoubleClick);
-            this.dgvFlaw.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvFlaw_ColumnHeaderMouseClick);
+            this.dgvFlaw.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvFlaw_CellFormatting);
             // 
             // tlpFlawImages
             // 

@@ -22,7 +22,7 @@ namespace NPxP
     [Export(typeof(IWRPlugIn))]
     public partial class PxPTab : UserControl, IWRPlugIn, IWRMapWindow, IOnFlaws, IOnEvents, IOnCut, IOnJobLoaded,
                                   IOnJobStarted, IOnLanguageChanged, IOnJobStopped, IOnWebDBConnected, 
-                                  IOnOnline, IOnUserTermsChanged, IOnDoffResult, IOnPxPConfig,
+                                  IOnOnline, IOnUserTermsChanged, IOnDoffResult, IOnPxPConfig,IOnClassifyFlaw,
                                   IOnRollResult, IOnOpenHistory, 
                                   IOnUnitsChanged
     {
@@ -30,7 +30,7 @@ namespace NPxP
 
         private MapWindow _mp;
         private DataTable _dtbFlaws;
-        private Dictionary<string, double> _units;
+        private List<NowUnit> _units;
         private List<double> _cuts;
         private string _xmlUnitsPath;
         private string _dbConnectString;
@@ -118,6 +118,7 @@ namespace NPxP
             _xmlUnitsPath = unitsXMLPath;
             LoadXmlToUnitsObject(unitsXMLPath);
             JobHelper.Job = Job;  // 設定 Helper 協助各頁面停止工單等操作.
+           
         }
         // (4)(7)(17)
         public void GetName(e_Language lang, out string name)
@@ -150,8 +151,9 @@ namespace NPxP
         public void GetMapControlHandle(out IntPtr hndl)
         {
             WriteHelper.Log("GetMapControlHandle()");
-            _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
+            _mp = new MapWindow(ref _dtbFlaws); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
+
         }
         // (10) :設定 MapWindow Position with Job object.
         public void SetMapPosition(int w, int h)
@@ -169,16 +171,14 @@ namespace NPxP
         public void OnUserTermsChanged(IUserTerms terms)
         {
             WriteHelper.Log("OnUserTermsChanged()");
-            if (!String.IsNullOrEmpty(_xmlUnitsPath))
-            {
-                LoadXmlToUnitsObject(_xmlUnitsPath);
-            }
+            
         }
         // (13)
         public void OnSetFlawLegend(List<FlawLegend> legend)
         {
             WriteHelper.Log("OnSetFlawLegend()");
-            _mp.SetFlawLegend(legend);  // 把 MapWindow 需要的資料傳過去. 
+            _mp.InitFlawLegendValue(legend);  // 把 MapWindow 需要的資料傳過去. 
+            
         }
         // (14)
         public void OnInitializeGlassEdges(int glassLeftMarginToROI, int glassRightMarginToROI)
@@ -190,6 +190,10 @@ namespace NPxP
         {
             WriteHelper.Log("OnPxPConfig()");
             JobHelper.PxPInfo = info;
+            // keep pxpinfo height and width's units is meter.
+            //NowUnit unitFlawMaCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+            //JobHelper.PxPInfo.Height = JobHelper.PxPInfo.Height / unitFlawMaCD.Conversion;
+            //JobHelper.PxPInfo.Width = JobHelper.PxPInfo.Width / unitFlawMaCD.Conversion;
         }
         // (16)
         public void OnJobLoaded(IList<IFlawTypeName> flawTypes, IList<ILaneInfo> lanes, IList<ISeverityInfo> severityInfo, IJobInfo jobInfo)
@@ -207,7 +211,23 @@ namespace NPxP
             JobHelper.JobInfo = jobInfo;
             JobHelper.Lanes = lanes;
             JobHelper.SeverityInfo = severityInfo;
-           
+
+            // update MapWindow JobInfo
+            _mp.InitJobInfo(jobInfo);
+            _mp.InitFlawLegendGrid();
+
+            //update dgvFlaw HeaderText + (Unit)
+            NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
+            dgvFlaw.Columns["CD"].HeaderText = dgvFlaw.Columns["CD"].Name + String.Format("({0})", unitFlawListCD.Symbol);
+            NowUnit unitFlawListMD = _units.Find(x => x.ComponentName == "Flaw List MD");
+            dgvFlaw.Columns["MD"].HeaderText = dgvFlaw.Columns["MD"].Name + String.Format("({0})", unitFlawListMD.Symbol);
+            NowUnit unitFlawListWidth = _units.Find(x => x.ComponentName == "Flaw List Width");
+            dgvFlaw.Columns["Width"].HeaderText = dgvFlaw.Columns["Width"].Name + String.Format("({0})", unitFlawListWidth.Symbol);
+            NowUnit unitFlawListLength = _units.Find(x => x.ComponentName == "Flaw List Height");
+            dgvFlaw.Columns["Length"].HeaderText =  dgvFlaw.Columns["Length"].Name + String.Format("({0})", unitFlawListLength.Symbol);
+            NowUnit unitFlawListArea = _units.Find(x => x.ComponentName == "Flaw List Area");
+            dgvFlaw.Columns["Area"].HeaderText = dgvFlaw.Columns["Area"].Name + String.Format("({0})", unitFlawListArea.Symbol);
+            
             // initialize datatable  flaw format without data.
             _dtbFlaws = new DataTable("Flaws");
             _dtbFlaws.Columns.Add("FlawID", typeof(int));
@@ -238,6 +258,18 @@ namespace NPxP
             
             // set dgvFlaws datasource 
             dgvFlaw.DataSource = _dtbFlaws;
+
+            // For MapWindow.cs
+            //---------------------------------------------------------------------------------------------//
+
+            // Initialize FlawLegend
+
+
+            //// Initial Flaw Chart
+            NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+            double mapWidth = JobHelper.PxPInfo.Width * unitFlawMapCD.Conversion;
+            double mapHeight = JobHelper.PxPInfo.Height * unitFlawMapCD.Conversion;
+            _mp.InitChart(mapWidth, mapHeight);
            
 
         }
@@ -342,13 +374,12 @@ namespace NPxP
             {
                 DataRow dr = _dtbFlaws.NewRow();
                 dr["FlawID"] = flaw.FlawID;
-                dr["CD"] = flaw.CD;
+                dr["CD"] = flaw.CD; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺
                 dr["MD"] = flaw.MD;
                 dr["Area"] = flaw.Area;
                 dr["DateTime"] = flaw.DateTime;
                 dr["FlawClass"] = flaw.FlawClass;
                 dr["FlawType"] = flaw.FlawType;
-
                 dr["LeftEdge"] = flaw.LeftEdge;
                 dr["LeftRollCD"] = flaw.LeftRollCD;
                 dr["Length"] = flaw.Length;
@@ -433,6 +464,21 @@ namespace NPxP
         public void OnUnitsChanged()
         {
             WriteHelper.Log("OnUnitsChanged()");
+            if (!String.IsNullOrEmpty(_xmlUnitsPath))
+            {
+                LoadXmlToUnitsObject(_xmlUnitsPath);
+            }
+            // update dgvFlaw HeaderText + (Unit)
+            NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
+            dgvFlaw.Columns["CD"].HeaderText = dgvFlaw.Columns["CD"].Name + String.Format("({0})", unitFlawListCD.Symbol);
+            NowUnit unitFlawListMD = _units.Find(x => x.ComponentName == "Flaw List MD");
+            dgvFlaw.Columns["MD"].HeaderText = dgvFlaw.Columns["MD"].Name + String.Format("({0})", unitFlawListMD.Symbol);
+            NowUnit unitFlawListWidth = _units.Find(x => x.ComponentName == "Flaw List Width");
+            dgvFlaw.Columns["Width"].HeaderText = dgvFlaw.Columns["Width"].Name + String.Format("({0})", unitFlawListWidth.Symbol);
+            NowUnit unitFlawListLength = _units.Find(x => x.ComponentName == "Flaw List Height");
+            dgvFlaw.Columns["Length"].HeaderText = dgvFlaw.Columns["Length"].Name + String.Format("({0})", unitFlawListLength.Symbol);
+            NowUnit unitFlawListArea = _units.Find(x => x.ComponentName == "Flaw List Area");
+            dgvFlaw.Columns["Area"].HeaderText = dgvFlaw.Columns["Area"].Name + String.Format("({0})", unitFlawListArea.Symbol);
         }
         // (D) 
         public void OnRollResult(double cd, double md, int doffNumber, int laneNumber, bool pass)
@@ -463,9 +509,7 @@ namespace NPxP
         // 將xml單位換算值儲存至 _units 物件
         public void LoadXmlToUnitsObject(string xml)
         {
-            // initialize units dictionary.
-            _units = new Dictionary<string, double>(); // ex: <Flaw Map CD, 1.00000000000000000>
-
+            _units = new List<NowUnit>();
             // load xml data to dictionary.
             XmlDocument document = new XmlDocument();
             document.Load(xml);
@@ -475,10 +519,13 @@ namespace NPxP
             while (node.MoveNext())
             {
                 int unitIndex = Convert.ToInt32(node.Current.SelectSingleNode("@unit").Value) + 1; // Xpath's index start from 1.
-                string expr = String.Format("//Units/Unit[{0}]/@conversion", unitIndex);
-                double convertion = Convert.ToDouble(navigator.SelectSingleNode(expr).Value);
+                string expr_conversion = String.Format("//Units/Unit[{0}]/@conversion", unitIndex);
+                string expr_symbol = String.Format("//Units/Unit[{0}]/@symbol", unitIndex);
+                double convertion = Convert.ToDouble(navigator.SelectSingleNode(expr_conversion).Value);
+                string symbol = navigator.SelectSingleNode(expr_symbol).Value;
                 string componentName = node.Current.SelectSingleNode("@name").Value;
-                _units.Add(componentName, convertion);
+                NowUnit unit = new NowUnit(componentName, symbol, convertion);
+                _units.Add(unit);
             }
         }
         // 啟動次要緩衝
@@ -680,12 +727,6 @@ namespace NPxP
                 btnProvFlawImages.Enabled = true;
             }
         }
-        #endregion
-
-        private void dgvFlaw_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            //dgvFlaw.SortedColumn;
-        }
 
         private void dgvFlaw_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -696,7 +737,57 @@ namespace NPxP
             RefreshtlpImagesControls(toPage, e.RowIndex);
         }
 
-        
+        private void dgvFlaw_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            switch (dgvFlaw.Columns[e.ColumnIndex].Name)
+            {
+                case "CD":
+                    NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw List CD");
+                    double cd = Convert.ToDouble(e.Value);
+                    e.Value = cd * ucd.Conversion;
+                    //e.Value += ucd.Symbol;
+                    break;
+                case "MD":
+                    NowUnit umd = _units.Find(x => x.ComponentName == "Flaw List MD");
+                    double md = Convert.ToDouble(e.Value);
+                    e.Value = md * umd.Conversion;
+                    //e.Value += umd.Symbol;
+                    break;
+                case "Width":
+                    NowUnit uWidth = _units.Find(x => x.ComponentName == "Flaw List Width");
+                    double width = Convert.ToDouble(e.Value);
+                    e.Value = width * uWidth.Conversion;
+                    //e.Value += uWidth.Symbol;
+                    break;
+                case "Length":
+                    NowUnit uLength = _units.Find(x => x.ComponentName == "Flaw List Height");
+                    double length = Convert.ToDouble(e.Value);
+                    e.Value = length * uLength.Conversion;
+                    //e.Value += uLength.Symbol;
+                    break;
+                case "Area":
+                    NowUnit uArea = _units.Find(x => x.ComponentName == "Flaw List Area");
+                    double area = Convert.ToDouble(e.Value);
+                    e.Value = area * uArea.Conversion;
+                    //e.Value += uArea.Symbol;
+                    break;
+            }
+
+        }
+        #endregion
+
+
+
+
+
+        #region IOnClassifyFlaw 成員
+
+        public void OnClassifyFlaw(ref IFlawInfo flaw, ref bool deleteFlaw)
+        {
+            WriteHelper.Log("OnClassifyFlaw()");
+        }
+
+        #endregion
     }
 
     // Extend class 

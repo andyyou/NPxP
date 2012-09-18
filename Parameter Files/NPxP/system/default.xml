@@ -1,22 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <system>
-  <map_conf_name>default</map_conf_name>
-  <grade_conf_name>default</grade_conf_name>
+  <map_conf_name>test</map_conf_name>
+  <grade_conf_name>next</grade_conf_name>
+  <!-- 顯示項目 0:All, 1:Pass, 2:Fail -->
+  <filter_display>1</filter_display>
   <dgv_flaw>
     <column>
       <name>Priority</name>
-      <width>100</width>
+      <width>78</width>
       <index>0</index>
     </column>
     <column>
       <name>FlawID</name>
       <width>100</width>
-      <index>1</index>
+      <index>2</index>
     </column>
     <column>
       <name>FlawClass</name>
       <width>100</width>
-      <index>2</index>
+      <index>1</index>
     </column>
     <column>
       <name>MD</name>
@@ -43,6 +45,6 @@
       <width>100</width>
       <index>7</index>
     </column>
-    <orderby>Priority</orderby>
+    <orderby>MD</orderby>
   </dgv_flaw>
 </system>

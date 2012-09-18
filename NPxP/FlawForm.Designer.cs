@@ -277,7 +277,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::NPxP.Properties.Resources.BackgroundLeft;
+            this.BackgroundImage = global::NPxP.Properties.Resources.BackgroundRight;
             this.ClientSize = new System.Drawing.Size(527, 429);
             this.Controls.Add(this.ftbImage);
             this.Controls.Add(this.tlpFlawInfo);

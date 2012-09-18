@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <config>
   <pxptab>
-    <image_grid_rows>3</image_grid_rows>
+    <image_grid_rows>2</image_grid_rows>
     <image_grid_columns>2</image_grid_columns>
   </pxptab>
   <map_window>
     <map_chart>
       <!-- 比例 x:y -->
-      <map_proportion name="x">2</map_proportion>
+      <map_proportion name="x">1</map_proportion>
       <map_proportion name="y">1</map_proportion>
       <!-- 顯示格線 -->
       <grid_line_display>false</grid_line_display>
@@ -16,8 +16,8 @@
       <grid_line_set>
         <fix>
           <symbol>m</symbol>
-          <cd>0.2</cd>
-          <md>0.2</md>
+          <cd>0.4</cd>
+          <md>0.3</md>
         </fix>
         <count>
           <cd>3</cd>
@@ -27,22 +27,22 @@
       <!-- 紀錄 MD 或 CD 為 Bottom Axes  -->
       <bottom_axes>CD</bottom_axes>
       <!-- 垂直翻轉 -->
-      <md_inver>false</md_inver>
+      <md_inver>true</md_inver>
       <!-- 水平翻轉 -->
-      <cd_inver>false</cd_inver>
+      <cd_inver>true</cd_inver>
     </map_chart>
     <!-- 上一次設定的 FlawLegend-->
     <flaw_legend>
       <flaw_type>0</flaw_type>
       <name>Not Classified</name>
-      <color>#FF0000</color>
-      <shape>Triangle</shape>
+      <color>#FFFF80</color>
+      <shape>Star</shape>
     </flaw_legend>
     <flaw_legend>
       <flaw_type>1</flaw_type>
       <name>dark   spot</name>
-      <color>#0000FF</color>
-      <shape>Triangle</shape>
+      <color>#000000</color>
+      <shape>Star</shape>
     </flaw_legend>
   </map_window>
 </config>

@@ -25,16 +25,20 @@ namespace NPxP.Helper
             return newdt;
         }
 
-        public DataRow[] QueryDataRows(DataTable dt, string queryExp)
+        /// <summary>
+        /// 判斷 DataTable 欄位是否有空值
+        /// </summary>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        public bool HasNull(DataTable table)
         {
-            DataRow[] rows = dt.Select(queryExp);
-            return rows;
-        }
+            foreach (DataColumn column in table.Columns)
+            {
+                if (table.Rows.OfType<DataRow>().Any(r => r.IsNull(column)))
+                    return true;
+            }
 
-        public DataRow QueryDataRow(DataTable dt, string queryExp)
-        {
-            DataRow[] rows = dt.Select(queryExp);
-            return rows[0];
+            return false;
         }
     }
 }

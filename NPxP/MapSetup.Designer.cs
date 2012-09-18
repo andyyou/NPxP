@@ -37,8 +37,8 @@
             this.nudImageRows = new System.Windows.Forms.NumericUpDown();
             this.nudImageColumns = new System.Windows.Forms.NumericUpDown();
             this.grbMapSettings = new System.Windows.Forms.GroupBox();
-            this.cmbCDInverse = new System.Windows.Forms.CheckBox();
-            this.cmbMDInverse = new System.Windows.Forms.CheckBox();
+            this.chkCDInverse = new System.Windows.Forms.CheckBox();
+            this.chkMDInverse = new System.Windows.Forms.CheckBox();
             this.cmbBottomAxes = new System.Windows.Forms.ComboBox();
             this.lblBottomAxie = new System.Windows.Forms.Label();
             this.pnlGridSizeSettings = new System.Windows.Forms.Panel();
@@ -59,19 +59,19 @@
             this.rdoMapGridOff = new System.Windows.Forms.RadioButton();
             this.rdoMapGridOn = new System.Windows.Forms.RadioButton();
             this.lblMapGridShow = new System.Windows.Forms.Label();
-            this.cboxMapSize = new System.Windows.Forms.ComboBox();
+            this.cmbMapSize = new System.Windows.Forms.ComboBox();
             this.lblMapSize = new System.Windows.Forms.Label();
             this.gbSeriesSetting = new System.Windows.Forms.GroupBox();
-            this.dgvFlawLegendSettings = new System.Windows.Forms.DataGridView();
+            this.dgvFlawLegends = new System.Windows.Forms.DataGridView();
             this.btnConfirm = new System.Windows.Forms.Button();
-            this.btnSaveAs = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.grbImageSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageRows)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageColumns)).BeginInit();
             this.grbMapSettings.SuspendLayout();
             this.pnlGridSizeSettings.SuspendLayout();
             this.gbSeriesSetting.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendSettings)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegends)).BeginInit();
             this.SuspendLayout();
             // 
             // lblMapConfig
@@ -85,12 +85,12 @@
             // 
             // cmbMapConfigName
             // 
-            this.cmbMapConfigName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbMapConfigName.FormattingEnabled = true;
             this.cmbMapConfigName.Location = new System.Drawing.Point(354, 453);
             this.cmbMapConfigName.Name = "cmbMapConfigName";
             this.cmbMapConfigName.Size = new System.Drawing.Size(150, 20);
             this.cmbMapConfigName.TabIndex = 1;
+            this.cmbMapConfigName.DropDownClosed += new System.EventHandler(this.cmbMapConfigName_DropDownClosed);
             // 
             // grbImageSettings
             // 
@@ -149,15 +149,15 @@
             // 
             // grbMapSettings
             // 
-            this.grbMapSettings.Controls.Add(this.cmbCDInverse);
-            this.grbMapSettings.Controls.Add(this.cmbMDInverse);
+            this.grbMapSettings.Controls.Add(this.chkCDInverse);
+            this.grbMapSettings.Controls.Add(this.chkMDInverse);
             this.grbMapSettings.Controls.Add(this.cmbBottomAxes);
             this.grbMapSettings.Controls.Add(this.lblBottomAxie);
             this.grbMapSettings.Controls.Add(this.pnlGridSizeSettings);
             this.grbMapSettings.Controls.Add(this.rdoMapGridOff);
             this.grbMapSettings.Controls.Add(this.rdoMapGridOn);
             this.grbMapSettings.Controls.Add(this.lblMapGridShow);
-            this.grbMapSettings.Controls.Add(this.cboxMapSize);
+            this.grbMapSettings.Controls.Add(this.cmbMapSize);
             this.grbMapSettings.Controls.Add(this.lblMapSize);
             this.grbMapSettings.Location = new System.Drawing.Point(15, 142);
             this.grbMapSettings.Name = "grbMapSettings";
@@ -166,27 +166,25 @@
             this.grbMapSettings.TabStop = false;
             this.grbMapSettings.Text = "Map Settings";
             // 
-            // cmbCDInverse
+            // chkCDInverse
             // 
-            this.cmbCDInverse.AutoSize = true;
-            this.cmbCDInverse.Location = new System.Drawing.Point(113, 272);
-            this.cmbCDInverse.Name = "cmbCDInverse";
-            this.cmbCDInverse.Size = new System.Drawing.Size(77, 16);
-            this.cmbCDInverse.TabIndex = 9;
-            this.cmbCDInverse.Text = "CD Inverse";
-            this.cmbCDInverse.UseVisualStyleBackColor = true;
-            this.cmbCDInverse.Visible = false;
+            this.chkCDInverse.AutoSize = true;
+            this.chkCDInverse.Location = new System.Drawing.Point(113, 272);
+            this.chkCDInverse.Name = "chkCDInverse";
+            this.chkCDInverse.Size = new System.Drawing.Size(77, 16);
+            this.chkCDInverse.TabIndex = 9;
+            this.chkCDInverse.Text = "CD Inverse";
+            this.chkCDInverse.UseVisualStyleBackColor = true;
             // 
-            // cmbMDInverse
+            // chkMDInverse
             // 
-            this.cmbMDInverse.AutoSize = true;
-            this.cmbMDInverse.Location = new System.Drawing.Point(12, 273);
-            this.cmbMDInverse.Name = "cmbMDInverse";
-            this.cmbMDInverse.Size = new System.Drawing.Size(79, 16);
-            this.cmbMDInverse.TabIndex = 8;
-            this.cmbMDInverse.Text = "MD Inverse";
-            this.cmbMDInverse.UseVisualStyleBackColor = true;
-            this.cmbMDInverse.Visible = false;
+            this.chkMDInverse.AutoSize = true;
+            this.chkMDInverse.Location = new System.Drawing.Point(12, 273);
+            this.chkMDInverse.Name = "chkMDInverse";
+            this.chkMDInverse.Size = new System.Drawing.Size(79, 16);
+            this.chkMDInverse.TabIndex = 8;
+            this.chkMDInverse.Text = "MD Inverse";
+            this.chkMDInverse.UseVisualStyleBackColor = true;
             // 
             // cmbBottomAxes
             // 
@@ -292,6 +290,7 @@
             this.txtCountSizeCD.Name = "txtCountSizeCD";
             this.txtCountSizeCD.Size = new System.Drawing.Size(34, 22);
             this.txtCountSizeCD.TabIndex = 7;
+            this.txtCountSizeCD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCountSizeCD_KeyPress);
             // 
             // txtCountSizeMD
             // 
@@ -299,6 +298,7 @@
             this.txtCountSizeMD.Name = "txtCountSizeMD";
             this.txtCountSizeMD.Size = new System.Drawing.Size(34, 22);
             this.txtCountSizeMD.TabIndex = 6;
+            this.txtCountSizeMD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCountSizeMD_KeyPress);
             // 
             // txtFixSizeCD
             // 
@@ -306,6 +306,8 @@
             this.txtFixSizeCD.Name = "txtFixSizeCD";
             this.txtFixSizeCD.Size = new System.Drawing.Size(34, 22);
             this.txtFixSizeCD.TabIndex = 5;
+            this.txtFixSizeCD.TextChanged += new System.EventHandler(this.Double_Validation);
+            this.txtFixSizeCD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFixSizeCD_KeyPress);
             // 
             // txtFixSizeMD
             // 
@@ -313,6 +315,8 @@
             this.txtFixSizeMD.Name = "txtFixSizeMD";
             this.txtFixSizeMD.Size = new System.Drawing.Size(34, 22);
             this.txtFixSizeMD.TabIndex = 4;
+            this.txtFixSizeMD.TextChanged += new System.EventHandler(this.Double_Validation);
+            this.txtFixSizeMD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFixSizeMD_KeyPress);
             // 
             // lblFixSizeCD
             // 
@@ -344,6 +348,7 @@
             this.rdoCountSize.TabStop = true;
             this.rdoCountSize.Text = "Equal Cell Count";
             this.rdoCountSize.UseVisualStyleBackColor = false;
+            this.rdoCountSize.CheckedChanged += new System.EventHandler(this.rdoCountSize_CheckedChanged);
             // 
             // rdoFixCellSize
             // 
@@ -355,6 +360,7 @@
             this.rdoFixCellSize.TabStop = true;
             this.rdoFixCellSize.Text = "Specify Cell Size";
             this.rdoFixCellSize.UseVisualStyleBackColor = false;
+            this.rdoFixCellSize.CheckedChanged += new System.EventHandler(this.rdoFixCellSize_CheckedChanged);
             // 
             // rdoMapGridOff
             // 
@@ -387,20 +393,20 @@
             this.lblMapGridShow.TabIndex = 2;
             this.lblMapGridShow.Text = "Map Grid Show";
             // 
-            // cboxMapSize
+            // cmbMapSize
             // 
-            this.cboxMapSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboxMapSize.FormattingEnabled = true;
-            this.cboxMapSize.Items.AddRange(new object[] {
+            this.cmbMapSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMapSize.FormattingEnabled = true;
+            this.cmbMapSize.Items.AddRange(new object[] {
             "1:1",
-            "2:1 ",
-            "4:3 ",
-            "3:4 ",
+            "2:1",
+            "4:3",
+            "3:4",
             "16:9"});
-            this.cboxMapSize.Location = new System.Drawing.Point(113, 21);
-            this.cboxMapSize.Name = "cboxMapSize";
-            this.cboxMapSize.Size = new System.Drawing.Size(121, 20);
-            this.cboxMapSize.TabIndex = 1;
+            this.cmbMapSize.Location = new System.Drawing.Point(113, 21);
+            this.cmbMapSize.Name = "cmbMapSize";
+            this.cmbMapSize.Size = new System.Drawing.Size(121, 20);
+            this.cmbMapSize.TabIndex = 1;
             // 
             // lblMapSize
             // 
@@ -413,7 +419,7 @@
             // 
             // gbSeriesSetting
             // 
-            this.gbSeriesSetting.Controls.Add(this.dgvFlawLegendSettings);
+            this.gbSeriesSetting.Controls.Add(this.dgvFlawLegends);
             this.gbSeriesSetting.Location = new System.Drawing.Point(278, 36);
             this.gbSeriesSetting.Name = "gbSeriesSetting";
             this.gbSeriesSetting.Size = new System.Drawing.Size(394, 409);
@@ -421,18 +427,21 @@
             this.gbSeriesSetting.TabStop = false;
             this.gbSeriesSetting.Text = "Series Settings";
             // 
-            // dgvFlawLegendSettings
+            // dgvFlawLegends
             // 
-            this.dgvFlawLegendSettings.AllowUserToAddRows = false;
-            this.dgvFlawLegendSettings.AllowUserToDeleteRows = false;
-            this.dgvFlawLegendSettings.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvFlawLegendSettings.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-            this.dgvFlawLegendSettings.Location = new System.Drawing.Point(6, 25);
-            this.dgvFlawLegendSettings.Name = "dgvFlawLegendSettings";
-            this.dgvFlawLegendSettings.RowHeadersVisible = false;
-            this.dgvFlawLegendSettings.RowTemplate.Height = 24;
-            this.dgvFlawLegendSettings.Size = new System.Drawing.Size(382, 326);
-            this.dgvFlawLegendSettings.TabIndex = 2;
+            this.dgvFlawLegends.AllowUserToAddRows = false;
+            this.dgvFlawLegends.AllowUserToDeleteRows = false;
+            this.dgvFlawLegends.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvFlawLegends.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvFlawLegends.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.dgvFlawLegends.Location = new System.Drawing.Point(6, 25);
+            this.dgvFlawLegends.Name = "dgvFlawLegends";
+            this.dgvFlawLegends.RowHeadersVisible = false;
+            this.dgvFlawLegends.RowTemplate.Height = 24;
+            this.dgvFlawLegends.Size = new System.Drawing.Size(382, 326);
+            this.dgvFlawLegends.TabIndex = 2;
+            this.dgvFlawLegends.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvFlawLegends_CellDoubleClick);
+            this.dgvFlawLegends.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvFlawLegends_CellFormatting);
             // 
             // btnConfirm
             // 
@@ -440,17 +449,19 @@
             this.btnConfirm.Name = "btnConfirm";
             this.btnConfirm.Size = new System.Drawing.Size(75, 23);
             this.btnConfirm.TabIndex = 9;
-            this.btnConfirm.Text = "Apply";
+            this.btnConfirm.Text = "Close";
             this.btnConfirm.UseVisualStyleBackColor = true;
+            this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
             // 
-            // btnSaveAs
+            // btnSave
             // 
-            this.btnSaveAs.Location = new System.Drawing.Point(510, 451);
-            this.btnSaveAs.Name = "btnSaveAs";
-            this.btnSaveAs.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveAs.TabIndex = 8;
-            this.btnSaveAs.Text = "Save As";
-            this.btnSaveAs.UseVisualStyleBackColor = true;
+            this.btnSave.Location = new System.Drawing.Point(510, 451);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.TabIndex = 8;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // MapSetup
             // 
@@ -458,7 +469,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(684, 512);
             this.Controls.Add(this.btnConfirm);
-            this.Controls.Add(this.btnSaveAs);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.gbSeriesSetting);
             this.Controls.Add(this.grbMapSettings);
             this.Controls.Add(this.grbImageSettings);
@@ -466,6 +477,7 @@
             this.Controls.Add(this.lblMapConfig);
             this.Name = "MapSetup";
             this.Text = "MapSetup";
+            this.Load += new System.EventHandler(this.MapSetup_Load);
             this.grbImageSettings.ResumeLayout(false);
             this.grbImageSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageRows)).EndInit();
@@ -475,7 +487,7 @@
             this.pnlGridSizeSettings.ResumeLayout(false);
             this.pnlGridSizeSettings.PerformLayout();
             this.gbSeriesSetting.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendSettings)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegends)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -489,11 +501,11 @@
         private System.Windows.Forms.Label lblImgX;
         private System.Windows.Forms.Label lblImgColumn;
         private System.Windows.Forms.Label lblImgRow;
-        private System.Windows.Forms.NumericUpDown nudImageRows;
-        private System.Windows.Forms.NumericUpDown nudImageColumns;
+        public System.Windows.Forms.NumericUpDown nudImageRows;
+        public System.Windows.Forms.NumericUpDown nudImageColumns;
         private System.Windows.Forms.GroupBox grbMapSettings;
-        private System.Windows.Forms.CheckBox cmbCDInverse;
-        private System.Windows.Forms.CheckBox cmbMDInverse;
+        private System.Windows.Forms.CheckBox chkCDInverse;
+        private System.Windows.Forms.CheckBox chkMDInverse;
         private System.Windows.Forms.ComboBox cmbBottomAxes;
         private System.Windows.Forms.Label lblBottomAxie;
         private System.Windows.Forms.Panel pnlGridSizeSettings;
@@ -514,11 +526,11 @@
         private System.Windows.Forms.RadioButton rdoMapGridOff;
         private System.Windows.Forms.RadioButton rdoMapGridOn;
         private System.Windows.Forms.Label lblMapGridShow;
-        private System.Windows.Forms.ComboBox cboxMapSize;
+        private System.Windows.Forms.ComboBox cmbMapSize;
         private System.Windows.Forms.Label lblMapSize;
         private System.Windows.Forms.GroupBox gbSeriesSetting;
-        private System.Windows.Forms.DataGridView dgvFlawLegendSettings;
+        private System.Windows.Forms.DataGridView dgvFlawLegends;
         private System.Windows.Forms.Button btnConfirm;
-        private System.Windows.Forms.Button btnSaveAs;
+        private System.Windows.Forms.Button btnSave;
     }
 }

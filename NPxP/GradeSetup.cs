@@ -209,6 +209,7 @@ namespace NPxP
         {
             int x = int.TryParse(txtColumns.Text, out x) ? x : 1;
             int y = int.TryParse(txtRows.Text, out y) ? y : 1;
+            
             _dtbColumns.Clear();
             for (int i = 0; i < x; i++)
             {
@@ -225,7 +226,6 @@ namespace NPxP
             }
 
             // SubpieceName Reset
-
 
             _pointsSubpieceNames = new List<string>();
             _marksSubpieceNames = new List<string>();
@@ -264,6 +264,19 @@ namespace NPxP
             }
 
             // Refresh Mark
+            foreach (string subpiece in _marksSubpieceNames)
+            { 
+                string expr = String.Format("SubpieceName='{0}'", subpiece);
+                DataRow[] drs = _dtbGrades.Select(expr);
+                if (drs.Length < 1)
+                {
+                    DataRow dr = _dtbGrades.NewRow();
+                    dr["SubpieceName"] = subpiece;
+                    dr["GradeName"] = "A";
+                    dr["Score"] = 0;
+                    _dtbGrades.Rows.Add(dr);
+                }
+            }
 
 
 
@@ -526,6 +539,39 @@ namespace NPxP
             {
                 MessageBox.Show("Fail.");
             }
+
+            // Refresh datas
+            // Refresh dgvPoint datasource
+            _dtbPoints.Clear();
+            DataTable tmpPoints = ch.GetDataTabledgvPoints(cmbConfig.SelectedItem.ToString().Trim());
+            foreach (DataRow dr in tmpPoints.Rows)
+            {
+                DataRow d = _dtbPoints.NewRow();
+                d["SubpieceName"] = dr["SubpieceName"];
+                d["ClassName"] = dr["ClassName"];
+                d["Score"] = dr["Score"];
+                _dtbPoints.Rows.Add(d);
+            }
+            DataView dvPoints = _dtbPoints.DefaultView;
+            dvPoints.RowFilter = String.Format("SubpieceName='{0}'", cmbSubPoints.SelectedItem.ToString().Trim());
+            tmpPoints.Dispose();
+
+            // Refresh dgvGrade datasource
+            _dtbGrades.Clear();
+            DataTable tmpGrades = ch.GetDataTabledgvGrade(cmbConfig.SelectedItem.ToString().Trim());
+            foreach (DataRow dr in tmpGrades.Rows)
+            {
+                DataRow d = _dtbGrades.NewRow();
+                d["SubpieceName"] = dr["SubpieceName"];
+                d["GradeName"] = dr["GradeName"];
+                d["Score"] = dr["Score"];
+                _dtbGrades.Rows.Add(d);
+            }
+            DataView dvGrade = _dtbGrades.DefaultView;
+            dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
+            tmpGrades.Dispose();
+            
+
         }
 
         private void btnReset_Click(object sender, EventArgs e)
@@ -888,14 +934,6 @@ namespace NPxP
                 tabGradeSetting.Visible = true;
             }
         }
-
-        private void tabGradeSetup_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-       
-
        
     }
 }

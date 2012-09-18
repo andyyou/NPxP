@@ -98,7 +98,6 @@
             this.tabGradeSetup.SelectedIndex = 0;
             this.tabGradeSetup.Size = new System.Drawing.Size(527, 451);
             this.tabGradeSetup.TabIndex = 1;
-            this.tabGradeSetup.SelectedIndexChanged += new System.EventHandler(this.tabGradeSetup_SelectedIndexChanged);
             // 
             // tpROI
             // 
@@ -166,6 +165,7 @@
             this.dgvRows.AllowUserToResizeColumns = false;
             this.dgvRows.AllowUserToResizeRows = false;
             this.dgvRows.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvRows.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.dgvRows.Location = new System.Drawing.Point(256, 79);
             this.dgvRows.Name = "dgvRows";
             this.dgvRows.RowTemplate.Height = 24;
@@ -180,6 +180,7 @@
             this.dgvColumns.AllowUserToResizeColumns = false;
             this.dgvColumns.AllowUserToResizeRows = false;
             this.dgvColumns.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvColumns.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.dgvColumns.Location = new System.Drawing.Point(6, 79);
             this.dgvColumns.Name = "dgvColumns";
             this.dgvColumns.RowTemplate.Height = 24;
@@ -226,7 +227,9 @@
             // 
             // txtColumns
             // 
+            this.txtColumns.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtColumns.Location = new System.Drawing.Point(5, 27);
+            this.txtColumns.MaxLength = 2;
             this.txtColumns.Name = "txtColumns";
             this.txtColumns.Size = new System.Drawing.Size(100, 22);
             this.txtColumns.TabIndex = 1;
@@ -234,7 +237,9 @@
             // 
             // txtRows
             // 
+            this.txtRows.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtRows.Location = new System.Drawing.Point(130, 27);
+            this.txtRows.MaxLength = 2;
             this.txtRows.Name = "txtRows";
             this.txtRows.Size = new System.Drawing.Size(100, 22);
             this.txtRows.TabIndex = 0;
@@ -340,6 +345,7 @@
             this.dgvPoint.AllowUserToResizeColumns = false;
             this.dgvPoint.AllowUserToResizeRows = false;
             this.dgvPoint.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvPoint.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.dgvPoint.Location = new System.Drawing.Point(23, 51);
             this.dgvPoint.MultiSelect = false;
             this.dgvPoint.Name = "dgvPoint";
@@ -487,6 +493,7 @@
             // 
             // txtFilterScore
             // 
+            this.txtFilterScore.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtFilterScore.Location = new System.Drawing.Point(50, 41);
             this.txtFilterScore.Name = "txtFilterScore";
             this.txtFilterScore.Size = new System.Drawing.Size(100, 22);
@@ -536,6 +543,7 @@
             // cmbConfig
             // 
             this.cmbConfig.FormattingEnabled = true;
+            this.cmbConfig.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.cmbConfig.Location = new System.Drawing.Point(121, 465);
             this.cmbConfig.Name = "cmbConfig";
             this.cmbConfig.Size = new System.Drawing.Size(234, 20);

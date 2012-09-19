@@ -21,20 +21,36 @@ namespace NPxP
     {
         #region Local Objects
 
-        private DataTable _dtbFlaws, _dtbFlawLegends;
+        private DataTable _dtbFlaws, _dtbFlawLegends, _dtbPoints;
         private DataRow[] _drFlaw;
         private List<FlawLegend> _legend;
+        private List<double> _cuts;
         private Dictionary<string, MarkerKind> _dicSeriesShape;
         private Dictionary<string, string> _dicLegendShape;
 
+        private int _currentPage, _totalPage; // Start from 1
+
         #endregion
 
-        public MapWindow(ref DataTable dtbFlaws)
+        public MapWindow()
         {
             WriteHelper.Log("MapWindow()");
             InitializeComponent();
-            this._dtbFlaws = dtbFlaws;
             createShapeRefDic();
+            chartControl.EmptyChartText.Text = "Flaw Distribution Map";
+        }
+
+        public void InitDatatableFlaws(ref DataTable dtbFlaws)
+        {
+            _dtbFlaws = new DataTable();
+            this._dtbFlaws = dtbFlaws;
+        }
+ 	 
+        // Just for Initialize once 
+        public void InitCutList(ref List<double> cuts)
+        {
+            _cuts = new List<double>();
+            _cuts = cuts;
         }
 
         // Just for Initialize once not use at other.
@@ -54,7 +70,7 @@ namespace NPxP
                 dr["Display"] = f.VisibleFlags;
                 dr["FlawType"] = f.ClassID;
                 dr["Name"] = f.Name;
-                dr["Shape"] = "Circle";
+                dr["Shape"] = "Cone";
                 dr["Color"] = String.Format("#{0:X2}{1:X2}{2:X2}", ColorTranslator.FromWin32((int)f.Color).R,
                                                         ColorTranslator.FromWin32((int)f.Color).G,
                                                         ColorTranslator.FromWin32((int)f.Color).B);
@@ -130,7 +146,8 @@ namespace NPxP
             lblPassValue.Text = "0";
             lblFailValue.Text = "0";
             lblYieldValue.Text = "0%";
-
+            btnPrevPiece.Enabled = false;
+            btnNextPiece.Enabled = false;
         }
         private void btnMapSetting_Click(object sender, EventArgs e)
         {
@@ -147,7 +164,7 @@ namespace NPxP
                     dr["Display"] = f.VisibleFlags;
                     dr["FlawType"] = f.ClassID;
                     dr["Name"] = f.Name;
-                    dr["Shape"] = "Circle";
+                    dr["Shape"] = "Cone";
                     dr["Color"] = String.Format("#{0:X2}{1:X2}{2:X2}", ColorTranslator.FromWin32((int)f.Color).R,
                                                             ColorTranslator.FromWin32((int)f.Color).G,
                                                             ColorTranslator.FromWin32((int)f.Color).B);
@@ -332,13 +349,28 @@ namespace NPxP
             }
         }
 
-        public void DrawChartPoint(DataRow[] flawRows, double cutMD)
+        public void UpdatePagesCount()
         {
+            _currentPage = 1;
+            _totalPage = _cuts.Count;
+
+            updateUIContrul();
+        }
+
+        public void DrawChartPoint(DataRow[] flawRows, double topOfPart)
+        {
+            if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)
+            {
+                _currentPage = _cuts.Count;
+                _totalPage = _cuts.Count;
+
+                updateUIContrul();
+            }
+
             this._drFlaw = flawRows;
             chartControl.Series.Clear();
             DrawSubPiece();
 
-            double topOfPart = cutMD - JobHelper.PxPInfo.Height;
             Series flawPoint;
             foreach (DataRow dr in _drFlaw)
             {
@@ -485,6 +517,11 @@ namespace NPxP
 
             dgvFlawLegend.DataSource = _dtbFlawLegends;
             dgvFlawLegendDetial.DataSource = _dtbFlawLegends;
+
+            // Get Points score
+            string grade_name = ch.GetDefaultGradeConfigName();
+            _dtbPoints = new DataTable();
+            _dtbPoints = ch.GetDataTabledgvPoints(grade_name);
         }
 
         private void cmbFilterType_SelectedIndexChanged(object sender, EventArgs e)
@@ -498,6 +535,24 @@ namespace NPxP
         {
             ConfigHelper ch = new ConfigHelper();
             ch.SaveGradeSetupConfigFile(cmbGradeConfigFiles.Text.Trim());
+
+            // Refresh _dtbPoints
+            // update _dtbPoints score.
+            DataTable dtbTmp = ch.GetDataTabledgvPoints(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
+            foreach (DataRow d in dtbTmp.Rows)
+            {
+                string subpiece = d["SubpieceName"].ToString().Trim();
+                string className = d["ClassName"].ToString().Trim();
+                string expr = String.Format("SubpieceName='{0}' AND ClassName='{1}'", subpiece, className);
+                DataRow[] drs = _dtbPoints.Select(expr);
+                if (drs.Length > 0)
+                {
+                    foreach (DataRow dr in drs)
+                    {
+                        dr["Score"] = d["Score"];
+                    }
+                }
+            }
         }
 
         private void chartControl_MouseMove(object sender, MouseEventArgs e)
@@ -570,11 +625,47 @@ namespace NPxP
         private void btnPrevPiece_Click(object sender, EventArgs e)
         {
             JobHelper.Job.SetOffline();
+            
+            if (_currentPage - 1 < 1)
+            {
+                _currentPage = 1;
+            }
+            else
+            {
+                _currentPage--;
+            }
+
+            double topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
+            double bottomOfPart = _cuts[_currentPage - 1];
+            string filterExp = String.Format("MD > {0} AND MD < {1}", topOfPart, bottomOfPart);
+            DataView dv = _dtbFlaws.DefaultView;
+            dv.RowFilter = filterExp;
+            DataRow[] rows = _dtbFlaws.Select(filterExp);
+            DrawChartPoint(rows, topOfPart);
+            updateUIContrul();
         }
 
         private void btnNextPiece_Click(object sender, EventArgs e)
         {
             JobHelper.Job.SetOffline();
+
+            if (_currentPage + 1 > _totalPage)
+            {
+                _currentPage = _totalPage;
+            }
+            else
+            {
+                _currentPage++;
+            }
+
+            double topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
+            double bottomOfPart = _cuts[_currentPage - 1];
+            string filterExp = String.Format("MD > {0} AND MD < {1}", topOfPart, bottomOfPart);
+            DataView dv = _dtbFlaws.DefaultView;
+            dv.RowFilter = filterExp;
+            DataRow[] rows = _dtbFlaws.Select(filterExp);
+            DrawChartPoint(rows, topOfPart);
+            updateUIContrul();
         }
 
         private void createShapeRefDic()
@@ -596,6 +687,40 @@ namespace NPxP
             this._dicLegendShape.Add("Plus", "✚");
             this._dicLegendShape.Add("Cross", "✖");
             this._dicLegendShape.Add("Star", "★");
+        }
+
+        private void dgvFlawLegend_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            Dictionary<string, Boolean> dicSeriesDisplay = new Dictionary<string, bool>();
+        }
+
+        // Update UI label
+        private void updateUIContrul()
+        {
+            lblNowPiece.Text = _currentPage.ToString();
+            lblTotalPiece.Text = _totalPage.ToString();
+            lblDoffValue.Text = _totalPage.ToString();
+
+            if (_totalPage == 1)
+            {
+                btnPrevPiece.Enabled = false;
+                btnNextPiece.Enabled = false;
+            }
+            else if (_currentPage == 1)
+            {
+                btnPrevPiece.Enabled = false;
+                btnNextPiece.Enabled = true;
+            }
+            else if (_currentPage == _totalPage)
+            {
+                btnPrevPiece.Enabled = true;
+                btnNextPiece.Enabled = false;
+            }
+            else
+            {
+                btnPrevPiece.Enabled = true;
+                btnNextPiece.Enabled = true;
+            }
         }
     }
 }

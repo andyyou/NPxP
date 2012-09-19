@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DevExpress.XtraCharts.SideBySideBarSeriesLabel sideBySideBarSeriesLabel1 = new DevExpress.XtraCharts.SideBySideBarSeriesLabel();
+            DevExpress.XtraCharts.SideBySideBarSeriesLabel sideBySideBarSeriesLabel2 = new DevExpress.XtraCharts.SideBySideBarSeriesLabel();
             this.tlpMapInfo = new System.Windows.Forms.TableLayoutPanel();
             this.lblOperatorValue = new System.Windows.Forms.Label();
             this.lblOperator = new System.Windows.Forms.Label();
@@ -67,7 +67,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegend)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendDetial)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartControl)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel2)).BeginInit();
             this.SuspendLayout();
             // 
             // tlpMapInfo
@@ -84,7 +84,7 @@
             this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 97F));
             this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 119F));
             this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 73F));
-            this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 146F));
+            this.tlpMapInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tlpMapInfo.Controls.Add(this.lblOperatorValue, 3, 1);
             this.tlpMapInfo.Controls.Add(this.lblOperator, 2, 1);
             this.tlpMapInfo.Controls.Add(this.lblMeterialType, 2, 0);
@@ -112,7 +112,7 @@
             // 
             this.lblOperatorValue.AutoSize = true;
             this.lblOperatorValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOperatorValue.Location = new System.Drawing.Point(295, 30);
+            this.lblOperatorValue.Location = new System.Drawing.Point(291, 30);
             this.lblOperatorValue.Name = "lblOperatorValue";
             this.lblOperatorValue.Size = new System.Drawing.Size(19, 14);
             this.lblOperatorValue.TabIndex = 8;
@@ -122,7 +122,7 @@
             // 
             this.lblOperator.AutoSize = true;
             this.lblOperator.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOperator.Location = new System.Drawing.Point(197, 30);
+            this.lblOperator.Location = new System.Drawing.Point(193, 30);
             this.lblOperator.Name = "lblOperator";
             this.lblOperator.Size = new System.Drawing.Size(64, 14);
             this.lblOperator.TabIndex = 7;
@@ -132,7 +132,7 @@
             // 
             this.lblMeterialType.AutoSize = true;
             this.lblMeterialType.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMeterialType.Location = new System.Drawing.Point(197, 3);
+            this.lblMeterialType.Location = new System.Drawing.Point(193, 3);
             this.lblMeterialType.Name = "lblMeterialType";
             this.lblMeterialType.Size = new System.Drawing.Size(91, 14);
             this.lblMeterialType.TabIndex = 6;
@@ -142,7 +142,7 @@
             // 
             this.lblMeterialTypeValue.AutoSize = true;
             this.lblMeterialTypeValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMeterialTypeValue.Location = new System.Drawing.Point(295, 3);
+            this.lblMeterialTypeValue.Location = new System.Drawing.Point(291, 3);
             this.lblMeterialTypeValue.Name = "lblMeterialTypeValue";
             this.lblMeterialTypeValue.Size = new System.Drawing.Size(19, 14);
             this.lblMeterialTypeValue.TabIndex = 4;
@@ -172,7 +172,7 @@
             // 
             this.lblOrderNumberValue.AutoSize = true;
             this.lblOrderNumberValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOrderNumberValue.Location = new System.Drawing.Point(120, 3);
+            this.lblOrderNumberValue.Location = new System.Drawing.Point(118, 3);
             this.lblOrderNumberValue.Name = "lblOrderNumberValue";
             this.lblOrderNumberValue.Size = new System.Drawing.Size(19, 14);
             this.lblOrderNumberValue.TabIndex = 3;
@@ -182,7 +182,7 @@
             // 
             this.lblJobIdValue.AutoSize = true;
             this.lblJobIdValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblJobIdValue.Location = new System.Drawing.Point(120, 30);
+            this.lblJobIdValue.Location = new System.Drawing.Point(118, 30);
             this.lblJobIdValue.Name = "lblJobIdValue";
             this.lblJobIdValue.Size = new System.Drawing.Size(19, 14);
             this.lblJobIdValue.TabIndex = 4;
@@ -192,7 +192,7 @@
             // 
             this.lblDateTime.AutoSize = true;
             this.lblDateTime.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDateTime.Location = new System.Drawing.Point(415, 3);
+            this.lblDateTime.Location = new System.Drawing.Point(411, 3);
             this.lblDateTime.Name = "lblDateTime";
             this.lblDateTime.Size = new System.Drawing.Size(66, 14);
             this.lblDateTime.TabIndex = 9;
@@ -202,7 +202,7 @@
             // 
             this.lblDateTimeValue.AutoSize = true;
             this.lblDateTimeValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDateTimeValue.Location = new System.Drawing.Point(489, 3);
+            this.lblDateTimeValue.Location = new System.Drawing.Point(485, 3);
             this.lblDateTimeValue.Name = "lblDateTimeValue";
             this.lblDateTimeValue.Size = new System.Drawing.Size(19, 14);
             this.lblDateTimeValue.TabIndex = 10;
@@ -212,7 +212,7 @@
             // 
             this.lblDoff.AutoSize = true;
             this.lblDoff.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDoff.Location = new System.Drawing.Point(415, 30);
+            this.lblDoff.Location = new System.Drawing.Point(411, 30);
             this.lblDoff.Name = "lblDoff";
             this.lblDoff.Size = new System.Drawing.Size(32, 14);
             this.lblDoff.TabIndex = 2;
@@ -222,7 +222,7 @@
             // 
             this.lblDoffValue.AutoSize = true;
             this.lblDoffValue.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDoffValue.Location = new System.Drawing.Point(489, 30);
+            this.lblDoffValue.Location = new System.Drawing.Point(485, 30);
             this.lblDoffValue.Name = "lblDoffValue";
             this.lblDoffValue.Size = new System.Drawing.Size(19, 14);
             this.lblDoffValue.TabIndex = 5;
@@ -396,6 +396,7 @@
             this.dgvFlawLegend.Size = new System.Drawing.Size(137, 244);
             this.dgvFlawLegend.TabIndex = 15;
             this.dgvFlawLegend.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvFlawLegend_CellFormatting);
+            this.dgvFlawLegend.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvFlawLegend_CellContentClick);
             // 
             // btnPrevPiece
             // 
@@ -426,7 +427,7 @@
             this.lblN1.BackColor = System.Drawing.Color.Transparent;
             this.lblN1.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblN1.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.lblN1.Location = new System.Drawing.Point(234, 562);
+            this.lblN1.Location = new System.Drawing.Point(243, 562);
             this.lblN1.Name = "lblN1";
             this.lblN1.Size = new System.Drawing.Size(21, 26);
             this.lblN1.TabIndex = 19;
@@ -435,11 +436,10 @@
             // lblTotalPiece
             // 
             this.lblTotalPiece.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblTotalPiece.AutoSize = true;
             this.lblTotalPiece.BackColor = System.Drawing.Color.Transparent;
             this.lblTotalPiece.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTotalPiece.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.lblTotalPiece.Location = new System.Drawing.Point(261, 562);
+            this.lblTotalPiece.Location = new System.Drawing.Point(269, 562);
             this.lblTotalPiece.Name = "lblTotalPiece";
             this.lblTotalPiece.Size = new System.Drawing.Size(39, 26);
             this.lblTotalPiece.TabIndex = 20;
@@ -448,11 +448,10 @@
             // lblNowPiece
             // 
             this.lblNowPiece.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblNowPiece.AutoSize = true;
             this.lblNowPiece.BackColor = System.Drawing.Color.Transparent;
             this.lblNowPiece.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblNowPiece.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.lblNowPiece.Location = new System.Drawing.Point(189, 562);
+            this.lblNowPiece.Location = new System.Drawing.Point(199, 562);
             this.lblNowPiece.Name = "lblNowPiece";
             this.lblNowPiece.Size = new System.Drawing.Size(39, 26);
             this.lblNowPiece.TabIndex = 21;
@@ -485,8 +484,8 @@
             this.chartControl.Location = new System.Drawing.Point(6, 70);
             this.chartControl.Name = "chartControl";
             this.chartControl.SeriesSerializable = new DevExpress.XtraCharts.Series[0];
-            sideBySideBarSeriesLabel1.LineVisible = true;
-            this.chartControl.SeriesTemplate.Label = sideBySideBarSeriesLabel1;
+            sideBySideBarSeriesLabel2.LineVisible = true;
+            this.chartControl.SeriesTemplate.Label = sideBySideBarSeriesLabel2;
             this.chartControl.Size = new System.Drawing.Size(493, 480);
             this.chartControl.TabIndex = 24;
             this.chartControl.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chartControl_MouseDoubleClick);
@@ -526,7 +525,7 @@
             this.tlpMapInfo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegend)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendDetial)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartControl)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

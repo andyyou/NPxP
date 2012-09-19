@@ -30,13 +30,13 @@ namespace NPxP
 
         private MapWindow _mp;
         private DataTable _dtbFlaws;
+        private DataView _dvFiliter;
         private List<NowUnit> _units;
         private List<double> _cuts;
         private string _xmlUnitsPath;
         private string _dbConnectString;
 
         private int _nowPage, _totalPage; // For TableLayout pages , start from 1.
-        private bool _isOpenHistory;
        
 
         #endregion
@@ -151,7 +151,7 @@ namespace NPxP
         public void GetMapControlHandle(out IntPtr hndl)
         {
             WriteHelper.Log("GetMapControlHandle()");
-            _mp = new MapWindow(ref _dtbFlaws); // 確保執行順序正確,所以在這邊在 new 物件.
+            _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
 
         }
@@ -205,16 +205,14 @@ namespace NPxP
             lblTotalPage.Text = "---";
             btnNextFlawImages.Enabled = false;
             btnProvFlawImages.Enabled = false;
+            _dvFiliter = new DataView();
+           
 
             // save datas in global helper.
             JobHelper.FlawTypes = flawTypes;
             JobHelper.JobInfo = jobInfo;
             JobHelper.Lanes = lanes;
             JobHelper.SeverityInfo = severityInfo;
-
-            // update MapWindow JobInfo
-            _mp.InitJobInfo(jobInfo);
-            _mp.InitFlawLegendGrid();
 
             //update dgvFlaw HeaderText + (Unit)
             NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
@@ -230,6 +228,7 @@ namespace NPxP
             
             // initialize datatable  flaw format without data.
             _dtbFlaws = new DataTable("Flaws");
+           
             _dtbFlaws.Columns.Add("FlawID", typeof(int));
             _dtbFlaws.Columns.Add("CD", typeof(double));
             _dtbFlaws.Columns.Add("MD", typeof(double));
@@ -262,6 +261,12 @@ namespace NPxP
             // For MapWindow.cs
             //---------------------------------------------------------------------------------------------//
 
+            // update MapWindow JobInfo
+            _mp.InitJobInfo(jobInfo);
+            _mp.InitFlawLegendGrid();
+            _mp.InitDatatableFlaws(ref _dtbFlaws);
+            _mp.InitCutList(ref _cuts);
+
             // Initialize FlawLegend
 
 
@@ -277,7 +282,7 @@ namespace NPxP
         public void OnOnline(bool isOnline)
         {
             JobHelper.IsOnline = isOnline;
-            _isOpenHistory = false;
+            JobHelper.IsOnpeHistory = false;
             WriteHelper.Log("OnOnline()");
         }
         // (19)
@@ -308,56 +313,26 @@ namespace NPxP
 
                     case e_EventID.CUT_SIGNAL:
                         _cuts.Add(eventInfo.MD);
-                        
-                        if (JobHelper.IsOnline || _isOpenHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
-                        {
-                            // Filter DataGridView
-                            double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
-                            string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
-                            DataView dv = _dtbFlaws.DefaultView;
-                            dv.RowFilter = filterExp;
-                            // Clear tableLyout controls and search data.  
-                            tlpFlawImages.Controls.Clear();
-                            int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
-                            int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
-                            DataRow[] rows = _dtbFlaws.Select(filterExp);
 
-                            // Calculate pages & set label and buttons
-                            int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
-                            _nowPage = 1;
-                            if (rows.Length <= pageSize)
-                                _totalPage = 1;
-                            else
+                        if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
+                        {
+                           
+                            if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
                             {
-                                _totalPage = rows.Length % pageSize == 0 ?
-                                             rows.Length / pageSize :
-                                             rows.Length / pageSize + 1;
-                            }
-                            lblNowPage.Text = _nowPage.ToString();
-                            lblTotalPage.Text = _totalPage.ToString();
-                            int startFicIndex = (_nowPage - 1) * pageSize;
-                            int endFicIndex = ((startFicIndex + pageSize) > rows.Length) ? rows.Length : (startFicIndex + pageSize);
-                            // Add FlawImageControl in tableLayout.
-                            for (int i = startFicIndex; i < endFicIndex; i++)
-                            {
-                                FlawImageControl fi = new FlawImageControl(rows[i]);
-                                SetDoubleBuffered(fi);
-                                fi.Width = holderWidth;
-                                fi.Height = holderHeight;
-                                fi.Dock = DockStyle.Fill;
-                                tlpFlawImages.Controls.Add(fi);
-                            }
-                            _mp.DrawChartPoint(rows, eventInfo.MD);
-                            // Set can using buttons when oncut all button reset.
-                            if (_totalPage > 1)
-                            {
-                                btnNextFlawImages.Enabled = true;
-                                btnProvFlawImages.Enabled = false;
+                                //break;
+                                _mp.UpdatePagesCount();
                             }
                             else
                             {
-                                btnNextFlawImages.Enabled = false;
-                                btnProvFlawImages.Enabled = false;
+                                // Filter DataGridView
+                                double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
+                                string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
+                                DataView dv = _dtbFlaws.DefaultView;
+                                _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
+                                dv.RowFilter = filterExp;
+
+                                DataRow[] rows = _dtbFlaws.Select(filterExp);
+                                _mp.DrawChartPoint(rows, prevMD);
                             }
                         }
                         break;
@@ -394,8 +369,8 @@ namespace NPxP
                     dr["Priority"] = JobHelper.SeverityInfo[0].Flaws.TryGetValue(flaw.FlawType, out opv) ? opv : 0;
                 else
                     dr["Priority"] = 0;
-                // UNDONE: 因讀取歷史資料, 特別處理 Image
-                if (_isOpenHistory)
+                // 因讀取歷史資料, 特別處理 Image
+                if (JobHelper.IsOnpeHistory)
                 {
                     bool blnShowImg = false;
                     int intW = 0;
@@ -452,7 +427,7 @@ namespace NPxP
         public void OnCut(double md)
         {
             WriteHelper.Log("OnCut()");
-            dgvFlaw.ClearSelection();
+            
            
         }
         // (D) :處理缺陷判斷
@@ -489,12 +464,14 @@ namespace NPxP
         public void OnOpenHistory(double startMD, double stopMD)
         {
             WriteHelper.Log("OnOpenHistory()");
-            _isOpenHistory = true;
+            JobHelper.IsOnpeHistory = true;
         }
         // (25) :停止工單
         public void OnJobStopped(double md)
         {
             WriteHelper.Log("OnJobStopped()");
+            JobHelper.IsOnpeHistory = false;
+
         }
         // (End -1 )
         public void Unplug()
@@ -774,6 +751,54 @@ namespace NPxP
             }
 
         }
+
+        public void DataTable_RowFilterChange(object sender, ListChangedEventArgs e)
+        {
+            // Clear tableLyout controls and search data. 
+            DataView dv = sender as DataView;
+            tlpFlawImages.Controls.Clear();
+            int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+            int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+            DataRow[] rows = _dtbFlaws.Select(dv.RowFilter);
+
+            // Calculate pages & set label and buttons
+            int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
+            _nowPage = 1;
+            if (rows.Length <= pageSize)
+                _totalPage = 1;
+            else
+            {
+                _totalPage = rows.Length % pageSize == 0 ?
+                             rows.Length / pageSize :
+                             rows.Length / pageSize + 1;
+            }
+            lblNowPage.Text = _nowPage.ToString();
+            lblTotalPage.Text = _totalPage.ToString();
+            int startFicIndex = (_nowPage - 1) * pageSize;
+            int endFicIndex = ((startFicIndex + pageSize) > rows.Length) ? rows.Length : (startFicIndex + pageSize);
+            // Add FlawImageControl in tableLayout.
+            for (int i = startFicIndex; i < endFicIndex; i++)
+            {
+                FlawImageControl fi = new FlawImageControl(rows[i]);
+                SetDoubleBuffered(fi);
+                fi.Width = holderWidth;
+                fi.Height = holderHeight;
+                fi.Dock = DockStyle.Fill;
+                tlpFlawImages.Controls.Add(fi);
+            }
+            // Set can using buttons when oncut all button reset.
+            if (_totalPage > 1)
+            {
+                btnNextFlawImages.Enabled = true;
+                btnProvFlawImages.Enabled = false;
+            }
+            else
+            {
+                btnNextFlawImages.Enabled = false;
+                btnProvFlawImages.Enabled = false;
+            }
+            dgvFlaw.ClearSelection();
+        }
         #endregion
 
 
@@ -788,6 +813,7 @@ namespace NPxP
         }
 
         #endregion
+
     }
 
     // Extend class 

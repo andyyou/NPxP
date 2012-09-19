@@ -151,8 +151,9 @@ namespace NPxP
         public void GetMapControlHandle(out IntPtr hndl)
         {
             WriteHelper.Log("GetMapControlHandle()");
-            _mp = new MapWindow(ref _dtbFlaws); // 確保執行順序正確,所以在這邊在 new 物件.
+            _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
+            _mp.InitTableLayout(ref tlpFlawImages);
 
         }
         // (10) :設定 MapWindow Position with Job object.
@@ -213,11 +214,6 @@ namespace NPxP
             JobHelper.JobInfo = jobInfo;
             JobHelper.Lanes = lanes;
             JobHelper.SeverityInfo = severityInfo;
-
-            // update MapWindow JobInfo
-            _mp.InitJobInfo(jobInfo);
-            _mp.InitFlawLegendGrid();
-            _mp.InitCutList(ref _cuts);
 
             //update dgvFlaw HeaderText + (Unit)
             NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
@@ -282,13 +278,19 @@ namespace NPxP
             // For MapWindow.cs
             //---------------------------------------------------------------------------------------------//
 
-            // Initialize FlawLegend
+            //// * No Map Controls
+            //// update MapWindow JobInfo
+            _mp.InitJobInfo(jobInfo);
+            _mp.InitFlawLegendGrid();
+            _mp.InitDatatableFlaws(ref _dtbFlaws);
+            _mp.InitCutList(ref _cuts);
 
 
-            //// Initial Flaw Chart
-            //NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
-            //double mapWidth = JobHelper.PxPInfo.Width * unitFlawMapCD.Conversion;
-            //double mapHeight = JobHelper.PxPInfo.Height * unitFlawMapCD.Conversion;
+            //// * No Map Controls
+            //// Initial Flaw Chart FlawLegend
+            NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+            double mapWidth = JobHelper.PxPInfo.Width * unitFlawMapCD.Conversion;
+            double mapHeight = JobHelper.PxPInfo.Height * unitFlawMapCD.Conversion;
             //_mp.InitChart(mapWidth, mapHeight);
            
 
@@ -334,7 +336,8 @@ namespace NPxP
                            
                             if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
                             {
-                                break;
+                                //// * No Map Controls
+                                //_mp.UpdatePagesCount();
                             }
                             else
                             {
@@ -344,6 +347,10 @@ namespace NPxP
                                 DataView dv = _dtbFlaws.DefaultView;
                                 _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
                                 dv.RowFilter = filterExp;
+
+                                //// * No Map Controls
+                                //DataRow[] rows = _dtbFlaws.Select(filterExp);
+                                //_mp.DrawChartPoint(rows, prevMD);
                             }
                         }
                         break;
@@ -797,7 +804,7 @@ namespace NPxP
                 fi.Dock = DockStyle.Fill;
                 tlpFlawImages.Controls.Add(fi);
             }
-            //_mp.DrawChartPoint(rows, eventInfo.MD);
+
             // Set can using buttons when oncut all button reset.
             if (_totalPage > 1)
             {
@@ -843,6 +850,7 @@ namespace NPxP
                 tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             }
         }
+
 
     }
 

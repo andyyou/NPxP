@@ -380,6 +380,15 @@ namespace NPxP.Helper
             dtb.Columns.Add("Shape", typeof(string));
             dtb.Columns.Add("Color", typeof(string));
 
+            Dictionary<string, string> dicLegendShape = new Dictionary<string, string>();
+            dicLegendShape.Add("Triangle", "▲");
+            dicLegendShape.Add("InvertedTriangle", "▼");
+            dicLegendShape.Add("Square", "■");
+            dicLegendShape.Add("Circle", "●");
+            dicLegendShape.Add("Plus", "✚");
+            dicLegendShape.Add("Cross", "✖");
+            dicLegendShape.Add("Star", "★");
+
             string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
             using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
             {
@@ -395,7 +404,14 @@ namespace NPxP.Helper
                     DataRow dr = dtb.NewRow();
                     dr["FlawType"] = flawType;
                     dr["Name"] = name;
-                    dr["Shape"] = shape;
+                    if (dicLegendShape.ContainsKey(shape))
+                    {
+                        dr["Shape"] = shape;
+                    }
+                    else
+                    {
+                        dr["Shape"] = "Circle";
+                    }
                     dr["Color"] = color;
 
                     dtb.Rows.Add(dr);

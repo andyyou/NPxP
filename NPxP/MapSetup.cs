@@ -102,13 +102,13 @@ namespace NPxP
             // prepare shape list
             Dictionary<string, string> shapes = new Dictionary<string, string>();
             shapes.Add("Triangle", "▲");
-            shapes.Add("Ellipse", "▼");
+            shapes.Add("InvertedTriangle", "▼");
             shapes.Add("Square", "■");
-            shapes.Add("Cone", "●");
-            shapes.Add("Cross", "+");
-            shapes.Add("LineDiagonalCross", "╳");
+            shapes.Add("Circle", "●");
+            shapes.Add("Plus", "+");
+            shapes.Add("Cross", "✖");
             shapes.Add("Star", "★");
-           
+          
             // Initialize FlawLegend (dgvFlawLegends)
 
             List<Column> columns = new List<Column>();
@@ -410,19 +410,19 @@ namespace NPxP
                     case "Triangle":
                         e.Value = "▲";
                         break;
-                    case "Ellipse":
+                    case "InvertedTriangle":
                         e.Value = "▼";
                         break;
                     case "Square":
                         e.Value = "■";
                         break;
-                    case "Cone":
+                    case "Circle":
                         e.Value = "●";
                         break;
-                    case "Cross":
+                    case "Plus":
                         e.Value = "✚";
                         break;
-                    case "LineDiagonalCross":
+                    case "Cross":
                         e.Value = "✖";
                         break;
                     case "Star":
@@ -529,7 +529,5 @@ namespace NPxP
                 _dtbFlawLegends.Rows.Add(newDr); 
             }
         }
-       
-
     }
 }

@@ -1,30 +1,16 @@
-C:\Projects\Github\NPxP\NPxP\bin\Debug\NPxP.dll
-C:\Projects\Github\NPxP\NPxP\bin\Debug\NPxP.pdb
-C:\Projects\Github\NPxP\NPxP\bin\Debug\System.ComponentModel.Composition.dll
-C:\Projects\Github\NPxP\NPxP\bin\Debug\WRPlugIn.dll
 C:\Projects\Github\NPxP\NPxP\obj\Debug\ResolveAssemblyReference.cache
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.FlawForm.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.FlawImageControl.resources
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.GradeSetup.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.MapSetup.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.MapWindow.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.Properties.Resources.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.PxPTab.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.csproj.GenerateResource.Cache
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.dll.licenses
+C:\Projects\Github\NPxP\NPxP\bin\Debug\NPxP.dll
+C:\Projects\Github\NPxP\NPxP\bin\Debug\NPxP.pdb
+C:\Projects\Github\NPxP\NPxP\bin\Debug\System.ComponentModel.Composition.dll
+C:\Projects\Github\NPxP\NPxP\bin\Debug\WRPlugIn.dll
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.dll
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.pdb
-C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.GradeSetup.resources
-C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.dll.licenses
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\ResolveAssemblyReference.cache
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.FlawForm.resources
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.FlawImageControl.resources
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.GradeSetup.resources
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.MapSetup.resources
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.MapWindow.resources
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.Properties.Resources.resources
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.PxPTab.resources
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.csproj.GenerateResource.Cache
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.dll.licenses
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.dll
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\bin\Debug\NPxP.dll
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\bin\Debug\NPxP.pdb
-C:\Workspace\Visual Studio 2008\Projects\NPxP\NPxP\obj\Debug\NPxP.pdb

@@ -44,7 +44,8 @@ namespace NPxP.Helper
         // 取得 PxPTab.cs/tlpFlawImages 幾列(預設)
         public int GettlpFlawImagesRows()
         {
-            string map_config_path = PathHelper.MapConfigFolder + "default.xml";
+            string map_name = GetDefaultMapConfigName();
+            string map_config_path = PathHelper.MapConfigFolder + map_name + ".xml";
             using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
             {
                 XPathDocument document = new XPathDocument(stream);
@@ -70,7 +71,8 @@ namespace NPxP.Helper
         // 取得 PxPTab.cs/tlpFlawImages 幾攔(預設)
         public int GettlpFlawImagesColumns()
         {
-            string map_config_path = PathHelper.MapConfigFolder + "default.xml";
+            string map_name = GetDefaultMapConfigName();
+            string map_config_path = PathHelper.MapConfigFolder + map_name + ".xml";
             using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
             {
                 XPathDocument document = new XPathDocument(stream);
@@ -378,6 +380,15 @@ namespace NPxP.Helper
             dtb.Columns.Add("Shape", typeof(string));
             dtb.Columns.Add("Color", typeof(string));
 
+            Dictionary<string, string> dicLegendShape = new Dictionary<string, string>();
+            dicLegendShape.Add("Triangle", "▲");
+            dicLegendShape.Add("InvertedTriangle", "▼");
+            dicLegendShape.Add("Square", "■");
+            dicLegendShape.Add("Circle", "●");
+            dicLegendShape.Add("Plus", "✚");
+            dicLegendShape.Add("Cross", "✖");
+            dicLegendShape.Add("Star", "★");
+
             string map_config_path = PathHelper.MapConfigFolder + fileName + ".xml";
             using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
             {
@@ -393,7 +404,14 @@ namespace NPxP.Helper
                     DataRow dr = dtb.NewRow();
                     dr["FlawType"] = flawType;
                     dr["Name"] = name;
-                    dr["Shape"] = shape;
+                    if (dicLegendShape.ContainsKey(shape))
+                    {
+                        dr["Shape"] = shape;
+                    }
+                    else
+                    {
+                        dr["Shape"] = "Circle";
+                    }
                     dr["Color"] = color;
 
                     dtb.Rows.Add(dr);

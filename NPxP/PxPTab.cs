@@ -153,6 +153,7 @@ namespace NPxP
             WriteHelper.Log("GetMapControlHandle()");
             _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
+            _mp.InitTableLayout(ref tlpFlawImages);
 
         }
         // (10) :設定 MapWindow Position with Job object.
@@ -258,19 +259,35 @@ namespace NPxP
             // set dgvFlaws datasource 
             dgvFlaw.DataSource = _dtbFlaws;
 
+            // Refresh TableLayoutPanel
+            tlpFlawImages.ColumnStyles.Clear();
+            tlpFlawImages.ColumnCount = ch.GettlpFlawImagesColumns();
+            tlpFlawImages.RowCount = ch.GettlpFlawImagesRows();
+            int phdHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+            int phdrWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+            for (int i = 0; i < tlpFlawImages.RowCount; i++)
+            {
+                tlpFlawImages.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+            }
+
+            for (int i = 0; i < tlpFlawImages.ColumnCount; i++)
+            {
+                tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            }
+
             // For MapWindow.cs
             //---------------------------------------------------------------------------------------------//
 
-            // update MapWindow JobInfo
+            //// * No Map Controls
+            //// update MapWindow JobInfo
             _mp.InitJobInfo(jobInfo);
             _mp.InitFlawLegendGrid();
             _mp.InitDatatableFlaws(ref _dtbFlaws);
             _mp.InitCutList(ref _cuts);
 
-            // Initialize FlawLegend
 
-
-            //// Initial Flaw Chart
+            //// * No Map Controls
+            //// Initial Flaw Chart FlawLegend
             NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
             double mapWidth = JobHelper.PxPInfo.Width * unitFlawMapCD.Conversion;
             double mapHeight = JobHelper.PxPInfo.Height * unitFlawMapCD.Conversion;
@@ -319,7 +336,7 @@ namespace NPxP
                            
                             if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
                             {
-                                //break;
+                                //// * No Map Controls
                                 _mp.UpdatePagesCount();
                             }
                             else
@@ -331,8 +348,8 @@ namespace NPxP
                                 _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
                                 dv.RowFilter = filterExp;
 
-                                DataRow[] rows = _dtbFlaws.Select(filterExp);
-                                _mp.DrawChartPoint(rows, prevMD);
+                                //// * No Map Controls
+                                _mp.DrawChartPoint(prevMD);
                             }
                         }
                         break;
@@ -786,6 +803,7 @@ namespace NPxP
                 fi.Dock = DockStyle.Fill;
                 tlpFlawImages.Controls.Add(fi);
             }
+
             // Set can using buttons when oncut all button reset.
             if (_totalPage > 1)
             {
@@ -813,6 +831,25 @@ namespace NPxP
         }
 
         #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            tlpFlawImages.ColumnCount++;
+            tlpFlawImages.RowCount++;
+            tlpFlawImages.ColumnStyles.Clear();
+            int phdHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+            int phdrWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+            for (int i = 0; i < tlpFlawImages.RowCount; i++)
+            {
+                tlpFlawImages.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+            }
+
+            for (int i = 0; i < tlpFlawImages.ColumnCount; i++)
+            {
+                tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            }
+        }
+
 
     }
 

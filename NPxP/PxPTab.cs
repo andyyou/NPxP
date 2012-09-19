@@ -36,7 +36,6 @@ namespace NPxP
         private string _dbConnectString;
 
         private int _nowPage, _totalPage; // For TableLayout pages , start from 1.
-        private bool _isOpenHistory;
        
 
         #endregion
@@ -278,7 +277,7 @@ namespace NPxP
         public void OnOnline(bool isOnline)
         {
             JobHelper.IsOnline = isOnline;
-            _isOpenHistory = false;
+            JobHelper.IsOnpeHistory = false;
             WriteHelper.Log("OnOnline()");
         }
         // (19)
@@ -309,8 +308,8 @@ namespace NPxP
 
                     case e_EventID.CUT_SIGNAL:
                         _cuts.Add(eventInfo.MD);
-                        
-                        if (JobHelper.IsOnline || _isOpenHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
+
+                        if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
                         {
                             // Filter DataGridView
                             double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
@@ -396,7 +395,7 @@ namespace NPxP
                 else
                     dr["Priority"] = 0;
                 // UNDONE: 因讀取歷史資料, 特別處理 Image
-                if (_isOpenHistory)
+                if (JobHelper.IsOnpeHistory)
                 {
                     bool blnShowImg = false;
                     int intW = 0;
@@ -490,7 +489,7 @@ namespace NPxP
         public void OnOpenHistory(double startMD, double stopMD)
         {
             WriteHelper.Log("OnOpenHistory()");
-            _isOpenHistory = true;
+            JobHelper.IsOnpeHistory = true;
         }
         // (25) :停止工單
         public void OnJobStopped(double md)

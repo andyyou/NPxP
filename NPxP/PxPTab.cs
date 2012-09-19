@@ -206,7 +206,7 @@ namespace NPxP
             btnNextFlawImages.Enabled = false;
             btnProvFlawImages.Enabled = false;
             _dvFiliter = new DataView();
-            _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
+           
 
             // save datas in global helper.
             JobHelper.FlawTypes = flawTypes;
@@ -233,6 +233,7 @@ namespace NPxP
             
             // initialize datatable  flaw format without data.
             _dtbFlaws = new DataTable("Flaws");
+           
             _dtbFlaws.Columns.Add("FlawID", typeof(int));
             _dtbFlaws.Columns.Add("CD", typeof(double));
             _dtbFlaws.Columns.Add("MD", typeof(double));
@@ -314,11 +315,20 @@ namespace NPxP
 
                         if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
                         {
-                            // Filter DataGridView
-                            double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
-                            string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
-                            _dvFiliter = _dtbFlaws.DefaultView;
-                            _dvFiliter.RowFilter = filterExp;
+                           
+                            if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                // Filter DataGridView
+                                double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
+                                string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
+                                DataView dv = _dtbFlaws.DefaultView;
+                                _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
+                                dv.RowFilter = filterExp;
+                            }
                         }
                         break;
                     default:
@@ -456,6 +466,7 @@ namespace NPxP
         {
             WriteHelper.Log("OnJobStopped()");
             JobHelper.IsOnpeHistory = false;
+
         }
         // (End -1 )
         public void Unplug()

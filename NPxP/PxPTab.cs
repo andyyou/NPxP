@@ -315,50 +315,9 @@ namespace NPxP
                             double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
                             string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
                             DataView dv = _dtbFlaws.DefaultView;
+                            _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
                             dv.RowFilter = filterExp;
-                            // Clear tableLyout controls and search data.  
-                            tlpFlawImages.Controls.Clear();
-                            int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
-                            int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
-                            DataRow[] rows = _dtbFlaws.Select(filterExp);
-
-                            // Calculate pages & set label and buttons
-                            int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
-                            _nowPage = 1;
-                            if (rows.Length <= pageSize)
-                                _totalPage = 1;
-                            else
-                            {
-                                _totalPage = rows.Length % pageSize == 0 ?
-                                             rows.Length / pageSize :
-                                             rows.Length / pageSize + 1;
-                            }
-                            lblNowPage.Text = _nowPage.ToString();
-                            lblTotalPage.Text = _totalPage.ToString();
-                            int startFicIndex = (_nowPage - 1) * pageSize;
-                            int endFicIndex = ((startFicIndex + pageSize) > rows.Length) ? rows.Length : (startFicIndex + pageSize);
-                            // Add FlawImageControl in tableLayout.
-                            for (int i = startFicIndex; i < endFicIndex; i++)
-                            {
-                                FlawImageControl fi = new FlawImageControl(rows[i]);
-                                SetDoubleBuffered(fi);
-                                fi.Width = holderWidth;
-                                fi.Height = holderHeight;
-                                fi.Dock = DockStyle.Fill;
-                                tlpFlawImages.Controls.Add(fi);
-                            }
-                            //_mp.DrawChartPoint(rows, eventInfo.MD);
-                            // Set can using buttons when oncut all button reset.
-                            if (_totalPage > 1)
-                            {
-                                btnNextFlawImages.Enabled = true;
-                                btnProvFlawImages.Enabled = false;
-                            }
-                            else
-                            {
-                                btnNextFlawImages.Enabled = false;
-                                btnProvFlawImages.Enabled = false;
-                            }
+                            
                         }
                         break;
                     default:
@@ -452,7 +411,7 @@ namespace NPxP
         public void OnCut(double md)
         {
             WriteHelper.Log("OnCut()");
-            dgvFlaw.ClearSelection();
+            
            
         }
         // (D) :處理缺陷判斷
@@ -774,6 +733,55 @@ namespace NPxP
             }
 
         }
+
+        public void DataTable_RowFilterChange(object sender, ListChangedEventArgs e)
+        {
+            // Clear tableLyout controls and search data. 
+            DataView dv = sender as DataView;
+            tlpFlawImages.Controls.Clear();
+            int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+            int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+            DataRow[] rows = _dtbFlaws.Select(dv.RowFilter);
+
+            // Calculate pages & set label and buttons
+            int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
+            _nowPage = 1;
+            if (rows.Length <= pageSize)
+                _totalPage = 1;
+            else
+            {
+                _totalPage = rows.Length % pageSize == 0 ?
+                             rows.Length / pageSize :
+                             rows.Length / pageSize + 1;
+            }
+            lblNowPage.Text = _nowPage.ToString();
+            lblTotalPage.Text = _totalPage.ToString();
+            int startFicIndex = (_nowPage - 1) * pageSize;
+            int endFicIndex = ((startFicIndex + pageSize) > rows.Length) ? rows.Length : (startFicIndex + pageSize);
+            // Add FlawImageControl in tableLayout.
+            for (int i = startFicIndex; i < endFicIndex; i++)
+            {
+                FlawImageControl fi = new FlawImageControl(rows[i]);
+                SetDoubleBuffered(fi);
+                fi.Width = holderWidth;
+                fi.Height = holderHeight;
+                fi.Dock = DockStyle.Fill;
+                tlpFlawImages.Controls.Add(fi);
+            }
+            //_mp.DrawChartPoint(rows, eventInfo.MD);
+            // Set can using buttons when oncut all button reset.
+            if (_totalPage > 1)
+            {
+                btnNextFlawImages.Enabled = true;
+                btnProvFlawImages.Enabled = false;
+            }
+            else
+            {
+                btnNextFlawImages.Enabled = false;
+                btnProvFlawImages.Enabled = false;
+            }
+            dgvFlaw.ClearSelection();
+        }
         #endregion
 
 
@@ -788,6 +796,7 @@ namespace NPxP
         }
 
         #endregion
+
     }
 
     // Extend class 

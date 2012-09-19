@@ -30,6 +30,7 @@ namespace NPxP
 
         private MapWindow _mp;
         private DataTable _dtbFlaws;
+        private DataView _dvFiliter;
         private List<NowUnit> _units;
         private List<double> _cuts;
         private string _xmlUnitsPath;
@@ -204,6 +205,8 @@ namespace NPxP
             lblTotalPage.Text = "---";
             btnNextFlawImages.Enabled = false;
             btnProvFlawImages.Enabled = false;
+            _dvFiliter = new DataView();
+            _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
 
             // save datas in global helper.
             JobHelper.FlawTypes = flawTypes;
@@ -314,10 +317,8 @@ namespace NPxP
                             // Filter DataGridView
                             double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
                             string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
-                            DataView dv = _dtbFlaws.DefaultView;
-                            _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
-                            dv.RowFilter = filterExp;
-                            
+                            _dvFiliter = _dtbFlaws.DefaultView;
+                            _dvFiliter.RowFilter = filterExp;
                         }
                         break;
                     default:
@@ -353,7 +354,7 @@ namespace NPxP
                     dr["Priority"] = JobHelper.SeverityInfo[0].Flaws.TryGetValue(flaw.FlawType, out opv) ? opv : 0;
                 else
                     dr["Priority"] = 0;
-                // UNDONE: 因讀取歷史資料, 特別處理 Image
+                // 因讀取歷史資料, 特別處理 Image
                 if (JobHelper.IsOnpeHistory)
                 {
                     bool blnShowImg = false;
@@ -454,6 +455,7 @@ namespace NPxP
         public void OnJobStopped(double md)
         {
             WriteHelper.Log("OnJobStopped()");
+            JobHelper.IsOnpeHistory = false;
         }
         // (End -1 )
         public void Unplug()

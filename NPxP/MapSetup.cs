@@ -334,6 +334,7 @@ namespace NPxP
                 MessageBox.Show("Fail.");
             }
             
+            
         }
 
         private void txtFixSizeMD_KeyPress(object sender, KeyPressEventArgs e)

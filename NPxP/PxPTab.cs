@@ -263,6 +263,22 @@ namespace NPxP
             // set dgvFlaws datasource 
             dgvFlaw.DataSource = _dtbFlaws;
 
+            // Refresh TableLayoutPanel
+            tlpFlawImages.ColumnStyles.Clear();
+            tlpFlawImages.ColumnCount = ch.GettlpFlawImagesColumns();
+            tlpFlawImages.RowCount = ch.GettlpFlawImagesRows();
+            int phdHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+            int phdrWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+            for (int i = 0; i < tlpFlawImages.RowCount; i++)
+            {
+                tlpFlawImages.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+            }
+
+            for (int i = 0; i < tlpFlawImages.ColumnCount; i++)
+            {
+                tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            }
+
             // For MapWindow.cs
             //---------------------------------------------------------------------------------------------//
 
@@ -809,6 +825,24 @@ namespace NPxP
         }
 
         #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            tlpFlawImages.ColumnCount++;
+            tlpFlawImages.RowCount++;
+            tlpFlawImages.ColumnStyles.Clear();
+            int phdHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
+            int phdrWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
+            for (int i = 0; i < tlpFlawImages.RowCount; i++)
+            {
+                tlpFlawImages.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+            }
+
+            for (int i = 0; i < tlpFlawImages.ColumnCount; i++)
+            {
+                tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            }
+        }
 
     }
 

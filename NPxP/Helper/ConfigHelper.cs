@@ -44,7 +44,8 @@ namespace NPxP.Helper
         // 取得 PxPTab.cs/tlpFlawImages 幾列(預設)
         public int GettlpFlawImagesRows()
         {
-            string map_config_path = PathHelper.MapConfigFolder + "default.xml";
+            string map_name = GetDefaultMapConfigName();
+            string map_config_path = PathHelper.MapConfigFolder + map_name + ".xml";
             using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
             {
                 XPathDocument document = new XPathDocument(stream);
@@ -70,7 +71,8 @@ namespace NPxP.Helper
         // 取得 PxPTab.cs/tlpFlawImages 幾攔(預設)
         public int GettlpFlawImagesColumns()
         {
-            string map_config_path = PathHelper.MapConfigFolder + "default.xml";
+            string map_name = GetDefaultMapConfigName();
+            string map_config_path = PathHelper.MapConfigFolder + map_name + ".xml";
             using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
             {
                 XPathDocument document = new XPathDocument(stream);

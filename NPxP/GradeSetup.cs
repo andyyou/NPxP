@@ -737,7 +737,7 @@ namespace NPxP
 
         private void dgvGrade_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == dgvGrade.Rows.Count - 1)
+            if (e.RowIndex == dgvGrade.Rows.Count - 1 && dgvGrade.Rows.Count < 5)
             {
                 string subpieceName = cmbSubMarks.SelectedItem.ToString().Trim();
                 string expr = String.Format("SubpieceName='{0}'", subpieceName);
@@ -748,12 +748,19 @@ namespace NPxP
                 _dtbGrades.Rows.Add(dr);
                 DataRow[] drs = _dtbGrades.Select(expr);
                 int chrNo = 65;
-                
+
                 foreach (DataRow d in drs)
                 {
+
                     d["GradeName"] = Chr(chrNo).ToString();
                     chrNo++;
                 }
+
+               
+            }
+            else
+            {
+                MessageBox.Show("Other score belone grade \"F\" ");
             }
             
  

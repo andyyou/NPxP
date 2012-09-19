@@ -23,7 +23,7 @@ namespace NPxP
         #region Local Objects
 
         private List<FlawLegend> _legend;
-        private DataTable _dtbFlaws, _dtbFlawLegends;
+        private DataTable _dtbFlaws, _dtbFlawLegends, _dtbPoints;
         private List<double> _cuts;
         #endregion
 
@@ -313,6 +313,11 @@ namespace NPxP
             
             dgvFlawLegend.DataSource = _dtbFlawLegends;
             dgvFlawLegendDetial.DataSource = _dtbFlawLegends;
+
+            // Get Points score
+            string grade_name = ch.GetDefaultGradeConfigName();
+            _dtbPoints = new DataTable();
+            _dtbPoints = ch.GetDataTabledgvPoints(grade_name);
            
 
 
@@ -331,6 +336,27 @@ namespace NPxP
         {
             ConfigHelper ch = new ConfigHelper();
             ch.SaveGradeSetupConfigFile(cmbGradeConfigFiles.Text.Trim());
+
+            // Refresh _dtbPoints
+            // update _dtbPoints score.
+            DataTable dtbTmp = ch.GetDataTabledgvPoints(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
+            foreach(DataRow d in dtbTmp.Rows)
+            {
+                string subpiece = d["SubpieceName"].ToString().Trim();
+                string className = d["ClassName"].ToString().Trim();
+                string expr = String.Format("SubpieceName='{0}' AND ClassName='{1}'", subpiece, className);
+                DataRow[] drs = _dtbPoints.Select(expr);
+                if (drs.Length > 0)
+                {
+                    foreach (DataRow dr in drs)
+                    {
+                        dr["Score"] = d["Score"];
+                    }
+                }
+            }
+            
+
+
         }
 
         private void dgvFlawLegend_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)

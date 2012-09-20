@@ -769,7 +769,6 @@ namespace NPxP
             }
         }
 
-        // UNDONE: Still have some issue when click PrevPiece
         private void btnPrevPiece_Click(object sender, EventArgs e)
         {
             JobHelper.Job.SetOffline();
@@ -778,11 +777,11 @@ namespace NPxP
             int newPageNum = _currentPage;
             if (_filterType == "Pass")
             {
-                newPageNum = _doffResult.LastIndexOf(true, newPageNum - 1) + 1;
+                newPageNum = _doffResult.LastIndexOf(true, newPageNum - 2) + 2;
             }
             else if (_filterType == "Fail")
             {
-                newPageNum = _doffResult.LastIndexOf(false, newPageNum - 1) + 1;
+                newPageNum = _doffResult.LastIndexOf(false, newPageNum - 2) + 2;
             }
 
             if (newPageNum != -1)

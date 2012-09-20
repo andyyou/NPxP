@@ -76,6 +76,22 @@ namespace NPxP
         private void gvFailList_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             int pieceNumber = (int)dgvFailPieceList.Rows[e.RowIndex].Cells[0].Value;
+            changePiece(pieceNumber);
+            _originCurrentPageLabel.Text = pieceNumber.ToString();
+            _originCurrentPageLabel.ForeColor = Color.Red;
+        }
+
+        private void FailList_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            changePiece(_originCurrentPage);
+            _mp.btnPrevPiece.Enabled = btnPrevPieceStatus;
+            _mp.btnNextPiece.Enabled = btnNextPieceStatus;
+            _originCurrentPageLabel.Text = _originCurrentPage.ToString();
+            _originCurrentPageLabel.ForeColor = _originCurrentPageColor;
+        }
+
+        private void changePiece(int pieceNumber)
+        {
             double topOfPart = _cuts[pieceNumber - 1] - JobHelper.PxPInfo.Height;
             double bottomOfPart = _cuts[pieceNumber - 1];
             string filterExp = String.Format("MD > {0} AND MD < {1}", topOfPart, bottomOfPart);
@@ -83,21 +99,6 @@ namespace NPxP
             DataView dv = _dtbFlaws.DefaultView;
             dv.RowFilter = filterExp;
             _mp.DrawChartPoint(topOfPart);
-            _originCurrentPageLabel.Text = pieceNumber.ToString();
-            _originCurrentPageLabel.ForeColor = Color.Red;
-        }
-
-        private void FailList_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            DataView dv = _dtbFlaws.DefaultView;
-            dv.RowFilter = _originRowFilter;
-            _mp.DrawChartPoint();
-
-            _mp.btnPrevPiece.Enabled = btnPrevPieceStatus;
-            _mp.btnNextPiece.Enabled = btnNextPieceStatus;
-
-            _originCurrentPageLabel.Text = _originCurrentPage.ToString();
-            _originCurrentPageLabel.ForeColor = _originCurrentPageColor;
         }
 
         #endregion

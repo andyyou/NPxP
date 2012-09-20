@@ -56,6 +56,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FailPieceList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FailPieceList.designer.cs">
+      <DependentUpon>FailPieceList.cs</DependentUpon>
+    </Compile>
     <Compile Include="FlawForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -116,6 +122,9 @@
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FailPieceList.resx">
+      <DependentUpon>FailPieceList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FlawForm.resx">
       <DependentUpon>FlawForm.cs</DependentUpon>
     </EmbeddedResource>

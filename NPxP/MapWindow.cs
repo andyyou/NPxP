@@ -160,6 +160,11 @@ namespace NPxP
             btnNextPiece.Enabled = false;
             _jobDoffNum.Clear();
             _doffResult.Clear();
+
+            if (JobHelper.IsOnpeHistory)
+            {
+                cmbFilterType.SelectedItem = "All";
+            }
         }
         public void InitTableLayout(ref TableLayoutPanel pnl)
         {
@@ -777,16 +782,16 @@ namespace NPxP
             int newPageNum = _currentPage;
             if (_filterType == "Pass")
             {
-                newPageNum = _doffResult.LastIndexOf(true, newPageNum - 2) + 2;
+                newPageNum = _doffResult.LastIndexOf(true, newPageNum - 2);
             }
             else if (_filterType == "Fail")
             {
-                newPageNum = _doffResult.LastIndexOf(false, newPageNum - 2) + 2;
+                newPageNum = _doffResult.LastIndexOf(false, newPageNum - 2);
             }
 
             if (newPageNum != -1)
             {
-                _currentPage = newPageNum;
+                _currentPage = newPageNum + 2;
                 if (_currentPage - 1 < 1)
                 {
                     _currentPage = 1;

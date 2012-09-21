@@ -1,4 +1,5 @@
 C:\Projects\Github\NPxP\NPxP\obj\Debug\ResolveAssemblyReference.cache
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.FailPieceList.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.FlawForm.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.FlawImageControl.resources
 C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.GradeSetup.resources

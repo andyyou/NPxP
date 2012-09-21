@@ -330,6 +330,7 @@ namespace NPxP
 
                     case e_EventID.CUT_SIGNAL:
                         _cuts.Add(eventInfo.MD);
+                        _mp.CalcEntirePieceResult();
 
                         if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
                         {
@@ -349,8 +350,7 @@ namespace NPxP
                                 dv.RowFilter = filterExp;
 
                                 //// * No Map Controls
-                                //DataRow[] rows = _dtbFlaws.Select(filterExp);
-                                //_mp.DrawChartPoint(rows, prevMD);
+                                //_mp.DrawChartPoint(prevMD);
                             }
                         }
                         break;

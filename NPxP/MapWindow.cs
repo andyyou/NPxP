@@ -788,6 +788,10 @@ namespace NPxP
             {
                 newPageNum = _doffResult.LastIndexOf(false, newPageNum - 2);
             }
+            else
+            {
+                newPageNum -= 2;
+            }
 
             if (newPageNum != -1)
             {
@@ -980,6 +984,7 @@ namespace NPxP
 
             if (roiMode == "Symmetrical" && showScore)
             {
+                bool pieceResult;
                 if (flawRows.Length > 0)
                 {
                     foreach (DataRow drCol in gradeColumn.Rows)
@@ -1002,17 +1007,18 @@ namespace NPxP
                     }
                     if (score >= limitScore)
                     {
-                        _doffResult.Add(false);
+                        pieceResult = false;
                     }
                     else
                     {
-                        _doffResult.Add(true);
+                        pieceResult = true;
                     }
                 }
                 else
                 {
-                    _doffResult.Add(true);
+                    pieceResult = true;
                 }
+                _doffResult.Add(pieceResult);
             }
 
             // Calc flaw number of this job

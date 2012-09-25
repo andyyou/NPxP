@@ -284,6 +284,7 @@ namespace NPxP
             _mp.InitFlawLegendGrid();
             _mp.InitDatatableFlaws(ref _dtbFlaws);
             _mp.InitCutList(ref _cuts);
+            _mp.InitFire(ref Fire);
 
 
             //// * No Map Controls
@@ -306,7 +307,6 @@ namespace NPxP
         public void OnJobStarted(int jobKey)
         {
             WriteHelper.Log("OnJobStarted()");
-            
         }
         // (20) :設定幾個 Events 就會觸發幾次
         public void OnEvents(IList<IEventInfo> events)

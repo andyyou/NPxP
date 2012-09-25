@@ -26,6 +26,7 @@ namespace NPxP
         private List<double> _cuts;
         private List<bool> _doffResult;
         private TableLayoutPanel _pnl;
+        private IWRFireEvent _fire;
         private Dictionary<string, MarkerKind> _dicSeriesShape;
         private Dictionary<string, string> _dicLegendShape;
         private Dictionary<string, int> _jobDoffNum;
@@ -44,6 +45,11 @@ namespace NPxP
             InitializeComponent();
             CreateShapeRefDic();
             chartControl.EmptyChartText.Text = "Flaw Distribution Map";
+        }
+
+        public void InitFire(ref IWRFireEvent fire)
+        {
+            this._fire = fire;
         }
 
         public void InitDatatableFlaws(ref DataTable dtbFlaws)
@@ -1019,6 +1025,12 @@ namespace NPxP
                     pieceResult = true;
                 }
                 _doffResult.Add(pieceResult);
+
+                // Fire when doff is fail
+                if (!JobHelper.IsOnpeHistory && pieceResult == false)
+                {
+                    _fire.FireEvent(0, 0, 0);
+                }
             }
 
             // Calc flaw number of this job

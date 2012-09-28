@@ -17,13 +17,43 @@ namespace NPxP
 {
     public partial class GradeSetup : Form
     {
+        #region Local Variables
+
         private DataTable _dtbColumns, _dtbRows, _dtbPoints, _dtbGrades;
         private List<string> _pointsSubpieceNames, _marksSubpieceNames;
+
+        #endregion
+
+        #region Constructor
+
         public GradeSetup()
         {
             InitializeComponent();
 
         }
+
+        #endregion
+
+        #region R Methods
+
+        // Convert ASCII to Char
+        public static char Chr(int Num)
+        {
+            char C = Convert.ToChar(Num);
+            return C;
+        }
+
+        // Convert Char to ASCII
+        public static int ASC(string S)
+        {
+            int N = Convert.ToInt32(S[0]);
+            return N;
+        }
+
+        #endregion
+
+        #region Action Methods
+
         private void GradeSetup_Load(object sender, EventArgs e)
         {
             // Prepare cmbConfig datasource
@@ -209,7 +239,7 @@ namespace NPxP
         {
             int x = int.TryParse(txtColumns.Text, out x) ? x : 1;
             int y = int.TryParse(txtRows.Text, out y) ? y : 1;
-            
+
             _dtbColumns.Clear();
             for (int i = 0; i < x; i++)
             {
@@ -265,7 +295,7 @@ namespace NPxP
 
             // Refresh Mark
             foreach (string subpiece in _marksSubpieceNames)
-            { 
+            {
                 string expr = String.Format("SubpieceName='{0}'", subpiece);
                 DataRow[] drs = _dtbGrades.Select(expr);
                 if (drs.Length < 1)
@@ -277,9 +307,6 @@ namespace NPxP
                     _dtbGrades.Rows.Add(dr);
                 }
             }
-
-
-
         }
 
         private void txtColumns_KeyPress(object sender, KeyPressEventArgs e)
@@ -332,6 +359,7 @@ namespace NPxP
             DataView dvGrade = _dtbGrades.DefaultView;
             dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
         }
+
         // Save xml
         private void btnSaveGradeConfigFile_Click(object sender, EventArgs e)
         {
@@ -407,7 +435,7 @@ namespace NPxP
                 navigator.SelectSingleNode("//roi/columns/column[last()]").AppendChildElement(string.Empty, "start", string.Empty, start);
                 navigator.SelectSingleNode("//roi/columns/column[last()]").AppendChildElement(string.Empty, "end", string.Empty, end);
             }
-            
+
             // Remove old rows for add new record.
             if (navigator.Select("//roi/rows/row").Count > 0)
             {
@@ -431,7 +459,7 @@ namespace NPxP
 
             // Grade - Setting
             //----------------------------------------------------------------------------------//
-            
+
             // Points
             // Save is points enable?
             navigator.SelectSingleNode("//grade/points/enable").SetValue(chkEnablePonit.Checked.ToString());
@@ -460,7 +488,7 @@ namespace NPxP
                 {
                     expr = String.Format("SubpieceName='{0}'", "All");
                 }
-               
+
                 DataRow[] drs = _dtbPoints.Select(expr);
                 foreach (DataRow dr in drs)
                 {
@@ -471,7 +499,7 @@ namespace NPxP
                     navigator.SelectSingleNode("//grade/points/sub_piece[last()]/flawtype_score[last()]").CreateAttribute(string.Empty, "id", string.Empty, classID.ToString());
                 }
             }
-           
+
             // Remove old grade(marks)/subpiece for add new record . (_dtbGrades)
             if (navigator.Select("//grade/marks/sub_piece").Count > 0)
             {
@@ -517,7 +545,7 @@ namespace NPxP
 
             // Finish Save
             //----------------------------------------------------------------------------------//
-           
+
             string grade_path = PathHelper.GradeConfigFolder + cmbConfig.Text.Trim() + ".xml";
             try
             {
@@ -570,8 +598,6 @@ namespace NPxP
             DataView dvGrade = _dtbGrades.DefaultView;
             dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
             tmpGrades.Dispose();
-            
-
         }
 
         private void btnReset_Click(object sender, EventArgs e)
@@ -588,7 +614,6 @@ namespace NPxP
             cmbConfig.DataSource = gradeConfigs;
             ConfigHelper ch = new ConfigHelper();
             cmbConfig.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
-
 
             //ROI Settings
             //----------------------------------------------------------------------------------------//
@@ -618,7 +643,6 @@ namespace NPxP
             dgvColumns.DataSource = _dtbColumns;
             _dtbRows = ch.GetDataTableOfdgvRows(cmbConfig.SelectedItem.ToString().Trim());
             dgvRows.DataSource = _dtbRows;
-
 
             // Grade Settings
             //----------------------------------------------------------------------------------------//
@@ -664,7 +688,6 @@ namespace NPxP
             }
         }
 
-
         private void dgvPoint_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.Cancel = false;
@@ -682,7 +705,6 @@ namespace NPxP
                 e.Handled = true;
             }
         }
-
 
         private void dgvPoint_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
@@ -706,33 +728,12 @@ namespace NPxP
             }
         }
 
-
         private void dgvGrade_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
             if (dgvGrade.Rows.Count <= 1)
             {
                 e.Cancel = true;
             }
-            else
-            {
-               
-            }
-
-
-        }
-
-        // 轉換 ASCII Number
-        public static char Chr(int Num)
-        {
-            char C = Convert.ToChar(Num);
-            return C;
-        }
-
-        // 轉換 Char to ASCnumber
-        public static int ASC(string S)
-        {
-            int N = Convert.ToInt32(S[0]);
-            return N;
         }
 
         private void dgvGrade_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -751,19 +752,14 @@ namespace NPxP
 
                 foreach (DataRow d in drs)
                 {
-
                     d["GradeName"] = Chr(chrNo).ToString();
                     chrNo++;
                 }
-
-               
             }
             else
             {
                 MessageBox.Show("Other score belone grade \"F\" ");
             }
-            
- 
         }
 
         private void dgvGrade_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
@@ -903,7 +899,6 @@ namespace NPxP
             if (!chkEnableGrade.Checked)
             {
                 chkEnablePonit.Enabled = true;
-              
             }
             else
             {
@@ -920,13 +915,13 @@ namespace NPxP
             {
                 chkEnablePonit.Checked = true;
                 chkEnablePonit.Enabled = false;
-
             }
             else
             {
                 chkEnableGrade.Enabled = true;
             }
         }
+
         private void RoiMode_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton rdo = sender as RadioButton;
@@ -941,6 +936,7 @@ namespace NPxP
                 tabGradeSetting.Visible = true;
             }
         }
-       
+
+        #endregion       
     }
 }

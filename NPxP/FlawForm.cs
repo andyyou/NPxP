@@ -24,17 +24,18 @@ namespace NPxP
 
         #endregion
 
+        #region Constructor
+
         public FlawForm(DataRow drFlaw)
         {
-
             InitializeComponent();
             _drFlaw = drFlaw;
-           
-
         }
-        //-------------------------------------------------------------------------------------------//
+
+        #endregion
 
         #region R Methods
+
         // 計算圖片比例和置放圖片.
         public double Init_Image(Bitmap bmp, TabPage tp, PictureBox pb)
         {
@@ -72,6 +73,7 @@ namespace NPxP
             pb.Image = dest;
             return ratio;
         }
+
         // Zoom In, Zoom Out
         public void PicZoomByPercent(int ZoomPercent)
         {
@@ -101,11 +103,11 @@ namespace NPxP
                 pb.Image = dest;
             }
         }
+
         #endregion
 
-        //-------------------------------------------------------------------------------------------//
-
         #region Action Methods
+
         private void FlawForm_Load(object sender, EventArgs e)
         {
             // set local variables.
@@ -154,17 +156,17 @@ namespace NPxP
                 }
             }
         }
+
         public void pb_Click(object sender, MouseEventArgs e)
         {
             ftbImage.Focus();
         }
+
         private void ftbImage_Scroll(object sender, EventArgs e)
         {
             PicZoomByPercent(ftbImage.Value);
         }
+
         #endregion
-
-       
-
     }
 }

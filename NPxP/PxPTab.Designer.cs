@@ -35,7 +35,6 @@
             this.lblSlash = new System.Windows.Forms.Label();
             this.lblTotalPage = new System.Windows.Forms.Label();
             this.lblNowPage = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlaw)).BeginInit();
             this.SuspendLayout();
             // 
@@ -141,23 +140,12 @@
             this.lblNowPage.TabIndex = 6;
             this.lblNowPage.Text = "---";
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(56, 700);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // PxPTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::NPxP.Properties.Resources.BackgroundRight;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.lblNowPage);
             this.Controls.Add(this.lblTotalPage);
             this.Controls.Add(this.lblSlash);
@@ -182,6 +170,5 @@
         private System.Windows.Forms.Label lblSlash;
         private System.Windows.Forms.Label lblTotalPage;
         private System.Windows.Forms.Label lblNowPage;
-        private System.Windows.Forms.Button button1;
     }
 }

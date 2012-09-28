@@ -17,13 +17,22 @@ namespace NPxP
 {
     public partial class MapSetup : Form
     {
+        #region Local Variables
+
         private DataTable _dtbFlawLegends;
+
+        #endregion
+
+        #region Constructor
+
         public MapSetup()
         {
             InitializeComponent();
         }
 
-        //----------------------------------------------------------------------------------//
+        #endregion
+
+        #region Action Methods
 
         private void MapSetup_Load(object sender, EventArgs e)
         {
@@ -206,7 +215,6 @@ namespace NPxP
             {
                 return;
             }
-            
 
             // initialize map xml sechma
             string sechma_path = PathHelper.SystemConfigFolder + "map_sechma.xml";
@@ -242,8 +250,6 @@ namespace NPxP
                 double cd = Double.TryParse(txtFixSizeCD.Text, out cd) ? cd : 1;
                 navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/fix/md").SetValue(md.ToString());
                 navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/fix/cd").SetValue(cd.ToString());
-
-
             }
             else if (rdoCountSize.Checked)
             {
@@ -333,7 +339,6 @@ namespace NPxP
             {
                 MessageBox.Show("Fail.");
             }
-            
         }
 
         private void txtFixSizeMD_KeyPress(object sender, KeyPressEventArgs e)
@@ -346,7 +351,6 @@ namespace NPxP
             {
                 e.Handled = true;
             }
-
         }
 
         private void txtFixSizeCD_KeyPress(object sender, KeyPressEventArgs e)
@@ -393,7 +397,6 @@ namespace NPxP
             if (!regex.IsMatch(txt.Text))
             {
                 txt.Text = "";
-
             }
         }
 
@@ -436,7 +439,6 @@ namespace NPxP
                 e.CellStyle.BackColor = System.Drawing.ColorTranslator.FromHtml(color);
                 e.CellStyle.ForeColor = System.Drawing.ColorTranslator.FromHtml(color);
                 e.Value = "";
-
             }
         }
 
@@ -529,5 +531,7 @@ namespace NPxP
                 _dtbFlawLegends.Rows.Add(newDr); 
             }
         }
+
+        #endregion
     }
 }

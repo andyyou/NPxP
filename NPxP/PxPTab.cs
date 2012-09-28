@@ -346,6 +346,7 @@ namespace NPxP
                                 double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
                                 string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
                                 DataView dv = _dtbFlaws.DefaultView;
+                                _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
                                 _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
                                 dv.RowFilter = filterExp;
 
@@ -445,7 +446,7 @@ namespace NPxP
         public void OnCut(double md)
         {
             WriteHelper.Log("OnCut()");
-            
+            GC.Collect();
            
         }
         // (D) :處理缺陷判斷
@@ -828,7 +829,7 @@ namespace NPxP
 
         public void OnClassifyFlaw(ref IFlawInfo flaw, ref bool deleteFlaw)
         {
-            WriteHelper.Log("OnClassifyFlaw()");
+            
         }
 
         #endregion

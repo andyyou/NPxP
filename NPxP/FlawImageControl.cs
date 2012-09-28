@@ -43,7 +43,7 @@ namespace NPxP
             _pb = new PictureBox[JobHelper.JobInfo.NumberOfStations];
             _pbRatio = new double[JobHelper.JobInfo.NumberOfStations];
             _srcImages = new Image[JobHelper.JobInfo.NumberOfStations];
-           
+
             for (int i = 0; i < JobHelper.JobInfo.NumberOfStations; i++)
             {
                 tabImages.TabPages.Add("S" + ((i + 1).ToString()));

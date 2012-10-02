@@ -758,7 +758,8 @@ namespace NPxP
             }
             else
             {
-                MessageBox.Show("Other score belone grade \"F\" ");
+                if(e.RowIndex == 4)
+                    MessageBox.Show("Other score belone grade \"F\" ");
             }
         }
 

@@ -15,24 +15,22 @@ namespace NPxP
 {
     public partial class FlawImageControl : UserControl
     {
-        #region Local Variable
+        #region Local Variables
 
         private DataRow _drFlaw;
         private PictureBox[] _pb;
         private double[] _pbRatio;
         private Image[] _srcImages;
 
-        
-        
         #endregion
-        //-------------------------------------------------------------------------------------------//
 
         #region Properties
 
         public bool IsDrawBorder { set; get; }
 
         #endregion
-        //-------------------------------------------------------------------------------------------//
+
+        #region Constructor
 
         public FlawImageControl(DataRow drFlaw)
         {
@@ -43,7 +41,7 @@ namespace NPxP
             _pb = new PictureBox[JobHelper.JobInfo.NumberOfStations];
             _pbRatio = new double[JobHelper.JobInfo.NumberOfStations];
             _srcImages = new Image[JobHelper.JobInfo.NumberOfStations];
-           
+
             for (int i = 0; i < JobHelper.JobInfo.NumberOfStations; i++)
             {
                 tabImages.TabPages.Add("S" + ((i + 1).ToString()));
@@ -77,10 +75,10 @@ namespace NPxP
             }
         }
 
-
-        //-------------------------------------------------------------------------------------------//
+        #endregion
 
         #region R Methods
+
         // 計算圖片比例和置放圖片.
         public double Init_Image(Bitmap bmp, TabPage tp, PictureBox pb)
         {
@@ -118,6 +116,7 @@ namespace NPxP
             pb.Image = dest;
             return ratio;
         }
+
         // Zoom In, Zoom Out
         public void PicZoomByPercent(int ZoomPercent)
         {
@@ -150,11 +149,8 @@ namespace NPxP
        
         #endregion
 
-
-        //-------------------------------------------------------------------------------------------//
-
         #region Action Methods
-        // 
+
         private void tabImages_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -173,7 +169,7 @@ namespace NPxP
                 WriteHelper.ErrorLog("tabImages_SelectedIndexChanged()"); 
             }
         }
-        //
+
         public void pb_Click(object sender, MouseEventArgs e)
         {
             JobHelper.Job.SetOffline();
@@ -208,6 +204,7 @@ namespace NPxP
                 tabImages.SelectedTab.Tag = multiliper;
             }
         }
+
         public void pb_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -217,6 +214,7 @@ namespace NPxP
                 ff.ShowDialog();
             }
         }
+
         private void FlawImageControl_Paint(object sender, PaintEventArgs e)
         {
             if (IsDrawBorder)
@@ -243,13 +241,10 @@ namespace NPxP
             }
         }
 
-       
-        #endregion
-
         private void tabImages_Click(object sender, EventArgs e)
         {
             var c = from controls in this.Parent.Controls.OfType<FlawImageControl>()
-                    select controls; 
+                    select controls;
             foreach (Control control in c)
             {
                 if (control.GetType().Name == "FlawImageControl")
@@ -268,13 +263,9 @@ namespace NPxP
             .Where(r => r.Cells["FlawID"].Value.ToString().Equals(_drFlaw["FlawID"].ToString()))
             .First();
             row.Selected = true;
-            
+
         }
 
-       
-
-        
-
-       
+        #endregion    
     }
 }

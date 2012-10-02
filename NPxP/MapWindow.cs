@@ -13,20 +13,21 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Xml;
 using System.Xml.XPath;
-//using DevExpress.XtraCharts;
+using DevExpress.XtraCharts;
 
 namespace NPxP
 {
     public partial class MapWindow : UserControl
     {
-        #region Local Objects
+        #region Local Variables
 
         private DataTable _dtbFlaws, _dtbFlawLegends, _dtbPoints, _dtbGrades;
         private List<FlawLegend> _legend;
         private List<double> _cuts;
         private List<bool> _doffResult;
         private TableLayoutPanel _pnl;
-        // private Dictionary<string, MarkerKind> _dicSeriesShape;
+        private IWRFireEvent _fire;
+        private Dictionary<string, MarkerKind> _dicSeriesShape;
         private Dictionary<string, string> _dicLegendShape;
         private Dictionary<string, int> _jobDoffNum;
         private FailPieceList fpl = null;
@@ -38,34 +39,55 @@ namespace NPxP
 
         #endregion
 
+        #region Constructor
+
         public MapWindow()
         {
             WriteHelper.Log("MapWindow()");
             InitializeComponent();
             CreateShapeRefDic();
-            //chartControl.EmptyChartText.Text = "Flaw Distribution Map";
+            chartControl.EmptyChartText.Text = "Flaw Distribution Map";
         }
 
+        #endregion
+
+        #region R Method
+
+        // Get PxPTab.Fire object memory address
+        public void InitFire(ref IWRFireEvent fire)
+        {
+            this._fire = fire;
+        }
+
+        // Get PxPTab._dtbFlaws object memory address
         public void InitDatatableFlaws(ref DataTable dtbFlaws)
         {
-            _dtbFlaws = new DataTable();
+            this._dtbFlaws = new DataTable();
             this._dtbFlaws = dtbFlaws;
         }
- 	 
-        // Just for Initialize once 
+
+        // Get PxPTab._cuts object memory address
         public void InitCutList(ref List<double> cuts)
         {
-            _cuts = new List<double>();
-            _cuts = cuts;
+            this._cuts = new List<double>();
+            this._cuts = cuts;
         }
 
-        // Just for Initialize once not use at other.
-        public void InitFlawLegendValue(List<FlawLegend> legned)
+        // Get PxPTab control(tlpFlawImages) memory address
+        public void InitTableLayout(ref TableLayoutPanel pnl)
         {
-            _legend = new List<FlawLegend>();
-            _legend.AddRange(legned);
+            this._pnl = new TableLayoutPanel();
+            this._pnl = pnl;
         }
 
+        // Get msc file legend defination
+        public void InitFlawLegendValue(List<FlawLegend> legend)
+        {
+            this._legend = new List<FlawLegend>();
+            _legend.AddRange(legend);
+        }
+
+        // Initial flaw legend datagridview
         public void InitFlawLegendGrid()
         {
             _dtbFlawLegends.Rows.Clear();
@@ -108,6 +130,7 @@ namespace NPxP
             document.Load(map_path);
             XPathNavigator navigator = document.CreateNavigator();
             XPathNodeIterator node = navigator.Select("//map_window/flaw_legend");
+            
             // remove old flawlegend for add records
             if (navigator.Select("//map_window/flaw_legend").Count > 0 && _dtbFlawLegends.Rows.Count > 0)
             {
@@ -116,6 +139,7 @@ namespace NPxP
                 navigator.MoveTo(first);
                 navigator.DeleteRange(last);
             }
+
             // save _dtbFlawLegends to xml
             for (int i = 0; i < _dtbFlawLegends.Rows.Count; i++)
             {
@@ -140,6 +164,7 @@ namespace NPxP
             }
         }
 
+        // Initial UI and local object
         public void InitJobInfo(IJobInfo jobInfo)
         {
             lblDateTimeValue.Text = DateTime.Now.ToShortDateString();
@@ -166,76 +191,9 @@ namespace NPxP
                 cmbFilterType.SelectedItem = "All";
             }
         }
-        public void InitTableLayout(ref TableLayoutPanel pnl)
-        {
-            _pnl = new TableLayoutPanel();
-            _pnl = pnl;
-        }
-        private void btnMapSetting_Click(object sender, EventArgs e)
-        {
-            MapSetup ms = new MapSetup();
-            ms.ShowDialog();
-            if (_legend != null && _legend.Count > 0)
-            {
-                // Reload flawlegend
-                _dtbFlawLegends.Rows.Clear();
-                // Add jobloaded records
-                foreach (FlawLegend f in _legend)
-                {
-                    DataRow dr = _dtbFlawLegends.NewRow();
-                    dr["Display"] = f.VisibleFlags;
-                    dr["FlawType"] = f.ClassID;
-                    dr["Name"] = f.Name;
-                    dr["Shape"] = "Cone";
-                    dr["Color"] = String.Format("#{0:X2}{1:X2}{2:X2}", ColorTranslator.FromWin32((int)f.Color).R,
-                                                            ColorTranslator.FromWin32((int)f.Color).G,
-                                                            ColorTranslator.FromWin32((int)f.Color).B);
-                    dr["PieceDoffNum"] = 0;
-                    dr["JobDoffNum"] = 0;
-                    _dtbFlawLegends.Rows.Add(dr);
-                }
-                // Deal Flaw Legends datasoure
-                ConfigHelper ch = new ConfigHelper();
 
-                string mapConfig = ch.GetDefaultMapConfigName().Trim();
-                DataTable dtbLegendFromConfig = ch.GetDataTablePrevFlawLegend(mapConfig);
-
-                foreach (DataRow d in dtbLegendFromConfig.Rows)
-                {
-                    string expr = String.Format("FlawType={0} AND Name='{1}'", d["FlawType"].ToString().Trim(), d["Name"].ToString().Trim());
-                    DataRow[] drs = _dtbFlawLegends.Select(expr);
-                    if (drs.Length > 0)
-                    {
-                        drs[0]["Shape"] = d["Shape"].ToString().Trim();
-                        drs[0]["Color"] = d["Color"].ToString().Trim();
-                    }
-                }
-
-                dgvFlawLegend.ClearSelection();
-                dgvFlawLegendDetial.ClearSelection();
-
-                // Refresh pxptab tablelayout
-
-                _pnl.ColumnCount = ch.GettlpFlawImagesColumns();
-                _pnl.RowCount = ch.GettlpFlawImagesRows();
-                _pnl.ColumnStyles.Clear();
-                int phdHeight = _pnl.Height / _pnl.RowCount;
-                int phdrWidth = _pnl.Width / _pnl.ColumnCount;
-                for (int i = 0; i < _pnl.RowCount; i++)
-                {
-                    _pnl.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
-                }
-
-                for (int i = 0; i < _pnl.ColumnCount; i++)
-                {
-                    _pnl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-                }
-            }
-        }
-
-        #region R Method
-
-        public void InitChart(double width,double height)
+        // Initial flaw chart
+        public void InitChart(double width, double height)
         {
             ConfigHelper ch = new ConfigHelper();
             string mapConfigFile = ch.GetDefaultMapConfigName();
@@ -249,93 +207,93 @@ namespace NPxP
             double countMdSize = ch.GetCountSizeMD(mapConfigFile);
             string bottomAxes = ch.GetBottomAxes(mapConfigFile);
 
+            if (chartControl.Series != null)
+            {
+                chartControl.Series.Clear();
+            }
+            Series series = new Series();
+            chartControl.RuntimeHitTesting = true;
+            chartControl.Legend.Visible = false;
+            chartControl.Series.Add(series);
 
-            //if (chartControl.Series != null)
-            //{
-            //    chartControl.Series.Clear();
-            //}
-            //Series series = new Series();
-            //chartControl.RuntimeHitTesting = true;
-            //chartControl.Legend.Visible = false;
-            //chartControl.Series.Add(series);
+            XYDiagram diagram = (XYDiagram)chartControl.Diagram;
+            // Setting AxisX format
+            diagram.EnableAxisXZooming = true;
+            diagram.AxisX.Range.MinValue = 0;
+            diagram.AxisX.Range.MaxValue = width;
+            diagram.AxisX.Range.ScrollingRange.SetMinMaxValues(0, width);
+            diagram.AxisX.NumericOptions.Format = NumericFormat.Number;
+            diagram.AxisX.NumericOptions.Precision = 6;
+            diagram.AxisX.Reverse = isCdInvert;
+            diagram.AxisX.GridLines.Visible = isDisplayGrid;
+            diagram.AxisX.GridLines.LineStyle.DashStyle = DashStyle.Dash;
+            diagram.AxisX.GridSpacingAuto = false;
 
-            //XYDiagram diagram = (XYDiagram)chartControl.Diagram;
-            //// Setting AxisX format
-            //diagram.EnableAxisXZooming = true;
-            //diagram.AxisX.Range.MinValue = 0;
-            //diagram.AxisX.Range.MaxValue = width;
-            //diagram.AxisX.Range.ScrollingRange.SetMinMaxValues(0, width);
-            //diagram.AxisX.NumericOptions.Format = NumericFormat.Number;
-            //diagram.AxisX.NumericOptions.Precision = 6;
-            //diagram.AxisX.Reverse = isCdInvert;
-            //diagram.AxisX.GridLines.Visible = isDisplayGrid;
-            //diagram.AxisX.GridLines.LineStyle.DashStyle = DashStyle.Dash;
-            //diagram.AxisX.GridSpacingAuto = false;
+            // Setting AxisY format
+            diagram.EnableAxisYZooming = true;
+            diagram.AxisY.Range.MinValue = 0;
+            diagram.AxisY.Range.MaxValue = height;
+            diagram.AxisY.Range.ScrollingRange.SetMinMaxValues(0, height);
+            diagram.AxisY.NumericOptions.Format = NumericFormat.Number;
+            diagram.AxisY.NumericOptions.Precision = 6;
+            diagram.AxisY.Reverse = isMdInvert;
+            diagram.AxisY.GridLines.Visible = isDisplayGrid;
+            diagram.AxisY.GridLines.LineStyle.DashStyle = DashStyle.Dash;
+            diagram.AxisY.GridSpacingAuto = false;
 
-            //// Setting AxisY format
-            //diagram.EnableAxisYZooming = true;
-            //diagram.AxisY.Range.MinValue = 0;
-            //diagram.AxisY.Range.MaxValue = height;
-            //diagram.AxisY.Range.ScrollingRange.SetMinMaxValues(0, height);
-            //diagram.AxisY.NumericOptions.Format = NumericFormat.Number;
-            //diagram.AxisY.NumericOptions.Precision = 6;
-            //diagram.AxisY.Reverse = isMdInvert;
-            //diagram.AxisY.GridLines.Visible = isDisplayGrid;
-            //diagram.AxisY.GridLines.LineStyle.DashStyle = DashStyle.Dash;
-            //diagram.AxisY.GridSpacingAuto = false;
+            // Setting chart cell size
+            if (isFixCellSize) // Specify cell size
+            {
+                diagram.AxisX.GridSpacing = fixCdSize;
+                diagram.AxisY.GridSpacing = fixMdSize;
+            }
+            else // Equal cell count
+            {
+                diagram.AxisX.GridSpacing = width / countCdSize;
+                diagram.AxisY.GridSpacing = height / countMdSize;
+            }
 
-            //// Setting chart cell size
-            //if (isFixCellSize) // Specify cell size
-            //{
-            //    diagram.AxisX.GridSpacing = fixCdSize;
-            //    diagram.AxisY.GridSpacing = fixMdSize;
-            //}
-            //else // Equal cell count
-            //{
-            //    diagram.AxisX.GridSpacing = width / countCdSize;
-            //    diagram.AxisY.GridSpacing = height / countMdSize;
-            //}
+            // Setting Axes position
+            if (isCdInvert)
+            {
+                if (isMdInvert)
+                {
+                    diagram.AxisX.Alignment = AxisAlignment.Far;
+                    diagram.AxisY.Alignment = AxisAlignment.Far;
+                }
+                else
+                {
+                    diagram.AxisX.Alignment = AxisAlignment.Near;
+                    diagram.AxisY.Alignment = AxisAlignment.Far;
+                }
+            }
+            else
+            {
+                if (isMdInvert)
+                {
+                    diagram.AxisX.Alignment = AxisAlignment.Far;
+                    diagram.AxisY.Alignment = AxisAlignment.Near;
+                }
+                else
+                {
+                    diagram.AxisX.Alignment = AxisAlignment.Near;
+                    diagram.AxisY.Alignment = AxisAlignment.Near;
+                }
+            }
 
-            //// Setting Axes position
-            //if (isCdInvert)
-            //{
-            //    if (isMdInvert)
-            //    {
-            //        diagram.AxisX.Alignment = AxisAlignment.Far;
-            //        diagram.AxisY.Alignment = AxisAlignment.Far;
-            //    }
-            //    else
-            //    {
-            //        diagram.AxisX.Alignment = AxisAlignment.Near;
-            //        diagram.AxisY.Alignment = AxisAlignment.Far;
-            //    }
-            //}
-            //else
-            //{
-            //    if (isMdInvert)
-            //    {
-            //        diagram.AxisX.Alignment = AxisAlignment.Far;
-            //        diagram.AxisY.Alignment = AxisAlignment.Near;
-            //    }
-            //    else
-            //    {
-            //        diagram.AxisX.Alignment = AxisAlignment.Near;
-            //        diagram.AxisY.Alignment = AxisAlignment.Near;
-            //    }
-            //}
-
-            //// Rotate chart when bottom axes is MD
-            //if (bottomAxes == "CD")
-            //{
-            //    diagram.Rotated = false;
-            //}
-            //else
-            //{
-            //    diagram.Rotated = true;
-            //}
-            //DrawSubPiece();
+            // Rotate chart when bottom axes is MD
+            if (bottomAxes == "CD")
+            {
+                diagram.Rotated = false;
+            }
+            else
+            {
+                diagram.Rotated = true;
+            }
+            DrawSubPiece();
         }
 
+        // Draw sub piece range and annotation
         private void DrawSubPiece()
         {
             _totalScore = 0;
@@ -351,91 +309,91 @@ namespace NPxP
 
             if (roiMode == "Symmetrical")
             {
-            //    foreach (DataRow drCol in gradeColumn.Rows)
-            //    {
-            //        foreach (DataRow drRow in gradeRow.Rows)
-            //        {
-            //            // Add rangearea
-            //            string rangeName = String.Format("{0}{1}", drCol["Name"], drRow["Name"]);
-            //            Series range = new Series(rangeName, ViewType.RangeArea);
-            //            range.ShowInLegend = false;
-            //            range.CrosshairEnabled = DevExpress.Utils.DefaultBoolean.False;
-            //            range.ArgumentScaleType = ScaleType.Numerical;
+                foreach (DataRow drCol in gradeColumn.Rows)
+                {
+                    foreach (DataRow drRow in gradeRow.Rows)
+                    {
+                        // Add rangearea
+                        string rangeName = String.Format("{0}{1}", drCol["Name"], drRow["Name"]);
+                        Series range = new Series(rangeName, ViewType.RangeArea);
+                        range.ShowInLegend = false;
+                        range.CrosshairEnabled = DevExpress.Utils.DefaultBoolean.False;
+                        range.ArgumentScaleType = ScaleType.Numerical;
 
-            //            range.Points.Add(new SeriesPoint(drCol["Start"], drRow["Start"], drRow["End"]));
-            //            range.Points.Add(new SeriesPoint(drCol["End"], drRow["Start"], drRow["End"]));
+                        range.Points.Add(new SeriesPoint(drCol["Start"], drRow["Start"], drRow["End"]));
+                        range.Points.Add(new SeriesPoint(drCol["End"], drRow["Start"], drRow["End"]));
 
-            //            RangeAreaSeriesView view = (RangeAreaSeriesView)range.View;
-            //            view.Color = Color.Red;
-            //            view.Transparency = 230;
-            //            view.Marker1.Visible = false;
-            //            view.Marker2.Visible = false;
-            //            view.Border1.Color = Color.Transparent;
-            //            view.Border2.Color = Color.Transparent;
+                        RangeAreaSeriesView view = (RangeAreaSeriesView)range.View;
+                        view.Color = Color.Red;
+                        view.Transparency = 230;
+                        view.Marker1.Visible = false;
+                        view.Marker2.Visible = false;
+                        view.Border1.Color = Color.Transparent;
+                        view.Border2.Color = Color.Transparent;
 
-            //            chartControl.Series.Add(range);
+                        chartControl.Series.Add(range);
 
-            //            int subPieceScore = 0;
-            //            string subPieceGrade = "F";
-            //                if (showScore)
-            //                {
-            //                    string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + _topOfPart), (Convert.ToDouble(drRow["End"]) + _topOfPart));
-            //                    DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
-            //                    foreach (DataRow dr in subFlawRows)
-            //                    {
-            //                        string pointFilter = String.Format("SubpieceName = 'ROI-{0}' AND ClassName = '{1}'", rangeName, dr["FlawClass"]);
-            //                        subPieceScore += Convert.ToInt32(_dtbPoints.Select(pointFilter).First()["Score"]);
-            //                    }
-            //                }
-            //                if (showGrade)
-            //                {
-            //                    string gradeFilter = String.Format("SubpieceName = 'ROI-{0}' AND Score >= {1}", rangeName, subPieceScore);
-            //                    DataRow[] r = _dtbGrades.Select(gradeFilter);
-            //                    if (_dtbGrades.Select(gradeFilter).Length > 0)
-            //                    {
-            //                        subPieceGrade = _dtbGrades.Select(gradeFilter).First()["GradeName"].ToString();
-            //                    }
-            //                }
+                        int subPieceScore = 0;
+                        string subPieceGrade = "F";
+                        if (showScore)
+                        {
+                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + _topOfPart), (Convert.ToDouble(drRow["End"]) + _topOfPart));
+                            DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
+                            foreach (DataRow dr in subFlawRows)
+                            {
+                                string pointFilter = String.Format("SubpieceName = 'ROI-{0}' AND ClassName = '{1}'", rangeName, dr["FlawClass"]);
+                                subPieceScore += Convert.ToInt32(_dtbPoints.Select(pointFilter).First()["Score"]);
+                            }
+                        }
+                        if (showGrade)
+                        {
+                            string gradeFilter = String.Format("SubpieceName = 'ROI-{0}' AND Score >= {1}", rangeName, subPieceScore);
+                            DataRow[] r = _dtbGrades.Select(gradeFilter);
+                            if (_dtbGrades.Select(gradeFilter).Length > 0)
+                            {
+                                subPieceGrade = _dtbGrades.Select(gradeFilter).First()["GradeName"].ToString();
+                            }
+                        }
 
-            //            // Add annotation
-            //            TextAnnotation annotation = new TextAnnotation();
-            //            PaneAnchorPoint paPoint = new PaneAnchorPoint();
-            //            RelativePosition relPosition = new RelativePosition();
+                        // Add annotation
+                        TextAnnotation annotation = new TextAnnotation();
+                        PaneAnchorPoint paPoint = new PaneAnchorPoint();
+                        RelativePosition relPosition = new RelativePosition();
 
-            //            annotation.LabelMode = true;
-            //            annotation.BackColor = System.Drawing.Color.Transparent;
-            //            annotation.Border.Visible = false;
-            //            annotation.ConnectorStyle = AnnotationConnectorStyle.None;
-            //            annotation.Font = new System.Drawing.Font("Tahoma", 8F, FontStyle.Bold);
-            //            annotation.TextColor = Color.Blue;
-            //            annotation.Name = rangeName;
-            //            string annotationScore = "";
-            //            if (showScore)
-            //            {
-            //                annotationScore = String.Format(" - {0}", subPieceScore);
-            //            }
-            //            string annotationGrade = "";
-            //            if (showGrade)
-            //            {
-            //                annotationGrade = String.Format("({0})", subPieceGrade);
-            //            }
-            //            annotation.Text = String.Format("{0}{1}{2}", rangeName, annotationScore, annotationGrade);
-            //            string annotationX = Convert.ToString(Convert.ToDouble(drCol["Start"]) + (Convert.ToDouble(drCol["End"]) - Convert.ToDouble(drCol["Start"])) * 0.1);
-            //            string annotationY = Convert.ToString(Convert.ToDouble(drRow["End"]) - (Convert.ToDouble(drRow["End"]) - Convert.ToDouble(drRow["Start"])) * 0.1);
-            //            paPoint.AxisXCoordinate.AxisValueSerializable = annotationX;
-            //            paPoint.AxisYCoordinate.AxisValueSerializable = annotationY;
-            //            annotation.AnchorPoint = paPoint;
-            //            relPosition.Angle = 0;
-            //            relPosition.ConnectorLength = 0;
-            //            annotation.ShapePosition = relPosition;
-            //            chartControl.AnnotationRepository.AddRange(new Annotation[] { annotation });
+                        annotation.LabelMode = true;
+                        annotation.BackColor = System.Drawing.Color.Transparent;
+                        annotation.Border.Visible = false;
+                        annotation.ConnectorStyle = AnnotationConnectorStyle.None;
+                        annotation.Font = new System.Drawing.Font("Tahoma", 8F, FontStyle.Bold);
+                        annotation.TextColor = Color.Blue;
+                        annotation.Name = rangeName;
+                        string annotationScore = "";
+                        if (showScore)
+                        {
+                            annotationScore = String.Format(" - {0}", subPieceScore);
+                        }
+                        string annotationGrade = "";
+                        if (showGrade)
+                        {
+                            annotationGrade = String.Format("({0})", subPieceGrade);
+                        }
+                        annotation.Text = String.Format("{0}{1}{2}", rangeName, annotationScore, annotationGrade);
+                        string annotationX = Convert.ToString(Convert.ToDouble(drCol["Start"]) + (Convert.ToDouble(drCol["End"]) - Convert.ToDouble(drCol["Start"])) * 0.1);
+                        string annotationY = Convert.ToString(Convert.ToDouble(drRow["End"]) - (Convert.ToDouble(drRow["End"]) - Convert.ToDouble(drRow["Start"])) * 0.1);
+                        paPoint.AxisXCoordinate.AxisValueSerializable = annotationX;
+                        paPoint.AxisYCoordinate.AxisValueSerializable = annotationY;
+                        annotation.AnchorPoint = paPoint;
+                        relPosition.Angle = 0;
+                        relPosition.ConnectorLength = 0;
+                        annotation.ShapePosition = relPosition;
+                        chartControl.AnnotationRepository.AddRange(new Annotation[] { annotation });
 
-            //            _totalScore += subPieceScore;
-            //        }
-            //    }
+                        _totalScore += subPieceScore;
+                    }
+                }
             }
 
-            //// Calculate flaw quantity
+            // Calculate flaw quantity
             Dictionary<string, int> flawLegendRefDic = new Dictionary<string, int>();
             int i = 0;
             foreach (DataGridViewRow dgvr in dgvFlawLegendDetial.Rows)
@@ -456,6 +414,7 @@ namespace NPxP
             }
         }
 
+        // Update page count(For Open History)
         public void UpdatePagesCount()
         {
             _currentPage = 1;
@@ -464,12 +423,14 @@ namespace NPxP
             UpdateUIControl();
         }
 
+        // Draw point at chart(For Online and Fail Piece List)
         public void DrawChartPoint(double topOfPart)
         {
             _topOfPart = topOfPart;
             DrawChartPoint();
         }
 
+        // Draw point at chart
         public void DrawChartPoint()
         {
             if (JobHelper.IsOnline)
@@ -482,55 +443,197 @@ namespace NPxP
 
             DataRow[] flawRows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter);
 
-            //chartControl.Series.Clear();
-            //DrawSubPiece();
+            chartControl.Series.Clear();
+            DrawSubPiece();
 
-            //Series flawPoint;
-            //foreach (DataRow dr in flawRows)
-            //{
-            //    flawPoint = new Series(dr["FlawID"].ToString(), ViewType.Point);
-            //    double cd = Convert.ToDouble(dr["CD"]);
-            //    double md = Convert.ToDouble(dr["MD"]) - _topOfPart;
-            //    string flawClass = dr["FlawClass"].ToString();
+            Series flawPoint;
+            foreach (DataRow dr in flawRows)
+            {
+                flawPoint = new Series(dr["FlawID"].ToString(), ViewType.Point);
+                double cd = Convert.ToDouble(dr["CD"]);
+                double md = Convert.ToDouble(dr["MD"]) - _topOfPart;
+                string flawClass = dr["FlawClass"].ToString();
 
-            //    string filterExp = String.Format("Name = '{0}'", flawClass);
-            //    DataRow row = _dtbFlawLegends.Select(filterExp).First();
+                string filterExp = String.Format("Name = '{0}'", flawClass);
+                DataRow row = _dtbFlawLegends.Select(filterExp).First();
 
-            //    flawPoint.LegendText = flawClass;
-            //    flawPoint.Points.Add(new SeriesPoint(cd, md));
-            //    flawPoint.ArgumentScaleType = ScaleType.Numerical;
-            //    flawPoint.ValueScaleType = ScaleType.Numerical;
-            //    flawPoint.CrosshairEnabled = DevExpress.Utils.DefaultBoolean.False;
-            //    flawPoint.Label.PointOptions.PointView = PointView.SeriesName;
-            //    flawPoint.Visible = Convert.ToBoolean(row["Display"]);
+                flawPoint.LegendText = flawClass;
+                flawPoint.Points.Add(new SeriesPoint(cd, md));
+                flawPoint.ArgumentScaleType = ScaleType.Numerical;
+                flawPoint.ValueScaleType = ScaleType.Numerical;
+                flawPoint.CrosshairEnabled = DevExpress.Utils.DefaultBoolean.False;
+                flawPoint.Label.PointOptions.PointView = PointView.SeriesName;
+                flawPoint.Visible = Convert.ToBoolean(row["Display"]);
 
-            //    // Access the view-type-specific options of the series.
-            //    PointSeriesView flawPointView = (PointSeriesView)flawPoint.View;
-            //    flawPointView.PointMarkerOptions.Kind = _dicSeriesShape[row["Shape"].ToString()];
-            //    flawPointView.Color = System.Drawing.ColorTranslator.FromHtml(row["Color"].ToString());
+                // Access the view-type-specific options of the series.
+                PointSeriesView flawPointView = (PointSeriesView)flawPoint.View;
+                flawPointView.PointMarkerOptions.Kind = _dicSeriesShape[row["Shape"].ToString()];
+                flawPointView.Color = System.Drawing.ColorTranslator.FromHtml(row["Color"].ToString());
 
-            //    //    chartControl.Series.Add(flawPoint);
-            //}
+                chartControl.Series.Add(flawPoint);
+            }
+        }
+
+        // Update UI label
+        private void UpdateUIControl()
+        {
+            if (_doffResult[_currentPage - 1])
+            {
+                lblNowPiece.ForeColor = Color.Lime;
+            }
+            else
+            {
+                lblNowPiece.ForeColor = Color.Red;
+            }
+            lblNowPiece.Text = _currentPage.ToString();
+            lblTotalPiece.Text = _totalPage.ToString();
+            lblDoffValue.Text = _totalPage.ToString();
+            lblScoreValue.Text = _totalScore.ToString();
+
+            if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)
+            {
+                double failCount = _doffResult.Count(n => n.Equals(false));
+                double passCount = _doffResult.Count(n => n.Equals(true));
+                double yield = Math.Round(passCount / (passCount + failCount) * 100, 2);
+                lblFailValue.Text = failCount.ToString();
+                lblPassValue.Text = passCount.ToString();
+                lblYieldValue.Text = String.Format("{0}%", yield);
+
+                // update datagridview flaw quantity
+                foreach (DataGridViewRow dgvr in dgvFlawLegendDetial.Rows)
+                {
+                    string flawName = dgvr.Cells["Name"].Value.ToString();
+                    if (_jobDoffNum.ContainsKey(flawName))
+                    {
+                        dgvr.Cells["JobDoffNum"].Value = _jobDoffNum[flawName];
+                    }
+                }
+            }
+
+            if (_totalPage == 1)
+            {
+                btnPrevPiece.Enabled = false;
+                btnNextPiece.Enabled = false;
+            }
+            else if (_currentPage == 1)
+            {
+                btnPrevPiece.Enabled = false;
+                btnNextPiece.Enabled = true;
+            }
+            else if (_currentPage == _totalPage)
+            {
+                btnPrevPiece.Enabled = true;
+                btnNextPiece.Enabled = false;
+            }
+            else
+            {
+                btnPrevPiece.Enabled = true;
+                btnNextPiece.Enabled = true;
+            }
+        }
+
+        // Calculate entiry piece score and send NG signal when piece fail
+        public void CalcEntirePieceResult()
+        {
+            int score = 0;
+            double top = Convert.ToDouble(_cuts.Last()) - JobHelper.PxPInfo.Height;
+            double bottom = Convert.ToDouble(_cuts.Last());
+            string rowFilter = String.Format("MD > {0} AND MD < {1}", top, bottom);
+            DataRow[] flawRows = _dtbFlaws.Select(rowFilter);
+
+            ConfigHelper ch = new ConfigHelper();
+            string gradeConfigFile = ch.GetDefaultGradeConfigName();
+            DataTable gradeColumn = ch.GetDataTableOfdgvColumns(gradeConfigFile);
+            DataTable gradeRow = ch.GetDataTableOfdgvRows(gradeConfigFile);
+            string roiMode = ch.GetGradeNoRoiMode(gradeConfigFile);
+            bool showScore = ch.IsGradePointEnable(gradeConfigFile);
+            double limitScore = ch.GetPassFailScore(gradeConfigFile);
+
+            if (roiMode == "Symmetrical" && showScore)
+            {
+                bool pieceResult;
+                if (flawRows.Length > 0)
+                {
+                    foreach (DataRow drCol in gradeColumn.Rows)
+                    {
+                        foreach (DataRow drRow in gradeRow.Rows)
+                        {
+                            string rangeName = String.Format("{0}{1}", drCol["Name"], drRow["Name"]);
+
+                            int subPieceScore = 0;
+                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + top), (Convert.ToDouble(drRow["End"]) + top));
+                            DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
+                            foreach (DataRow dr in subFlawRows)
+                            {
+                                string pointFilter = String.Format("SubpieceName = 'ROI-{0}' AND ClassName = '{1}'", rangeName, dr["FlawClass"]);
+                                subPieceScore += Convert.ToInt32(_dtbPoints.Select(pointFilter).First()["Score"]);
+                            }
+
+                            score += subPieceScore;
+                        }
+                    }
+                    if (score >= limitScore)
+                    {
+                        pieceResult = false;
+                    }
+                    else
+                    {
+                        pieceResult = true;
+                    }
+                }
+                else
+                {
+                    pieceResult = true;
+                }
+                _doffResult.Add(pieceResult);
+
+                // Fire when doff is fail
+                if (!JobHelper.IsOnpeHistory && pieceResult == false)
+                {
+                    _fire.FireEvent(0, 0, 0);
+                }
+            }
+
+            // Calc flaw number of this job
+            foreach (DataRow dr in flawRows)
+            {
+                string name = dr["FlawClass"].ToString();
+                if (!_jobDoffNum.ContainsKey(name))
+                {
+                    _jobDoffNum.Add(name, 1);
+                }
+                else
+                {
+                    _jobDoffNum[name]++;
+                }
+            }
+        }
+
+        // Create shape dictionary
+        private void CreateShapeRefDic()
+        {
+            _dicSeriesShape = new Dictionary<string, MarkerKind>();
+            this._dicSeriesShape.Add("Triangle", MarkerKind.Triangle);
+            this._dicSeriesShape.Add("InvertedTriangle", MarkerKind.InvertedTriangle);
+            this._dicSeriesShape.Add("Square", MarkerKind.Square);
+            this._dicSeriesShape.Add("Circle", MarkerKind.Circle);
+            this._dicSeriesShape.Add("Plus", MarkerKind.Plus);
+            this._dicSeriesShape.Add("Cross", MarkerKind.Cross);
+            this._dicSeriesShape.Add("Star", MarkerKind.Star);
+
+            _dicLegendShape = new Dictionary<string, string>();
+            this._dicLegendShape.Add("Triangle", "▲");
+            this._dicLegendShape.Add("InvertedTriangle", "▼");
+            this._dicLegendShape.Add("Square", "■");
+            this._dicLegendShape.Add("Circle", "●");
+            this._dicLegendShape.Add("Plus", "✚");
+            this._dicLegendShape.Add("Cross", "✖");
+            this._dicLegendShape.Add("Star", "★");
         }
 
         #endregion
 
-        private void chartControl_BoundDataChanged(object sender, EventArgs e)
-        {
-            //foreach (Series series in this.chartControl.Series)
-            //{
-            //    series.PointOptions.ValueNumericOptions.Format = NumericFormat.Number;
-            //    series.PointOptions.ValueNumericOptions.Precision = 6;
-            //}
-        }
-
-        private void btnGradeSetting_Click(object sender, EventArgs e)
-        {
-            ConfigHelper ch = new ConfigHelper();
-            GradeSetup gs = new GradeSetup();
-            gs.ShowDialog();
-            cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
-        }
+        #region Action Method
 
         private void MapWindow_Load(object sender, EventArgs e)
         {
@@ -642,7 +745,77 @@ namespace NPxP
 
             // Init doffResult
             _doffResult = new List<bool>();
-            _jobDoffNum = new Dictionary<string,int>();
+            _jobDoffNum = new Dictionary<string, int>();
+        }
+
+        private void btnMapSetting_Click(object sender, EventArgs e)
+        {
+            MapSetup ms = new MapSetup();
+            ms.ShowDialog();
+            if (_legend != null && _legend.Count > 0)
+            {
+                // Reload flawlegend
+                _dtbFlawLegends.Rows.Clear();
+                // Add jobloaded records
+                foreach (FlawLegend f in _legend)
+                {
+                    DataRow dr = _dtbFlawLegends.NewRow();
+                    dr["Display"] = f.VisibleFlags;
+                    dr["FlawType"] = f.ClassID;
+                    dr["Name"] = f.Name;
+                    dr["Shape"] = "Cone";
+                    dr["Color"] = String.Format("#{0:X2}{1:X2}{2:X2}", ColorTranslator.FromWin32((int)f.Color).R,
+                                                            ColorTranslator.FromWin32((int)f.Color).G,
+                                                            ColorTranslator.FromWin32((int)f.Color).B);
+                    dr["PieceDoffNum"] = 0;
+                    dr["JobDoffNum"] = 0;
+                    _dtbFlawLegends.Rows.Add(dr);
+                }
+                // Deal Flaw Legends datasoure
+                ConfigHelper ch = new ConfigHelper();
+
+                string mapConfig = ch.GetDefaultMapConfigName().Trim();
+                DataTable dtbLegendFromConfig = ch.GetDataTablePrevFlawLegend(mapConfig);
+
+                foreach (DataRow d in dtbLegendFromConfig.Rows)
+                {
+                    string expr = String.Format("FlawType={0} AND Name='{1}'", d["FlawType"].ToString().Trim(), d["Name"].ToString().Trim());
+                    DataRow[] drs = _dtbFlawLegends.Select(expr);
+                    if (drs.Length > 0)
+                    {
+                        drs[0]["Shape"] = d["Shape"].ToString().Trim();
+                        drs[0]["Color"] = d["Color"].ToString().Trim();
+                    }
+                }
+
+                dgvFlawLegend.ClearSelection();
+                dgvFlawLegendDetial.ClearSelection();
+
+                // Refresh pxptab tablelayout
+
+                _pnl.ColumnCount = ch.GettlpFlawImagesColumns();
+                _pnl.RowCount = ch.GettlpFlawImagesRows();
+                _pnl.ColumnStyles.Clear();
+                int phdHeight = _pnl.Height / _pnl.RowCount;
+                int phdrWidth = _pnl.Width / _pnl.ColumnCount;
+                for (int i = 0; i < _pnl.RowCount; i++)
+                {
+                    _pnl.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+                }
+
+                for (int i = 0; i < _pnl.ColumnCount; i++)
+                {
+                    _pnl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+                }
+            }
+        }
+
+        private void btnGradeSetting_Click(object sender, EventArgs e)
+        {
+            ConfigHelper ch = new ConfigHelper();
+            GradeSetup gs = new GradeSetup();
+            gs.ShowDialog();
+            cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
         }
 
         private void cmbFilterType_SelectedIndexChanged(object sender, EventArgs e)
@@ -693,48 +866,21 @@ namespace NPxP
             }
         }
 
-        private void chartControl_MouseMove(object sender, MouseEventArgs e)
+        private void btnFailPieceList_Click(object sender, EventArgs e)
         {
-            //ChartHitInfo hi = chartControl.CalcHitInfo(e.X, e.Y);
-
-            //if (hi.SeriesPoint != null && hi.Series != null)
-            //{
-            //    //MessageBox.Show(hi.Series.LegendText.ToString());
-            //    hi.Series.LabelsVisibility = DevExpress.Utils.DefaultBoolean.True;
-            //    hi.Series.View.Color = System.Drawing.ColorTranslator.FromHtml("#fff698");
-            //}
-            //else
-            //{
-            //    foreach (Series s in chartControl.Series)
-            //    {
-            //        if (!(s.View is RangeAreaSeriesView) && s.LegendText != "")
-            //        {
-            //            s.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
-
-            //            string filterExp = String.Format("Name = '{0}'", s.LegendText);
-            //            DataRow row = _dtbFlawLegends.Select(filterExp).First();
-            //            s.View.Color = System.Drawing.ColorTranslator.FromHtml(row["Color"].ToString());
-            //        }
-            //    }
-            //}
-        }
-
-        private void chartControl_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
+            // Check whether the form is opened
+            if (fpl == null || fpl.IsDisposed)
             {
-            //    ChartHitInfo hi = chartControl.CalcHitInfo(e.X, e.Y);
+                if (JobHelper.IsOnline)
+                {
+                    // Set WebInspector Offline
+                    JobHelper.Job.SetOffline();
+                }
 
-            //    if (hi.SeriesPoint != null)
-            //    {
-            //        Series seriesPoint = (Series)hi.Series;
-            //        DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter);
-            //        IEnumerable<DataRow> result = rows.Where(row => row["FlawID"].ToString().Equals(seriesPoint.Name));
-
-            //        JobHelper.Job.SetOffline();
-            //        FlawForm ff = new FlawForm(result.First());
-            //        ff.ShowDialog();
-            //    }
+                fpl = new FailPieceList(this, ref _dtbFlaws, _doffResult, _cuts, lblNowPiece);
+                fpl.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+                fpl.Location = new Point(Screen.PrimaryScreen.Bounds.Width - fpl.Width - 5, 5);
+                fpl.Show();
             }
         }
 
@@ -775,6 +921,35 @@ namespace NPxP
             }
         }
 
+        private void dgvFlawLegend_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dgvFlawLegend.Columns[e.ColumnIndex].Name == "Display")
+            {
+                Dictionary<string, Boolean> dicSeriesDisplay = new Dictionary<string, bool>();
+
+                if (_dtbFlawLegends.Rows.Count > 0)
+                {
+                    int i = 0;
+                    foreach (DataRow dr in _dtbFlawLegends.Rows)
+                    {
+                        string name = dr["Name"].ToString();
+                        bool isDisplay = Convert.ToBoolean(dgvFlawLegend.Rows[i].Cells["Display"].EditedFormattedValue);
+                        dicSeriesDisplay.Add(name, isDisplay);
+                        i++;
+                    }
+                }
+
+                // Change series visible status
+                foreach (Series s in chartControl.Series)
+                {
+                    if (!(s.View is RangeAreaSeriesView) && s.LegendText != "")
+                    {
+                        s.Visible = dicSeriesDisplay[s.LegendText];
+                    }
+                }
+            }
+        }
+
         private void btnPrevPiece_Click(object sender, EventArgs e)
         {
             JobHelper.Job.SetOffline();
@@ -788,6 +963,10 @@ namespace NPxP
             else if (_filterType == "Fail")
             {
                 newPageNum = _doffResult.LastIndexOf(false, newPageNum - 2);
+            }
+            else
+            {
+                newPageNum -= 2;
             }
 
             if (newPageNum != -1)
@@ -849,204 +1028,65 @@ namespace NPxP
             }
         }
 
-        private void CreateShapeRefDic()
-        {
-            //_dicSeriesShape = new Dictionary<string, MarkerKind>();
-            //this._dicSeriesShape.Add("Triangle", MarkerKind.Triangle);
-            //this._dicSeriesShape.Add("InvertedTriangle", MarkerKind.InvertedTriangle);
-            //this._dicSeriesShape.Add("Square", MarkerKind.Square);
-            //this._dicSeriesShape.Add("Circle", MarkerKind.Circle);
-            //this._dicSeriesShape.Add("Plus", MarkerKind.Plus);
-            //this._dicSeriesShape.Add("Cross", MarkerKind.Cross);
-            //this._dicSeriesShape.Add("Star", MarkerKind.Star);
-
-            _dicLegendShape = new Dictionary<string, string>();
-            this._dicLegendShape.Add("Triangle", "▲");
-            this._dicLegendShape.Add("InvertedTriangle", "▼");
-            this._dicLegendShape.Add("Square", "■");
-            this._dicLegendShape.Add("Circle", "●");
-            this._dicLegendShape.Add("Plus", "✚");
-            this._dicLegendShape.Add("Cross", "✖");
-            this._dicLegendShape.Add("Star", "★");
-        }
-
-        private void dgvFlawLegend_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (dgvFlawLegend.Columns[e.ColumnIndex].Name == "Display")
-            {
-                Dictionary<string, Boolean> dicSeriesDisplay = new Dictionary<string, bool>();
-
-                if (_dtbFlawLegends.Rows.Count > 0)
-                {
-                    int i = 0;
-                    foreach (DataRow dr in _dtbFlawLegends.Rows)
-                    {
-                        string name = dr["Name"].ToString();
-                        bool isDisplay = Convert.ToBoolean(dgvFlawLegend.Rows[i].Cells["Display"].EditedFormattedValue);
-                        dicSeriesDisplay.Add(name, isDisplay);
-                        i++;
-                    }
-                }
-
-                // Change series visible status
-                //foreach (Series s in chartControl.Series)
-                //{
-                //    if (!(s.View is RangeAreaSeriesView) && s.LegendText != "")
-                //    {
-                //        s.Visible = dicSeriesDisplay[s.LegendText];
-                //    }
-                //}
-            }
-        }
-
-        // Update UI label
-        private void UpdateUIControl()
-        {
-            if (_doffResult[_currentPage - 1])
-            {
-                lblNowPiece.ForeColor = Color.Lime;
-            }
-            else
-            {
-                lblNowPiece.ForeColor = Color.Red;
-            }
-            lblNowPiece.Text = _currentPage.ToString();
-            lblTotalPiece.Text = _totalPage.ToString();
-            lblDoffValue.Text = _totalPage.ToString();
-            lblScoreValue.Text = _totalScore.ToString();
-
-            if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)
-            {
-                double failCount = _doffResult.Count(n => n.Equals(false));
-                double passCount = _doffResult.Count(n => n.Equals(true));
-                double yield = Math.Round(passCount / (passCount + failCount) * 100, 2);
-                lblFailValue.Text = failCount.ToString();
-                lblPassValue.Text = passCount.ToString();
-                lblYieldValue.Text = String.Format("{0}%", yield);
-
-                // update datagridview flaw quantity
-                foreach (DataGridViewRow dgvr in dgvFlawLegendDetial.Rows)
-                {
-                    string flawName = dgvr.Cells["Name"].Value.ToString();
-                    if (_jobDoffNum.ContainsKey(flawName))
-                    {
-                        dgvr.Cells["JobDoffNum"].Value = _jobDoffNum[flawName];
-                    }
-                }
-            }
-
-            if (_totalPage == 1)
-            {
-                btnPrevPiece.Enabled = false;
-                btnNextPiece.Enabled = false;
-            }
-            else if (_currentPage == 1)
-            {
-                btnPrevPiece.Enabled = false;
-                btnNextPiece.Enabled = true;
-            }
-            else if (_currentPage == _totalPage)
-            {
-                btnPrevPiece.Enabled = true;
-                btnNextPiece.Enabled = false;
-            }
-            else
-            {
-                btnPrevPiece.Enabled = true;
-                btnNextPiece.Enabled = true;
-            }
-        }
-
         private void chartControl_Click(object sender, EventArgs e)
         {
             JobHelper.Job.SetOffline();
             JobHelper.IsOnline = false;
         }
 
-        public void CalcEntirePieceResult()
+        private void chartControl_BoundDataChanged(object sender, EventArgs e)
         {
-            int score = 0;
-            double top = Convert.ToDouble(_cuts.Last()) - JobHelper.PxPInfo.Height;
-            double bottom = Convert.ToDouble(_cuts.Last());
-            string rowFilter = String.Format("MD > {0} AND MD < {1}", top, bottom);
-            DataRow[] flawRows = _dtbFlaws.Select(rowFilter);
-
-            ConfigHelper ch = new ConfigHelper();
-            string gradeConfigFile = ch.GetDefaultGradeConfigName();
-            DataTable gradeColumn = ch.GetDataTableOfdgvColumns(gradeConfigFile);
-            DataTable gradeRow = ch.GetDataTableOfdgvRows(gradeConfigFile);
-            string roiMode = ch.GetGradeNoRoiMode(gradeConfigFile);
-            bool showScore = ch.IsGradePointEnable(gradeConfigFile);
-            double limitScore = ch.GetPassFailScore(gradeConfigFile);
-
-            if (roiMode == "Symmetrical" && showScore)
+            foreach (Series series in this.chartControl.Series)
             {
-                if (flawRows.Length > 0)
-                {
-                    foreach (DataRow drCol in gradeColumn.Rows)
-                    {
-                        foreach (DataRow drRow in gradeRow.Rows)
-                        {
-                            string rangeName = String.Format("{0}{1}", drCol["Name"], drRow["Name"]);
-
-                            int subPieceScore = 0;
-                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + top), (Convert.ToDouble(drRow["End"]) + top));
-                            DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
-                            foreach (DataRow dr in subFlawRows)
-                            {
-                                string pointFilter = String.Format("SubpieceName = 'ROI-{0}' AND ClassName = '{1}'", rangeName, dr["FlawClass"]);
-                                subPieceScore += Convert.ToInt32(_dtbPoints.Select(pointFilter).First()["Score"]);
-                            }
-
-                            score += subPieceScore;
-                        }
-                    }
-                    if (score >= limitScore)
-                    {
-                        _doffResult.Add(false);
-                    }
-                    else
-                    {
-                        _doffResult.Add(true);
-                    }
-                }
-                else
-                {
-                    _doffResult.Add(true);
-                }
+                series.PointOptions.ValueNumericOptions.Format = NumericFormat.Number;
+                series.PointOptions.ValueNumericOptions.Precision = 6;
             }
+        }
 
-            // Calc flaw number of this job
-            foreach (DataRow dr in flawRows)
+        private void chartControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            ChartHitInfo hi = chartControl.CalcHitInfo(e.X, e.Y);
+
+            if (hi.SeriesPoint != null && hi.Series != null)
             {
-                string name = dr["FlawClass"].ToString();
-                if (!_jobDoffNum.ContainsKey(name))
+                hi.Series.LabelsVisibility = DevExpress.Utils.DefaultBoolean.True;
+                hi.Series.View.Color = System.Drawing.ColorTranslator.FromHtml("#fff698");
+            }
+            else
+            {
+                foreach (Series s in chartControl.Series)
                 {
-                    _jobDoffNum.Add(name, 1);
-                }
-                else
-                {
-                    _jobDoffNum[name]++;
+                    if (!(s.View is RangeAreaSeriesView) && s.LegendText != "")
+                    {
+                        s.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+
+                        string filterExp = String.Format("Name = '{0}'", s.LegendText);
+                        DataRow row = _dtbFlawLegends.Select(filterExp).First();
+                        s.View.Color = System.Drawing.ColorTranslator.FromHtml(row["Color"].ToString());
+                    }
                 }
             }
         }
 
-        private void btnFailPieceList_Click(object sender, EventArgs e)
+        private void chartControl_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            // Check whether the form is opened
-            if (fpl == null || fpl.IsDisposed)
+            if (e.Button == MouseButtons.Left)
             {
-                if (JobHelper.IsOnline)
+                ChartHitInfo hi = chartControl.CalcHitInfo(e.X, e.Y);
+
+                if (hi.SeriesPoint != null)
                 {
-                    // Set WebInspector Offline
+                    Series seriesPoint = (Series)hi.Series;
+                    DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter);
+                    IEnumerable<DataRow> result = rows.Where(row => row["FlawID"].ToString().Equals(seriesPoint.Name));
+
                     JobHelper.Job.SetOffline();
+                    FlawForm ff = new FlawForm(result.First());
+                    ff.ShowDialog();
                 }
-
-                fpl = new FailPieceList(this, ref _dtbFlaws, _doffResult, _cuts, lblNowPiece);
-                fpl.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-                fpl.Location = new Point(Screen.PrimaryScreen.Bounds.Width - fpl.Width - 5, 5);
-                fpl.Show();
             }
         }
+
+        #endregion
     }
 }

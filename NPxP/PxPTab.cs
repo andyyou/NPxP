@@ -26,7 +26,7 @@ namespace NPxP
                                   IOnRollResult, IOnOpenHistory, 
                                   IOnUnitsChanged
     {
-        #region Local Objects
+        #region Local Variables
 
         private MapWindow _mp;
         private DataTable _dtbFlaws;
@@ -37,25 +37,28 @@ namespace NPxP
         private string _dbConnectString;
 
         private int _nowPage, _totalPage; // For TableLayout pages , start from 1.
-       
 
         #endregion
+
         //-------------------------------------------------------------------------------------------//
+        
         #region Import Objects
+
         [Import(typeof(IWRMessageLog))]
         IWRMessageLog MsgLog; // Log 物件
 
         [Import(typeof(IWRJob))]
-        public IWRJob Job;           // Job 物件: 啟動,停止,回復工單,Margin ROI 等... 
+        public IWRJob Job; // Job 物件: 啟動, 停止, 回復工單, Margin ROI 等... 
         
         [Import(typeof(IWRFireEvent))]
-        IWRFireEvent Fire;    // Fire 物件: 回傳 Event 給 CCD
+        IWRFireEvent Fire; // Fire 物件: 回傳 Event 給 CCD
 
         #endregion
 
         //-------------------------------------------------------------------------------------------//
 
         #region Interface Method
+
         // (1)
         public PxPTab()
         {
@@ -96,6 +99,7 @@ namespace NPxP
                 tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             }
         }
+
         // (End)
         ~PxPTab()
         {
@@ -106,20 +110,22 @@ namespace NPxP
                 ch.SavedgvFlawOrderByColumn(dgvFlaw.SortedColumn.Name);
             }
         }
+        
         // (2)
         public void OnLanguageChanged(e_Language language)
         {
             WriteHelper.Log("OnLanguageChanged()");
         }
+
         // (3)(8)
         public void Initialize(string unitsXMLPath)
         {
             WriteHelper.Log("Initialize()");
             _xmlUnitsPath = unitsXMLPath;
             LoadXmlToUnitsObject(unitsXMLPath);
-            JobHelper.Job = Job;  // 設定 Helper 協助各頁面停止工單等操作.
-           
+            JobHelper.Job = Job;  // 設定 Helper 協助各頁面停止工單等操作
         }
+
         // (4)(7)(17)
         public void GetName(e_Language lang, out string name)
         {
@@ -134,19 +140,21 @@ namespace NPxP
                     break;
             }
         }
+
         // (5)
         public void GetControlHandle(out IntPtr hndl)
         {
             WriteHelper.Log("GetControlHandle()");
             hndl = Handle;
         }
+
         // (6)
         public void SetPosition(int w, int h)
         {
             WriteHelper.Log("SetPosition()");
             SetBounds(0, 0, w, h);
-          
         }
+
         // (9) :回傳外掛設計的 MapWindow 給主程式
         public void GetMapControlHandle(out IntPtr hndl)
         {
@@ -154,48 +162,48 @@ namespace NPxP
             _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
             _mp.InitTableLayout(ref tlpFlawImages);
-
         }
+
         // (10) :設定 MapWindow Position with Job object.
         public void SetMapPosition(int w, int h)
         {
             WriteHelper.Log("SetMapPosition()");
             _mp.SetBounds(0, 0, w, h);
         }
+
         // (11)
         public void OnWebDBConnected(IWebDBConnectionInfo info)
         {
             WriteHelper.Log("OnWebDBConnected()");
             _dbConnectString = String.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3};", info.ServerName, info.DatabaseName, info.UserName, info.Password);
         }
+
         // (12)
         public void OnUserTermsChanged(IUserTerms terms)
         {
             WriteHelper.Log("OnUserTermsChanged()");
-            
         }
+
         // (13)
         public void OnSetFlawLegend(List<FlawLegend> legend)
         {
             WriteHelper.Log("OnSetFlawLegend()");
-            _mp.InitFlawLegendValue(legend);  // 把 MapWindow 需要的資料傳過去. 
-            
+            _mp.InitFlawLegendValue(legend);  // 把 MapWindow 需要的資料傳過去
         }
+
         // (14)
         public void OnInitializeGlassEdges(int glassLeftMarginToROI, int glassRightMarginToROI)
         {
             WriteHelper.Log("OnInitializeGlassEdges()");
         }
+
         // (15)
         public void OnPxPConfig(IPxPInfo info)
         {
             WriteHelper.Log("OnPxPConfig()");
             JobHelper.PxPInfo = info;
-            // keep pxpinfo height and width's units is meter.
-            //NowUnit unitFlawMaCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
-            //JobHelper.PxPInfo.Height = JobHelper.PxPInfo.Height / unitFlawMaCD.Conversion;
-            //JobHelper.PxPInfo.Width = JobHelper.PxPInfo.Width / unitFlawMaCD.Conversion;
         }
+
         // (16)
         public void OnJobLoaded(IList<IFlawTypeName> flawTypes, IList<ILaneInfo> lanes, IList<ISeverityInfo> severityInfo, IJobInfo jobInfo)
         {
@@ -208,7 +216,6 @@ namespace NPxP
             btnProvFlawImages.Enabled = false;
             _dvFiliter = new DataView();
            
-
             // save datas in global helper.
             JobHelper.FlawTypes = flawTypes;
             JobHelper.JobInfo = jobInfo;
@@ -276,25 +283,22 @@ namespace NPxP
             }
 
             // For MapWindow.cs
-            //---------------------------------------------------------------------------------------------//
+            //---------------------------------------------------------------------------
 
-            //// * No Map Controls
-            //// update MapWindow JobInfo
+            // Setting MapWindow
             _mp.InitJobInfo(jobInfo);
             _mp.InitFlawLegendGrid();
             _mp.InitDatatableFlaws(ref _dtbFlaws);
             _mp.InitCutList(ref _cuts);
+            _mp.InitFire(ref Fire);
 
-
-            //// * No Map Controls
-            //// Initial Flaw Chart FlawLegend
+            // Initial Flaw Chart FlawLegend
             NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
             double mapWidth = JobHelper.PxPInfo.Width * unitFlawMapCD.Conversion;
             double mapHeight = JobHelper.PxPInfo.Height * unitFlawMapCD.Conversion;
-            //_mp.InitChart(mapWidth, mapHeight);
-           
-
+            _mp.InitChart(mapWidth, mapHeight);
         }
+
         // (18) :執行每一個步驟都會檢查
         public void OnOnline(bool isOnline)
         {
@@ -302,12 +306,13 @@ namespace NPxP
             JobHelper.IsOnpeHistory = false;
             WriteHelper.Log("OnOnline()");
         }
+
         // (19)
         public void OnJobStarted(int jobKey)
         {
             WriteHelper.Log("OnJobStarted()");
-            
         }
+
         // (20) :設定幾個 Events 就會觸發幾次
         public void OnEvents(IList<IEventInfo> events)
         {
@@ -317,15 +322,12 @@ namespace NPxP
                 switch ((e_EventID)eventInfo.EventType)
                 {
                     case e_EventID.STOP_JOB:
-                       
                         break;
 
                     case e_EventID.STOP_INSPECTION:
-                      
                         break;
 
                     case e_EventID.START_INSPECTION:
-                       
                         break;
 
                     case e_EventID.CUT_SIGNAL:
@@ -334,11 +336,10 @@ namespace NPxP
 
                         if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
                         {
-                           
                             if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
                             {
-                                //// * No Map Controls
-                                //_mp.UpdatePagesCount();
+                                // Update MapWindow
+                                _mp.UpdatePagesCount();
                             }
                             else
                             {
@@ -346,11 +347,12 @@ namespace NPxP
                                 double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
                                 string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
                                 DataView dv = _dtbFlaws.DefaultView;
+                                _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
                                 _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
                                 dv.RowFilter = filterExp;
 
-                                //// * No Map Controls
-                                //_mp.DrawChartPoint(prevMD);
+                                // Update MapWindow
+                                _mp.DrawChartPoint(prevMD);
                             }
                         }
                         break;
@@ -358,8 +360,8 @@ namespace NPxP
                         break;
                 }
             }
-
         }
+
         // (D) :資料流入
         public void OnFlaws(IList<IFlawInfo> flaws)
         {
@@ -438,21 +440,22 @@ namespace NPxP
                 // add record to datatable
                 _dtbFlaws.Rows.Add(dr);
             }
-            
             WriteHelper.Log("OnFlaws()");
         }
+
         // (D)
         public void OnCut(double md)
         {
             WriteHelper.Log("OnCut()");
-            
-           
+            GC.Collect();
         }
+
         // (D) :處理缺陷判斷
         public void OnDoffResult(double md, int doffNumber, bool pass)
         {
             WriteHelper.Log("OnDoffResult()");
         }
+
         // (D) :單位變更
         public void OnUnitsChanged()
         {
@@ -473,17 +476,20 @@ namespace NPxP
             NowUnit unitFlawListArea = _units.Find(x => x.ComponentName == "Flaw List Area");
             dgvFlaw.Columns["Area"].HeaderText = dgvFlaw.Columns["Area"].Name + String.Format("({0})", unitFlawListArea.Symbol);
         }
+
         // (D) 
         public void OnRollResult(double cd, double md, int doffNumber, int laneNumber, bool pass)
         {
             WriteHelper.Log("OnRollResult()");
         }
+
         // (D) :開啟歷史資料
         public void OnOpenHistory(double startMD, double stopMD)
         {
             WriteHelper.Log("OnOpenHistory()");
             JobHelper.IsOnpeHistory = true;
         }
+
         // (25) :停止工單
         public void OnJobStopped(double md)
         {
@@ -491,16 +497,19 @@ namespace NPxP
             JobHelper.IsOnpeHistory = false;
 
         }
-        // (End -1 )
+
+        // (End -1)
         public void Unplug()
         {
             WriteHelper.Log("Unplug()");
         }
+        
         #endregion
 
         //-------------------------------------------------------------------------------------------//
 
         #region R Method
+
         // 將xml單位換算值儲存至 _units 物件
         public void LoadXmlToUnitsObject(string xml)
         {
@@ -523,6 +532,7 @@ namespace NPxP
                 _units.Add(unit);
             }
         }
+
         // 啟動次要緩衝
         public static void SetDoubleBuffered(Control control)
         {
@@ -531,6 +541,7 @@ namespace NPxP
                 BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
                 null, control, new object[] { true });
         }
+
         // 設定 TableLayoutPanel without data just initialize.  
         public void LoadXmlTotlpImages()
         {
@@ -550,6 +561,7 @@ namespace NPxP
                 tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             }
         }
+
         // 更新 tlpImages 內部 Controls , 更新 lblNowPage
         public void RefreshtlpImagesControls(int nowPage)
         {
@@ -575,6 +587,7 @@ namespace NPxP
                 tlpFlawImages.Controls.Add(fi);
             }
         }
+
         // 更新 tlpImages 內部 Controls , 更新 lblNowPage , 指定畫邊框 ID
         public void RefreshtlpImagesControls(int nowPage, int paintRowID)
         {
@@ -607,6 +620,7 @@ namespace NPxP
 
             }
         }
+
         // Function of Image
         public static Bitmap ToGrayBitmap(byte[] rawValues, int width, int height)
         {
@@ -652,13 +666,13 @@ namespace NPxP
             bmp.Palette = tempPalette;
             return bmp;
         }
-        #endregion
 
-       
+        #endregion
 
         //-------------------------------------------------------------------------------------------//
 
         #region Action Method
+
         private void btnNextFlawImages_Click(object sender, EventArgs e)
         {
             Job.SetOffline();
@@ -689,8 +703,8 @@ namespace NPxP
                 btnNextFlawImages.Enabled = true;
                 btnProvFlawImages.Enabled = true;
             }
-
         }
+
         private void btnProvFlawImages_Click(object sender, EventArgs e)
         {
             Job.SetOffline();
@@ -818,6 +832,7 @@ namespace NPxP
             }
             dgvFlaw.ClearSelection();
         }
+
         #endregion
 
 
@@ -828,29 +843,10 @@ namespace NPxP
 
         public void OnClassifyFlaw(ref IFlawInfo flaw, ref bool deleteFlaw)
         {
-            WriteHelper.Log("OnClassifyFlaw()");
+            
         }
 
         #endregion
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            tlpFlawImages.ColumnCount++;
-            tlpFlawImages.RowCount++;
-            tlpFlawImages.ColumnStyles.Clear();
-            int phdHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
-            int phdrWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
-            for (int i = 0; i < tlpFlawImages.RowCount; i++)
-            {
-                tlpFlawImages.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
-            }
-
-            for (int i = 0; i < tlpFlawImages.ColumnCount; i++)
-            {
-                tlpFlawImages.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            }
-        }
-
 
     }
 

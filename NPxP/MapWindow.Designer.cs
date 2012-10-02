@@ -28,8 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-
-            //DevExpress.XtraCharts.SideBySideBarSeriesLabel sideBySideBarSeriesLabel11 = new DevExpress.XtraCharts.SideBySideBarSeriesLabel();
+            DevExpress.XtraCharts.SideBySideBarSeriesLabel sideBySideBarSeriesLabel11 = new DevExpress.XtraCharts.SideBySideBarSeriesLabel();
             this.tlpMapInfo = new System.Windows.Forms.TableLayoutPanel();
             this.lblOperatorValue = new System.Windows.Forms.Label();
             this.lblOperator = new System.Windows.Forms.Label();
@@ -63,14 +62,14 @@
             this.lblTotalPiece = new System.Windows.Forms.Label();
             this.lblNowPiece = new System.Windows.Forms.Label();
             this.dgvFlawLegendDetial = new System.Windows.Forms.DataGridView();
-            //this.chartControl = new DevExpress.XtraCharts.ChartControl();
+            this.chartControl = new DevExpress.XtraCharts.ChartControl();
             this.lblScore = new System.Windows.Forms.Label();
             this.lblScoreValue = new System.Windows.Forms.Label();
             this.tlpMapInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegend)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendDetial)).BeginInit();
-            //((System.ComponentModel.ISupportInitialize)(this.chartControl)).BeginInit();
-            //((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel11)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel11)).BeginInit();
             this.SuspendLayout();
             // 
             // tlpMapInfo
@@ -483,19 +482,19 @@
             // 
             // chartControl
             // 
-            //this.chartControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            //            | System.Windows.Forms.AnchorStyles.Left)
-            //            | System.Windows.Forms.AnchorStyles.Right)));
-            //this.chartControl.Location = new System.Drawing.Point(6, 70);
-            //this.chartControl.Name = "chartControl";
-            //this.chartControl.SeriesSerializable = new DevExpress.XtraCharts.Series[0];
-            //sideBySideBarSeriesLabel11.LineVisible = true;
-            //this.chartControl.SeriesTemplate.Label = sideBySideBarSeriesLabel11;
-            //this.chartControl.Size = new System.Drawing.Size(493, 480);
-            //this.chartControl.TabIndex = 24;
-            //this.chartControl.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chartControl_MouseDoubleClick);
-            //this.chartControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chartControl_MouseMove);
-            //this.chartControl.Click += new System.EventHandler(this.chartControl_Click);
+            this.chartControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.chartControl.Location = new System.Drawing.Point(6, 70);
+            this.chartControl.Name = "chartControl";
+            this.chartControl.SeriesSerializable = new DevExpress.XtraCharts.Series[0];
+            sideBySideBarSeriesLabel11.LineVisible = true;
+            this.chartControl.SeriesTemplate.Label = sideBySideBarSeriesLabel11;
+            this.chartControl.Size = new System.Drawing.Size(493, 480);
+            this.chartControl.TabIndex = 24;
+            this.chartControl.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chartControl_MouseDoubleClick);
+            this.chartControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chartControl_MouseMove);
+            this.chartControl.Click += new System.EventHandler(this.chartControl_Click);
             // 
             // lblScore
             // 
@@ -528,7 +527,7 @@
             this.BackgroundImage = global::NPxP.Properties.Resources.BackgroundLeft;
             this.Controls.Add(this.lblScoreValue);
             this.Controls.Add(this.lblScore);
-            //this.Controls.Add(this.chartControl);
+            this.Controls.Add(this.chartControl);
             this.Controls.Add(this.dgvFlawLegendDetial);
             this.Controls.Add(this.lblNowPiece);
             this.Controls.Add(this.lblTotalPiece);
@@ -557,8 +556,8 @@
             this.tlpMapInfo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegend)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlawLegendDetial)).EndInit();
-            //((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel11)).EndInit();
-            //((System.ComponentModel.ISupportInitialize)(this.chartControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(sideBySideBarSeriesLabel11)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartControl)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -597,8 +596,7 @@
         private System.Windows.Forms.Label lblTotalPiece;
         private System.Windows.Forms.Label lblNowPiece;
         private System.Windows.Forms.DataGridView dgvFlawLegendDetial;
-
-        //private DevExpress.XtraCharts.ChartControl chartControl;
+        private DevExpress.XtraCharts.ChartControl chartControl;
         private System.Windows.Forms.Label lblScore;
         private System.Windows.Forms.Label lblScoreValue;
         public System.Windows.Forms.Button btnPrevPiece;

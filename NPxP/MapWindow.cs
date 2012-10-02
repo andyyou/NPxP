@@ -609,6 +609,14 @@ namespace NPxP
             }
         }
 
+        // Enable/Disable UI Control status
+        public void SettingUIControlStatus(bool status)
+        {
+            cmbGradeConfigFiles.Enabled = status;
+            btnMapSetting.Enabled = status;
+            btnGradeSetting.Enabled = status;
+        }
+
         // Create shape dictionary
         private void CreateShapeRefDic()
         {

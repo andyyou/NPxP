@@ -311,6 +311,7 @@ namespace NPxP
         public void OnJobStarted(int jobKey)
         {
             WriteHelper.Log("OnJobStarted()");
+            _mp.SettingUIControlStatus(false);
         }
 
         // (20) :設定幾個 Events 就會觸發幾次
@@ -495,7 +496,7 @@ namespace NPxP
         {
             WriteHelper.Log("OnJobStopped()");
             JobHelper.IsOnpeHistory = false;
-
+            _mp.SettingUIControlStatus(true);
         }
 
         // (End -1)

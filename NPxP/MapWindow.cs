@@ -181,6 +181,7 @@ namespace NPxP
             lblNowPiece.Text = "---";
             lblTotalPiece.Text = "---";
 
+            lblNowPiece.ForeColor = SystemColors.ControlDarkDark;
             btnPrevPiece.Enabled = false;
             btnNextPiece.Enabled = false;
             _jobDoffNum.Clear();
@@ -588,9 +589,16 @@ namespace NPxP
                 _doffResult.Add(pieceResult);
 
                 // Fire when doff is fail
-                if (!JobHelper.IsOnpeHistory && pieceResult == false)
+                if (!JobHelper.IsOnpeHistory)
                 {
-                    _fire.FireEvent(0, 0, 0);
+                    if (pieceResult == false)
+                    {
+                        _fire.FireEvent(0, 0, 0);
+                    }
+                    else
+                    {
+                        _fire.FireEvent(1, 0, 0);
+                    }
                 }
             }
 
@@ -638,6 +646,18 @@ namespace NPxP
             this._dicLegendShape.Add("Plus", "✚");
             this._dicLegendShape.Add("Cross", "✖");
             this._dicLegendShape.Add("Star", "★");
+        }
+
+        // Reload points and grades data
+        public void ReloadDataTables()
+        {
+            ConfigHelper ch = new ConfigHelper();
+            string grade_name = ch.GetDefaultGradeConfigName();
+
+            // Get Points score
+            _dtbPoints = ch.GetDataTabledgvPoints(grade_name);
+            // Get Grade
+            _dtbGrades = ch.GetDataTabledgvGrade(grade_name);
         }
 
         #endregion

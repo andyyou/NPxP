@@ -312,6 +312,7 @@ namespace NPxP
         {
             WriteHelper.Log("OnJobStarted()");
             _mp.SettingUIControlStatus(false);
+            _mp.ReloadDataTables();
         }
 
         // (20) :設定幾個 Events 就會觸發幾次

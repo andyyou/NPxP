@@ -615,6 +615,7 @@ namespace NPxP
             cmbGradeConfigFiles.Enabled = status;
             btnMapSetting.Enabled = status;
             btnGradeSetting.Enabled = status;
+            btnFailPieceList.Enabled = !status;
         }
 
         // Create shape dictionary
@@ -754,6 +755,9 @@ namespace NPxP
             // Init doffResult
             _doffResult = new List<bool>();
             _jobDoffNum = new Dictionary<string, int>();
+
+            // Setting UI controls status
+            SettingUIControlStatus(true);
         }
 
         private void btnMapSetting_Click(object sender, EventArgs e)

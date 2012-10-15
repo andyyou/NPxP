@@ -782,6 +782,12 @@ namespace NPxP
 
         private void btnMapSetting_Click(object sender, EventArgs e)
         {
+            XYDiagram diagram = null;
+            if ((XYDiagram)chartControl.Diagram != null)
+            {
+                diagram = (XYDiagram)chartControl.Diagram;
+            }
+
             MapSetup ms = new MapSetup();
             ms.ShowDialog();
             if (_legend != null && _legend.Count > 0)
@@ -838,6 +844,15 @@ namespace NPxP
                 for (int i = 0; i < _pnl.ColumnCount; i++)
                 {
                     _pnl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+                }
+
+                // Re-configure Chart
+                if (diagram != null)
+                {
+                    double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
+                    double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
+                    InitChart(width, height);
+                    DrawChartPoint();
                 }
             }
         }

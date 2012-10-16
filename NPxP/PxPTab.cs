@@ -291,6 +291,7 @@ namespace NPxP
             _mp.InitJobInfo(jobInfo);
             _mp.InitFlawLegendGrid();
             _mp.InitDatatableFlaws(ref _dtbFlaws);
+            _mp.InitUnits(ref _units);
             _mp.InitCutList(ref _cuts);
 
             // UNDONE: New Cut List
@@ -607,7 +608,7 @@ namespace NPxP
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                FlawImageControl fi = new FlawImageControl(rows[i]);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
                 SetDoubleBuffered(fi);
                 fi.Width = holderWidth;
                 fi.Height = holderHeight;
@@ -645,8 +646,8 @@ namespace NPxP
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                
-                FlawImageControl fi = new FlawImageControl(rows[i]);
+
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
                 SetDoubleBuffered(fi);
                 // set draw border
                 if(i == paintRowID)
@@ -866,7 +867,7 @@ namespace NPxP
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                FlawImageControl fi = new FlawImageControl(rows[i]);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
                 SetDoubleBuffered(fi);
                 fi.Width = holderWidth;
                 fi.Height = holderHeight;

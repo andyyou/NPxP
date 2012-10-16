@@ -56,13 +56,23 @@ namespace NPxP
                 tabImages.TabPages[i].BackColor = Color.Transparent;
                 tabImages.TabPages[i].Tag = 100;  // Zoom Multiplier value.
             }
+            //UNDONE: NoImage Issue?
             if (!drFlaw.IsNull("Images"))
             {
                 IList<IImageInfo> images = drFlaw["Images"] as IList<IImageInfo>;
                 foreach (IImageInfo image in images)
                 {
-                    _srcImages[image.Station] = image.Image;
-                    _pbRatio[image.Station] = Init_Image(image.Image, tabImages.TabPages[image.Station], _pb[image.Station]);
+                    Bitmap flawImage;
+                    if (image.Image == null)
+                    {
+                        flawImage = Resources.NoImage;
+                    }
+                    else
+                    {
+                        flawImage = image.Image;
+                    }
+                    _srcImages[image.Station] = flawImage;
+                    _pbRatio[image.Station] = Init_Image(flawImage, tabImages.TabPages[image.Station], _pb[image.Station]);
                 }
             }
             else

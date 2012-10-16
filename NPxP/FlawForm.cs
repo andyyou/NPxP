@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using NPxP.Helper;
 using NPxP.Toolkit;
+using NPxP.Model;
 using WRPlugIn;
 using NPxP.Properties;
 
@@ -21,15 +22,17 @@ namespace NPxP
         private PictureBox[] _pb;
         private double[] _pbRatio;
         private Image[] _srcImages;
+        private List<NowUnit> _units;
 
         #endregion
 
         #region Constructor
 
-        public FlawForm(DataRow drFlaw)
+        public FlawForm(DataRow drFlaw, List<NowUnit> units)
         {
             InitializeComponent();
             _drFlaw = drFlaw;
+            _units = new List<NowUnit>(units);
         }
 
         #endregion
@@ -110,6 +113,9 @@ namespace NPxP
 
         private void FlawForm_Load(object sender, EventArgs e)
         {
+            // get current using unit
+            NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw List CD");
+            NowUnit umd = _units.Find(x => x.ComponentName == "Flaw List MD");
             // set local variables.
             _pb = new PictureBox[JobHelper.JobInfo.NumberOfStations];
             _pbRatio = new double[JobHelper.JobInfo.NumberOfStations];
@@ -118,8 +124,10 @@ namespace NPxP
             lblFlawIDVal.Text = _drFlaw["FlawID"].ToString();
             lblFlawClassVal.Text = _drFlaw["FlawClass"].ToString();
             lblFlawTypeVal.Text = _drFlaw["FlawType"].ToString();
-            lblCDVal.Text = _drFlaw["CD"].ToString();
-            lblMDVal.Text = _drFlaw["MD"].ToString();
+            double cd = Convert.ToDouble(_drFlaw["CD"]) * ucd.Conversion;
+            lblCDVal.Text = cd.ToString();
+            double md = Convert.ToDouble(_drFlaw["MD"]) * umd.Conversion;
+            lblMDVal.Text = md.ToString();
             lblLengthVal.Text = _drFlaw["Length"].ToString();
             lblWidthVal.Text = _drFlaw["Width"].ToString();
             lblAreaVal.Text = _drFlaw["Area"].ToString();

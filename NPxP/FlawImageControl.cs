@@ -10,6 +10,7 @@ using System.ComponentModel.Composition;
 using WRPlugIn;
 using NPxP.Helper;
 using NPxP.Properties;
+using NPxP.Model;
 
 namespace NPxP
 {
@@ -21,6 +22,7 @@ namespace NPxP
         private PictureBox[] _pb;
         private double[] _pbRatio;
         private Image[] _srcImages;
+        private List<NowUnit> _units;
 
         #endregion
 
@@ -32,10 +34,11 @@ namespace NPxP
 
         #region Constructor
 
-        public FlawImageControl(DataRow drFlaw)
+        public FlawImageControl(DataRow drFlaw, ref List<NowUnit> units)
         {
             InitializeComponent();
             this._drFlaw = drFlaw;
+            this._units = units;
             IsDrawBorder = false;
             lblFlawID.Text += drFlaw["FlawID"].ToString();
             _pb = new PictureBox[JobHelper.JobInfo.NumberOfStations];
@@ -218,7 +221,7 @@ namespace NPxP
             if (e.Button == MouseButtons.Left)
             {
                 JobHelper.Job.SetOffline();
-                FlawForm ff = new FlawForm(_drFlaw);
+                FlawForm ff = new FlawForm(_drFlaw, _units);
                 ff.ShowDialog();
             }
         }

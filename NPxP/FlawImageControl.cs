@@ -62,17 +62,16 @@ namespace NPxP
                 IList<IImageInfo> images = drFlaw["Images"] as IList<IImageInfo>;
                 foreach (IImageInfo image in images)
                 {
-                    Bitmap flawImage;
-                    if (image.Image == null)
+                    _srcImages[image.Station] = image.Image;
+                    _pbRatio[image.Station] = Init_Image(image.Image, tabImages.TabPages[image.Station], _pb[image.Station]);
+                }
+                for (int i = 0; i < JobHelper.JobInfo.NumberOfStations; i++)
+                {
+                    if (_srcImages[i] == null)
                     {
-                        flawImage = Resources.NoImage;
+                        _srcImages[i] = Resources.NoImage;
+                        _pbRatio[i] = Init_Image(Resources.NoImage, tabImages.TabPages[i], _pb[i]);
                     }
-                    else
-                    {
-                        flawImage = image.Image;
-                    }
-                    _srcImages[image.Station] = flawImage;
-                    _pbRatio[image.Station] = Init_Image(flawImage, tabImages.TabPages[image.Station], _pb[image.Station]);
                 }
             }
             else

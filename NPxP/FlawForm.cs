@@ -146,6 +146,14 @@ namespace NPxP
                     _srcImages[image.Station] = image.Image;
                     _pbRatio[image.Station] = Init_Image(image.Image, tabImages.TabPages[image.Station], _pb[image.Station]);
                 }
+                for (int i = 0; i < JobHelper.JobInfo.NumberOfStations; i++)
+                {
+                    if (_srcImages[i] == null)
+                    {
+                        _srcImages[i] = Resources.NoImage;
+                        _pbRatio[i] = Init_Image(Resources.NoImage, tabImages.TabPages[i], _pb[i]);
+                    }
+                }
             }
             else
             {

@@ -63,7 +63,7 @@ namespace NPxP
         // (1)
         public PxPTab()
         {
-            WriteHelper.Log("PxPTab()");
+            // WriteHelper.Log("PxPTab()");
             InitializeComponent();
             // initialize dgvFlaw without datasource.
             ConfigHelper ch = new ConfigHelper();
@@ -115,13 +115,13 @@ namespace NPxP
         // (2)
         public void OnLanguageChanged(e_Language language)
         {
-            WriteHelper.Log("OnLanguageChanged()");
+            // WriteHelper.Log("OnLanguageChanged()");
         }
 
         // (3)(8)
         public void Initialize(string unitsXMLPath)
         {
-            WriteHelper.Log("Initialize()");
+            // WriteHelper.Log("Initialize()");
             _xmlUnitsPath = unitsXMLPath;
             LoadXmlToUnitsObject(unitsXMLPath);
             JobHelper.Job = Job;  // 設定 Helper 協助各頁面停止工單等操作
@@ -130,7 +130,7 @@ namespace NPxP
         // (4)(7)(17)
         public void GetName(e_Language lang, out string name)
         {
-            WriteHelper.Log("GetName()");
+            // WriteHelper.Log("GetName()");
             switch (lang)
             {
                 case e_Language.Chinese:
@@ -145,21 +145,21 @@ namespace NPxP
         // (5)
         public void GetControlHandle(out IntPtr hndl)
         {
-            WriteHelper.Log("GetControlHandle()");
+            // WriteHelper.Log("GetControlHandle()");
             hndl = Handle;
         }
 
         // (6)
         public void SetPosition(int w, int h)
         {
-            WriteHelper.Log("SetPosition()");
+            // WriteHelper.Log("SetPosition()");
             SetBounds(0, 0, w, h);
         }
 
         // (9) :回傳外掛設計的 MapWindow 給主程式
         public void GetMapControlHandle(out IntPtr hndl)
         {
-            WriteHelper.Log("GetMapControlHandle()");
+            // WriteHelper.Log("GetMapControlHandle()");
             _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
             _mp.InitTableLayout(ref tlpFlawImages); // 為了讓右邊可以即時更新左邊圖片.把參考加給右邊.
@@ -168,47 +168,47 @@ namespace NPxP
         // (10) :設定 MapWindow Position with Job object.
         public void SetMapPosition(int w, int h)
         {
-            WriteHelper.Log("SetMapPosition()");
+            // WriteHelper.Log("SetMapPosition()");
             _mp.SetBounds(0, 0, w, h);
         }
 
         // (11)
         public void OnWebDBConnected(IWebDBConnectionInfo info)
         {
-            WriteHelper.Log("OnWebDBConnected()");
+            // WriteHelper.Log("OnWebDBConnected()");
             _dbConnectString = String.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3};", info.ServerName, info.DatabaseName, info.UserName, info.Password);
         }
 
         // (12)
         public void OnUserTermsChanged(IUserTerms terms)
         {
-            WriteHelper.Log("OnUserTermsChanged()");
+            // WriteHelper.Log("OnUserTermsChanged()");
         }
 
         // (13)
         public void OnSetFlawLegend(List<FlawLegend> legend)
         {
-            WriteHelper.Log("OnSetFlawLegend()");
+            // WriteHelper.Log("OnSetFlawLegend()");
             _mp.InitFlawLegendValue(legend);  // 把 MapWindow 需要的"圖例"資料傳過去
         }
 
         // (14)
         public void OnInitializeGlassEdges(int glassLeftMarginToROI, int glassRightMarginToROI)
         {
-            WriteHelper.Log("OnInitializeGlassEdges()");
+            // WriteHelper.Log("OnInitializeGlassEdges()");
         }
 
         // (15)
         public void OnPxPConfig(IPxPInfo info)
         {
-            WriteHelper.Log("OnPxPConfig()");
+            // WriteHelper.Log("OnPxPConfig()");
             JobHelper.PxPInfo = info;
         }
 
         // (16)
         public void OnJobLoaded(IList<IFlawTypeName> flawTypes, IList<ILaneInfo> lanes, IList<ISeverityInfo> severityInfo, IJobInfo jobInfo)
         {
-            WriteHelper.Log("OnJobLoaded()");
+            // WriteHelper.Log("OnJobLoaded()");
             // Reset to default.
             _cuts = new List<double>();
             _newCuts = new List<Cut>();
@@ -309,13 +309,13 @@ namespace NPxP
         {
             JobHelper.IsOnline = isOnline;
             JobHelper.IsOnpeHistory = false;
-            WriteHelper.Log("OnOnline()");
+            // WriteHelper.Log("OnOnline()");
         }
 
         // (19)
         public void OnJobStarted(int jobKey)
         {
-            WriteHelper.Log("OnJobStarted()");
+            // WriteHelper.Log("OnJobStarted()");
             _mp.SettingUIControlStatus(false);
             _mp.ReloadDataTables();
         }
@@ -323,7 +323,7 @@ namespace NPxP
         // (20) :設定幾個 Events 就會觸發幾次
         public void OnEvents(IList<IEventInfo> events)
         {
-            WriteHelper.Log("OnEvents()");
+            // WriteHelper.Log("OnEvents()");
             foreach (IEventInfo eventInfo in events)
             {
                 switch ((e_EventID)eventInfo.EventType)
@@ -338,6 +338,7 @@ namespace NPxP
                         break;
 
                     case e_EventID.CUT_SIGNAL:
+                        WriteHelper.Log("CutEvent(): " + eventInfo.MD);
                         _cuts.Add(eventInfo.MD);
                         // UNDONE: New Cut List & Sort
                         _newCuts.Add(new Cut(eventInfo.MD));
@@ -357,6 +358,7 @@ namespace NPxP
                                 // Filter DataGridView
                                 double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
                                 string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
+                                WriteHelper.Log(filterExp);
                                 DataView dv = _dtbFlaws.DefaultView;
                                 _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
                                 _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
@@ -376,8 +378,11 @@ namespace NPxP
         // (D) :資料流入
         public void OnFlaws(IList<IFlawInfo> flaws)
         {
+            // 確保右邊TableLayout更新只在Cut發生,因為發生: Cut卡在資料中間的狀況.
+            _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
             foreach (IFlawInfo flaw in flaws)
             {
+                WriteHelper.Log(String.Format("ID:{0},MD:{1}", flaw.FlawID, flaw.MD));
                 DataRow dr = _dtbFlaws.NewRow();
                 dr["FlawID"] = flaw.FlawID;
                 dr["CD"] = flaw.CD; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺
@@ -451,26 +456,26 @@ namespace NPxP
                 // add record to datatable
                 _dtbFlaws.Rows.Add(dr);
             }
-            WriteHelper.Log("OnFlaws()");
+            // WriteHelper.Log("OnFlaws()");
         }
 
         // (D)
         public void OnCut(double md)
         {
-            WriteHelper.Log("OnCut()");
+            WriteHelper.Log("Ture OnCut()");
             GC.Collect();
         }
 
         // (D) :處理缺陷判斷
         public void OnDoffResult(double md, int doffNumber, bool pass)
         {
-            WriteHelper.Log("OnDoffResult()");
+            // WriteHelper.Log("OnDoffResult()");
         }
 
         // (D) :單位變更
         public void OnUnitsChanged()
         {
-            WriteHelper.Log("OnUnitsChanged()");
+            // WriteHelper.Log("OnUnitsChanged()");
             if (!String.IsNullOrEmpty(_xmlUnitsPath))
             {
                 LoadXmlToUnitsObject(_xmlUnitsPath);
@@ -491,20 +496,20 @@ namespace NPxP
         // (D) 
         public void OnRollResult(double cd, double md, int doffNumber, int laneNumber, bool pass)
         {
-            WriteHelper.Log("OnRollResult()");
+            // WriteHelper.Log("OnRollResult()");
         }
 
         // (D) :開啟歷史資料
         public void OnOpenHistory(double startMD, double stopMD)
         {
-            WriteHelper.Log("OnOpenHistory()");
+            // WriteHelper.Log("OnOpenHistory()");
             JobHelper.IsOnpeHistory = true;
         }
 
         // (25) :停止工單
         public void OnJobStopped(double md)
         {
-            WriteHelper.Log("OnJobStopped()");
+            // WriteHelper.Log("OnJobStopped()");
             JobHelper.IsOnpeHistory = false;
             _mp.SettingUIControlStatus(true);
         }
@@ -512,7 +517,7 @@ namespace NPxP
         // (End -1)
         public void Unplug()
         {
-            WriteHelper.Log("Unplug()");
+            // WriteHelper.Log("Unplug()");
         }
         
         #endregion
@@ -583,8 +588,19 @@ namespace NPxP
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
             lblNowPage.Text = nowPage.ToString();
-            // Get now filter rows
-            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter); 
+            // Get now filter rows  Sort DataRow[]: 因為 _dtbFlaws.Select() 後資料排序會亂掉.
+            string sortedColumn = dgvFlaw.SortedColumn.Name;
+            string sortOrder = "";
+            if (dgvFlaw.SortOrder.ToString() == "Ascending")
+            {
+                sortOrder = "ASC";
+            }
+            else
+            {
+                sortOrder = "DESC";
+            }
+            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
+            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter, sortString);
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.
@@ -610,7 +626,19 @@ namespace NPxP
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
             lblNowPage.Text = nowPage.ToString();
             // Get now filter rows
-            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter); 
+            // Sort DataRow[]: 因為 _dtbFlaws.Select() 後資料排序會亂掉.
+            string sortedColumn = dgvFlaw.SortedColumn.Name;
+            string sortOrder = "";
+            if (dgvFlaw.SortOrder.ToString() == "Ascending")
+            {
+                sortOrder = "ASC";
+            }
+            else
+            {
+                sortOrder = "DESC";
+            }
+            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
+            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter, sortString); 
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.
@@ -800,14 +828,28 @@ namespace NPxP
         public void DataTable_RowFilterChange(object sender, ListChangedEventArgs e)
         {
             // UNDONE: 這邊改成使用GirdView資料列, 因為GridView排序之後會和下面對不起來.
+            // UNDONE: FlawImageControl加入時效能不佳須改善.
 
             // Clear tableLyout controls and search data. 
             DataView dv = sender as DataView;
             tlpFlawImages.Controls.Clear();
             int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
-            DataRow[] rows = _dtbFlaws.Select(dv.RowFilter);
-            rows.OrderBy(x => x.Field<int>("FlawID"));
+
+            // Sort DataRow[]: 因為 _dtbFlaws.Select() 後資料排序會亂掉.
+            string sortedColumn = dgvFlaw.SortedColumn.Name;
+            string sortOrder = "";
+            if (dgvFlaw.SortOrder.ToString() == "Ascending")
+            {
+                sortOrder = "ASC";
+            }
+            else
+            {
+                sortOrder = "DESC";
+            }
+            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
+            DataRow[] rows = _dtbFlaws.Select(dv.RowFilter, sortString);
+           
 
             // Calculate pages & set label and buttons
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
@@ -849,6 +891,14 @@ namespace NPxP
             dgvFlaw.ClearSelection();
         }
 
+        private void dgvFlaw_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
+            _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
+            _dtbFlaws.DefaultView.RowFilter = _dtbFlaws.DefaultView.RowFilter;
+            
+        }
+
         #endregion
 
 
@@ -863,6 +913,10 @@ namespace NPxP
         }
 
         #endregion
+
+       
+
+        
 
     }
 

@@ -305,6 +305,9 @@ namespace NPxP
         // Draw sub piece range and annotation
         private void DrawSubPiece()
         {
+            // get current using unit
+            NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
+
             _totalScore = 0;
             DataRow[] flawRows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter);
 
@@ -346,7 +349,7 @@ namespace NPxP
                         string subPieceGrade = "F";
                         if (showScore)
                         {
-                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + _topOfPart), (Convert.ToDouble(drRow["End"]) + _topOfPart));
+                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"])/ucd.Conversion, Convert.ToDouble(drCol["End"])/ucd.Conversion, (Convert.ToDouble(drRow["Start"])/ucd.Conversion + _topOfPart), (Convert.ToDouble(drRow["End"])/ucd.Conversion + _topOfPart));
                             DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
                             foreach (DataRow dr in subFlawRows)
                             {
@@ -546,6 +549,9 @@ namespace NPxP
         // Calculate entiry piece score and send NG signal when piece fail
         public void CalcEntirePieceResult()
         {
+            // get current using unit
+            NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
+
             int score = 0;
             double top = Convert.ToDouble(_cuts.Last()) - JobHelper.PxPInfo.Height;
             double bottom = Convert.ToDouble(_cuts.Last());
@@ -572,7 +578,8 @@ namespace NPxP
                             string rangeName = String.Format("{0}{1}", drCol["Name"], drRow["Name"]);
 
                             int subPieceScore = 0;
-                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + top), (Convert.ToDouble(drRow["End"]) + top));
+                            //string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + top), (Convert.ToDouble(drRow["End"]) + top));
+                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"])/ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion + top), (Convert.ToDouble(drRow["End"]) / ucd.Conversion + top));
                             DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
                             foreach (DataRow dr in subFlawRows)
                             {
@@ -872,6 +879,19 @@ namespace NPxP
             ConfigHelper ch = new ConfigHelper();
             GradeSetup gs = new GradeSetup();
             gs.ShowDialog();
+
+            // re-binding datasource
+            // Prepare cmbGradeConfigFiles datasource
+            List<string> gradeConfigs = new List<string>();
+            DirectoryInfo dirInfo = new DirectoryInfo(PathHelper.GradeConfigFolder);
+            FileInfo[] files = dirInfo.GetFiles("*.xml");
+            foreach (FileInfo file in files)
+            {
+                gradeConfigs.Add(file.Name.ToString().Substring(0, file.Name.ToString().LastIndexOf(".")));
+            }
+            // Binding cmbGradeConfigFiles
+            cmbGradeConfigFiles.DataSource = gradeConfigs;
+
             cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
         }
 
@@ -921,6 +941,17 @@ namespace NPxP
                     }
                 }
             }
+
+            // Re-configure Chart
+            XYDiagram diagram = null;
+            if ((XYDiagram)chartControl.Diagram != null)
+            {
+                diagram = (XYDiagram)chartControl.Diagram;
+                double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
+                double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
+                DrawChartPoint();
+            }
+            //UNDONE: 歷史資料切換設定時需重判好壞
         }
 
         private void btnFailPieceList_Click(object sender, EventArgs e)

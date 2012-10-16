@@ -23,6 +23,7 @@ namespace NPxP
 
         private DataTable _dtbFlaws, _dtbFlawLegends, _dtbPoints, _dtbGrades;
         private List<FlawLegend> _legend;
+        private List<NowUnit> _units;
         private List<double> _cuts;
         private List<bool> _doffResult;
         private TableLayoutPanel _pnl;
@@ -64,6 +65,13 @@ namespace NPxP
         {
             this._dtbFlaws = new DataTable();
             this._dtbFlaws = dtbFlaws;
+        }
+
+        // Get PxPTab._units object memory address
+        public void InitUnits(ref List<NowUnit> units)
+        {
+            this._units = new List<NowUnit>();
+            this._units = units;
         }
 
         // Get PxPTab._cuts object memory address
@@ -434,6 +442,8 @@ namespace NPxP
         // Draw point at chart
         public void DrawChartPoint()
         {
+            NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
+
             if (JobHelper.IsOnline)
             {
                 _currentPage = _cuts.Count;
@@ -451,8 +461,8 @@ namespace NPxP
             foreach (DataRow dr in flawRows)
             {
                 flawPoint = new Series(dr["FlawID"].ToString(), ViewType.Point);
-                double cd = Convert.ToDouble(dr["CD"]);
-                double md = Convert.ToDouble(dr["MD"]) - _topOfPart;
+                double cd = Convert.ToDouble(dr["CD"]) * ucd.Conversion;
+                double md = (Convert.ToDouble(dr["MD"]) - _topOfPart)* ucd.Conversion;
                 string flawClass = dr["FlawClass"].ToString();
 
                 string filterExp = String.Format("Name = '{0}'", flawClass);
@@ -1128,7 +1138,7 @@ namespace NPxP
                     IEnumerable<DataRow> result = rows.Where(row => row["FlawID"].ToString().Equals(seriesPoint.Name));
 
                     JobHelper.Job.SetOffline();
-                    FlawForm ff = new FlawForm(result.First());
+                    FlawForm ff = new FlawForm(result.First(), _units);
                     ff.ShowDialog();
                 }
             }

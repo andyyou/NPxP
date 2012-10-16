@@ -291,6 +291,7 @@ namespace NPxP
             _mp.InitJobInfo(jobInfo);
             _mp.InitFlawLegendGrid();
             _mp.InitDatatableFlaws(ref _dtbFlaws);
+            _mp.InitUnits(ref _units);
             _mp.InitCutList(ref _cuts);
 
             // UNDONE: New Cut List
@@ -382,7 +383,7 @@ namespace NPxP
             _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
             foreach (IFlawInfo flaw in flaws)
             {
-                WriteHelper.Log(String.Format("ID:{0},MD:{1}", flaw.FlawID, flaw.MD));
+                //WriteHelper.Log(string.Format("{0},{1},{2}",flaw.FlawID,flaw.MD,flaw.CD));
                 DataRow dr = _dtbFlaws.NewRow();
                 dr["FlawID"] = flaw.FlawID;
                 dr["CD"] = flaw.CD; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺
@@ -456,7 +457,7 @@ namespace NPxP
                 // add record to datatable
                 _dtbFlaws.Rows.Add(dr);
             }
-            // WriteHelper.Log("OnFlaws()");
+            //WriteHelper.Log("OnFlaws()");
         }
 
         // (D)
@@ -599,14 +600,15 @@ namespace NPxP
             {
                 sortOrder = "DESC";
             }
-            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
+            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder); 
             DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter, sortString);
+
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                FlawImageControl fi = new FlawImageControl(rows[i]);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
                 SetDoubleBuffered(fi);
                 fi.Width = holderWidth;
                 fi.Height = holderHeight;
@@ -644,8 +646,8 @@ namespace NPxP
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                
-                FlawImageControl fi = new FlawImageControl(rows[i]);
+
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
                 SetDoubleBuffered(fi);
                 // set draw border
                 if(i == paintRowID)
@@ -780,8 +782,6 @@ namespace NPxP
         {
             Job.SetOffline();
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
-
-            // UNDONE: 不能直接拿e.RowIndex計算頁數. 會不准會有排序狀況 所以應該改成直接使用GridView的資料
             int toPage = e.RowIndex / pageSize + 1;
             // re add need controls to tlpImages and update lblNowPage
             RefreshtlpImagesControls(toPage, e.RowIndex);
@@ -829,7 +829,6 @@ namespace NPxP
         {
             // UNDONE: 這邊改成使用GirdView資料列, 因為GridView排序之後會和下面對不起來.
             // UNDONE: FlawImageControl加入時效能不佳須改善.
-
             // Clear tableLyout controls and search data. 
             DataView dv = sender as DataView;
             tlpFlawImages.Controls.Clear();
@@ -849,7 +848,6 @@ namespace NPxP
             }
             string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
             DataRow[] rows = _dtbFlaws.Select(dv.RowFilter, sortString);
-           
 
             // Calculate pages & set label and buttons
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
@@ -869,7 +867,7 @@ namespace NPxP
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                FlawImageControl fi = new FlawImageControl(rows[i]);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
                 SetDoubleBuffered(fi);
                 fi.Width = holderWidth;
                 fi.Height = holderHeight;

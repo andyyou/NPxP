@@ -56,7 +56,6 @@ namespace NPxP
                 tabImages.TabPages[i].BackColor = Color.Transparent;
                 tabImages.TabPages[i].Tag = 100;  // Zoom Multiplier value.
             }
-            //UNDONE: NoImage Issue?
             if (!drFlaw.IsNull("Images"))
             {
                 IList<IImageInfo> images = drFlaw["Images"] as IList<IImageInfo>;

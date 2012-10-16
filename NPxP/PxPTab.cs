@@ -378,6 +378,7 @@ namespace NPxP
         {
             foreach (IFlawInfo flaw in flaws)
             {
+                //WriteHelper.Log(string.Format("{0},{1},{2}",flaw.FlawID,flaw.MD,flaw.CD));
                 DataRow dr = _dtbFlaws.NewRow();
                 dr["FlawID"] = flaw.FlawID;
                 dr["CD"] = flaw.CD; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺
@@ -451,7 +452,7 @@ namespace NPxP
                 // add record to datatable
                 _dtbFlaws.Rows.Add(dr);
             }
-            WriteHelper.Log("OnFlaws()");
+            //WriteHelper.Log("OnFlaws()");
         }
 
         // (D)
@@ -584,7 +585,19 @@ namespace NPxP
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
             lblNowPage.Text = nowPage.ToString();
             // Get now filter rows
-            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter); 
+            // Sort datarow array(因為 Select 後資料排序會亂掉)
+            string sortedColumn = dgvFlaw.SortedColumn.Name;
+            string sortOrder = "";
+            if (dgvFlaw.SortOrder.ToString() == "Ascending")
+            {
+                sortOrder = "ASC";
+            }
+            else
+            {
+                sortOrder = "DESC";
+            }
+            string sortString = string.Format("{0} {1}", sortedColumn, sortOrder);
+            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter, sortString); 
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.
@@ -610,7 +623,19 @@ namespace NPxP
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
             lblNowPage.Text = nowPage.ToString();
             // Get now filter rows
-            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter); 
+            // Sort datarow array(因為 Select 後資料排序會亂掉)
+            string sortedColumn = dgvFlaw.SortedColumn.Name;
+            string sortOrder = "";
+            if (dgvFlaw.SortOrder.ToString() == "Ascending")
+            {
+                sortOrder = "ASC";
+            }
+            else
+            {
+                sortOrder = "DESC";
+            }
+            string sortString = string.Format("{0} {1}", sortedColumn, sortOrder);
+            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter, sortString); 
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.
@@ -752,8 +777,6 @@ namespace NPxP
         {
             Job.SetOffline();
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
-
-            // UNDONE: 不能直接拿e.RowIndex計算頁數. 會不准會有排序狀況 所以應該改成直接使用GridView的資料
             int toPage = e.RowIndex / pageSize + 1;
             // re add need controls to tlpImages and update lblNowPage
             RefreshtlpImagesControls(toPage, e.RowIndex);
@@ -799,15 +822,24 @@ namespace NPxP
 
         public void DataTable_RowFilterChange(object sender, ListChangedEventArgs e)
         {
-            // UNDONE: 這邊改成使用GirdView資料列, 因為GridView排序之後會和下面對不起來.
-
             // Clear tableLyout controls and search data. 
             DataView dv = sender as DataView;
             tlpFlawImages.Controls.Clear();
             int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
-            DataRow[] rows = _dtbFlaws.Select(dv.RowFilter);
-            rows.OrderBy(x => x.Field<int>("FlawID"));
+            // Sort datarow array(因為 Select 後資料排序會亂掉)
+            string sortedColumn = dgvFlaw.SortedColumn.Name;
+            string sortOrder = "";
+            if (dgvFlaw.SortOrder.ToString() == "Ascending")
+            {
+                sortOrder = "ASC";
+            }
+            else
+            {
+                sortOrder = "DESC";
+            }
+            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
+            DataRow[] rows = _dtbFlaws.Select(dv.RowFilter, sortString);
 
             // Calculate pages & set label and buttons
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;

@@ -33,6 +33,7 @@ namespace NPxP
         private DataView _dvFiliter;
         private List<NowUnit> _units;
         private List<double> _cuts;
+        private List<Cut> _newCuts; // Build on JobLoaded.
         private string _xmlUnitsPath;
         private string _dbConnectString;
 
@@ -161,7 +162,7 @@ namespace NPxP
             WriteHelper.Log("GetMapControlHandle()");
             _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
-            _mp.InitTableLayout(ref tlpFlawImages);
+            _mp.InitTableLayout(ref tlpFlawImages); // 為了讓右邊可以即時更新左邊圖片.把參考加給右邊.
         }
 
         // (10) :設定 MapWindow Position with Job object.
@@ -188,7 +189,7 @@ namespace NPxP
         public void OnSetFlawLegend(List<FlawLegend> legend)
         {
             WriteHelper.Log("OnSetFlawLegend()");
-            _mp.InitFlawLegendValue(legend);  // 把 MapWindow 需要的資料傳過去
+            _mp.InitFlawLegendValue(legend);  // 把 MapWindow 需要的"圖例"資料傳過去
         }
 
         // (14)
@@ -210,6 +211,7 @@ namespace NPxP
             WriteHelper.Log("OnJobLoaded()");
             // Reset to default.
             _cuts = new List<double>();
+            _newCuts = new List<Cut>();
             lblNowPage.Text = "---";
             lblTotalPage.Text = "---";
             btnNextFlawImages.Enabled = false;
@@ -290,6 +292,9 @@ namespace NPxP
             _mp.InitFlawLegendGrid();
             _mp.InitDatatableFlaws(ref _dtbFlaws);
             _mp.InitCutList(ref _cuts);
+
+            // UNDONE: New Cut List
+            // _mp.InitCutList(ref _newCuts);
             _mp.InitFire(ref Fire);
 
             // Initial Flaw Chart FlawLegend
@@ -334,6 +339,10 @@ namespace NPxP
 
                     case e_EventID.CUT_SIGNAL:
                         _cuts.Add(eventInfo.MD);
+                        // UNDONE: New Cut List & Sort
+                        _newCuts.Add(new Cut(eventInfo.MD));
+                        _newCuts.Sort(delegate(Cut c1, Cut c2) { return Comparer<double>.Default.Compare(c1.MD, c2.MD); });
+
                         _mp.CalcEntirePieceResult();
 
                         if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.

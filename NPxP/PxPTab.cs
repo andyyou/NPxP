@@ -743,6 +743,8 @@ namespace NPxP
         {
             Job.SetOffline();
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
+
+            // UNDONE: 不能直接拿e.RowIndex計算頁數. 會不准會有排序狀況 所以應該改成直接使用GridView的資料
             int toPage = e.RowIndex / pageSize + 1;
             // re add need controls to tlpImages and update lblNowPage
             RefreshtlpImagesControls(toPage, e.RowIndex);
@@ -788,12 +790,15 @@ namespace NPxP
 
         public void DataTable_RowFilterChange(object sender, ListChangedEventArgs e)
         {
+            // UNDONE: 這邊改成使用GirdView資料列, 因為GridView排序之後會和下面對不起來.
+
             // Clear tableLyout controls and search data. 
             DataView dv = sender as DataView;
             tlpFlawImages.Controls.Clear();
             int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
             DataRow[] rows = _dtbFlaws.Select(dv.RowFilter);
+            rows.OrderBy(x => x.Field<int>("FlawID"));
 
             // Calculate pages & set label and buttons
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;

@@ -44,3 +44,4 @@ C:\Projects\Github\calvert\NPxP\NPxP\obj\Debug\NPxP.csproj.GenerateResource.Cach
 C:\Projects\Github\calvert\NPxP\NPxP\obj\Debug\NPxP.dll.licenses
 C:\Projects\Github\calvert\NPxP\NPxP\obj\Debug\NPxP.dll
 C:\Projects\Github\calvert\NPxP\NPxP\obj\Debug\NPxP.pdb
+C:\Projects\Github\NPxP\NPxP\obj\Debug\NPxP.FailPieceList.resources

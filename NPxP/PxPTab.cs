@@ -596,7 +596,7 @@ namespace NPxP
             {
                 sortOrder = "DESC";
             }
-            string sortString = string.Format("{0} {1}", sortedColumn, sortOrder);
+            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
             DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter, sortString); 
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
@@ -634,7 +634,7 @@ namespace NPxP
             {
                 sortOrder = "DESC";
             }
-            string sortString = string.Format("{0} {1}", sortedColumn, sortOrder);
+            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
             DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter, sortString); 
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);

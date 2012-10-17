@@ -80,7 +80,7 @@
             this.lblMapConfig.Location = new System.Drawing.Point(269, 456);
             this.lblMapConfig.Name = "lblMapConfig";
             this.lblMapConfig.Size = new System.Drawing.Size(82, 12);
-            this.lblMapConfig.TabIndex = 0;
+            this.lblMapConfig.TabIndex = 3;
             this.lblMapConfig.Text = "Map Config File";
             // 
             // cmbMapConfigName
@@ -89,7 +89,7 @@
             this.cmbMapConfigName.Location = new System.Drawing.Point(354, 453);
             this.cmbMapConfigName.Name = "cmbMapConfigName";
             this.cmbMapConfigName.Size = new System.Drawing.Size(150, 20);
-            this.cmbMapConfigName.TabIndex = 1;
+            this.cmbMapConfigName.TabIndex = 4;
             this.cmbMapConfigName.DropDownClosed += new System.EventHandler(this.cmbMapConfigName_DropDownClosed);
             // 
             // grbImageSettings
@@ -102,7 +102,7 @@
             this.grbImageSettings.Location = new System.Drawing.Point(15, 36);
             this.grbImageSettings.Name = "grbImageSettings";
             this.grbImageSettings.Size = new System.Drawing.Size(251, 100);
-            this.grbImageSettings.TabIndex = 3;
+            this.grbImageSettings.TabIndex = 0;
             this.grbImageSettings.TabStop = false;
             this.grbImageSettings.Text = "Image Grid Settings";
             // 
@@ -112,7 +112,7 @@
             this.lblImgX.Location = new System.Drawing.Point(63, 55);
             this.lblImgX.Name = "lblImgX";
             this.lblImgX.Size = new System.Drawing.Size(13, 12);
-            this.lblImgX.TabIndex = 4;
+            this.lblImgX.TabIndex = 3;
             this.lblImgX.Text = "X";
             // 
             // lblImgColumn
@@ -121,7 +121,7 @@
             this.lblImgColumn.Location = new System.Drawing.Point(10, 25);
             this.lblImgColumn.Name = "lblImgColumn";
             this.lblImgColumn.Size = new System.Drawing.Size(47, 12);
-            this.lblImgColumn.TabIndex = 3;
+            this.lblImgColumn.TabIndex = 0;
             this.lblImgColumn.Text = "Columns";
             // 
             // lblImgRow
@@ -130,22 +130,42 @@
             this.lblImgRow.Location = new System.Drawing.Point(80, 25);
             this.lblImgRow.Name = "lblImgRow";
             this.lblImgRow.Size = new System.Drawing.Size(31, 12);
-            this.lblImgRow.TabIndex = 2;
+            this.lblImgRow.TabIndex = 1;
             this.lblImgRow.Text = "Rows";
             // 
             // nudImageRows
             // 
             this.nudImageRows.Location = new System.Drawing.Point(80, 50);
+            this.nudImageRows.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.nudImageRows.Name = "nudImageRows";
             this.nudImageRows.Size = new System.Drawing.Size(50, 22);
-            this.nudImageRows.TabIndex = 1;
+            this.nudImageRows.TabIndex = 4;
+            this.nudImageRows.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // nudImageColumns
             // 
             this.nudImageColumns.Location = new System.Drawing.Point(10, 50);
+            this.nudImageColumns.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.nudImageColumns.Name = "nudImageColumns";
             this.nudImageColumns.Size = new System.Drawing.Size(50, 22);
-            this.nudImageColumns.TabIndex = 0;
+            this.nudImageColumns.TabIndex = 2;
+            this.nudImageColumns.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // grbMapSettings
             // 
@@ -162,7 +182,7 @@
             this.grbMapSettings.Location = new System.Drawing.Point(15, 142);
             this.grbMapSettings.Name = "grbMapSettings";
             this.grbMapSettings.Size = new System.Drawing.Size(251, 302);
-            this.grbMapSettings.TabIndex = 4;
+            this.grbMapSettings.TabIndex = 1;
             this.grbMapSettings.TabStop = false;
             this.grbMapSettings.Text = "Map Settings";
             // 
@@ -232,20 +252,20 @@
             // 
             this.lblSCCD.AutoSize = true;
             this.lblSCCD.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.lblSCCD.Location = new System.Drawing.Point(179, 49);
+            this.lblSCCD.Location = new System.Drawing.Point(179, 45);
             this.lblSCCD.Name = "lblSCCD";
             this.lblSCCD.Size = new System.Drawing.Size(23, 12);
-            this.lblSCCD.TabIndex = 13;
+            this.lblSCCD.TabIndex = 6;
             this.lblSCCD.Text = "mm";
             // 
             // lblSCMD
             // 
             this.lblSCMD.AutoSize = true;
             this.lblSCMD.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.lblSCMD.Location = new System.Drawing.Point(179, 22);
+            this.lblSCMD.Location = new System.Drawing.Point(179, 17);
             this.lblSCMD.Name = "lblSCMD";
             this.lblSCMD.Size = new System.Drawing.Size(23, 12);
-            this.lblSCMD.TabIndex = 12;
+            this.lblSCMD.TabIndex = 3;
             this.lblSCMD.Text = "mm";
             // 
             // lbSCellCDUnit
@@ -271,7 +291,7 @@
             this.lblCountSizeCD.Location = new System.Drawing.Point(120, 108);
             this.lblCountSizeCD.Name = "lblCountSizeCD";
             this.lblCountSizeCD.Size = new System.Drawing.Size(21, 12);
-            this.lblCountSizeCD.TabIndex = 9;
+            this.lblCountSizeCD.TabIndex = 10;
             this.lblCountSizeCD.Text = "CD";
             // 
             // lblCountSizeMD
@@ -289,7 +309,7 @@
             this.txtCountSizeCD.Location = new System.Drawing.Point(144, 103);
             this.txtCountSizeCD.Name = "txtCountSizeCD";
             this.txtCountSizeCD.Size = new System.Drawing.Size(34, 22);
-            this.txtCountSizeCD.TabIndex = 7;
+            this.txtCountSizeCD.TabIndex = 11;
             this.txtCountSizeCD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCountSizeCD_KeyPress);
             // 
             // txtCountSizeMD
@@ -297,7 +317,7 @@
             this.txtCountSizeMD.Location = new System.Drawing.Point(144, 75);
             this.txtCountSizeMD.Name = "txtCountSizeMD";
             this.txtCountSizeMD.Size = new System.Drawing.Size(34, 22);
-            this.txtCountSizeMD.TabIndex = 6;
+            this.txtCountSizeMD.TabIndex = 9;
             this.txtCountSizeMD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtCountSizeMD_KeyPress);
             // 
             // txtFixSizeCD
@@ -314,7 +334,7 @@
             this.txtFixSizeMD.Location = new System.Drawing.Point(144, 12);
             this.txtFixSizeMD.Name = "txtFixSizeMD";
             this.txtFixSizeMD.Size = new System.Drawing.Size(34, 22);
-            this.txtFixSizeMD.TabIndex = 4;
+            this.txtFixSizeMD.TabIndex = 2;
             this.txtFixSizeMD.TextChanged += new System.EventHandler(this.Double_Validation);
             this.txtFixSizeMD.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFixSizeMD_KeyPress);
             // 
@@ -325,7 +345,7 @@
             this.lblFixSizeCD.Location = new System.Drawing.Point(120, 45);
             this.lblFixSizeCD.Name = "lblFixSizeCD";
             this.lblFixSizeCD.Size = new System.Drawing.Size(21, 12);
-            this.lblFixSizeCD.TabIndex = 3;
+            this.lblFixSizeCD.TabIndex = 4;
             this.lblFixSizeCD.Text = "CD";
             // 
             // lblFixSizeMD
@@ -335,7 +355,7 @@
             this.lblFixSizeMD.Location = new System.Drawing.Point(118, 17);
             this.lblFixSizeMD.Name = "lblFixSizeMD";
             this.lblFixSizeMD.Size = new System.Drawing.Size(23, 12);
-            this.lblFixSizeMD.TabIndex = 2;
+            this.lblFixSizeMD.TabIndex = 1;
             this.lblFixSizeMD.Text = "MD";
             // 
             // rdoCountSize
@@ -344,7 +364,7 @@
             this.rdoCountSize.Location = new System.Drawing.Point(11, 72);
             this.rdoCountSize.Name = "rdoCountSize";
             this.rdoCountSize.Size = new System.Drawing.Size(200, 60);
-            this.rdoCountSize.TabIndex = 1;
+            this.rdoCountSize.TabIndex = 7;
             this.rdoCountSize.TabStop = true;
             this.rdoCountSize.Text = "Equal Cell Count";
             this.rdoCountSize.UseVisualStyleBackColor = false;
@@ -423,7 +443,7 @@
             this.gbSeriesSetting.Location = new System.Drawing.Point(278, 36);
             this.gbSeriesSetting.Name = "gbSeriesSetting";
             this.gbSeriesSetting.Size = new System.Drawing.Size(394, 409);
-            this.gbSeriesSetting.TabIndex = 5;
+            this.gbSeriesSetting.TabIndex = 2;
             this.gbSeriesSetting.TabStop = false;
             this.gbSeriesSetting.Text = "Series Settings";
             // 
@@ -439,7 +459,7 @@
             this.dgvFlawLegends.RowHeadersVisible = false;
             this.dgvFlawLegends.RowTemplate.Height = 24;
             this.dgvFlawLegends.Size = new System.Drawing.Size(382, 326);
-            this.dgvFlawLegends.TabIndex = 2;
+            this.dgvFlawLegends.TabIndex = 0;
             this.dgvFlawLegends.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvFlawLegends_CellDoubleClick);
             this.dgvFlawLegends.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvFlawLegends_CellFormatting);
             // 
@@ -448,7 +468,7 @@
             this.btnConfirm.Location = new System.Drawing.Point(591, 451);
             this.btnConfirm.Name = "btnConfirm";
             this.btnConfirm.Size = new System.Drawing.Size(75, 23);
-            this.btnConfirm.TabIndex = 9;
+            this.btnConfirm.TabIndex = 6;
             this.btnConfirm.Text = "Close";
             this.btnConfirm.UseVisualStyleBackColor = true;
             this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
@@ -458,7 +478,7 @@
             this.btnSave.Location = new System.Drawing.Point(510, 451);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 8;
+            this.btnSave.TabIndex = 5;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);

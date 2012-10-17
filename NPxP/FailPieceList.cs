@@ -21,7 +21,7 @@ namespace NPxP
         private bool btnPrevPieceStatus, btnNextPieceStatus;
         private List<double> _cuts;
         private Label _originCurrentPageLabel;
-        private int _originCurrentPage;
+        private int _originCurrentPage = -1;
         private Color _originCurrentPageColor;
 
         #endregion
@@ -36,8 +36,11 @@ namespace NPxP
             this._doffResult = doffResult;
             this._cuts = cuts;
             this._originCurrentPageLabel = currentPage;
-            _originCurrentPage = Convert.ToInt32(_originCurrentPageLabel.Text);
-            _originCurrentPageColor = _originCurrentPageLabel.ForeColor;
+            if (_dtbFlaws != null)
+            {
+                _originCurrentPage = Convert.ToInt32(_originCurrentPageLabel.Text);
+                _originCurrentPageColor = _originCurrentPageLabel.ForeColor;
+            }
         }
 
         ~FailPieceList()
@@ -56,20 +59,24 @@ namespace NPxP
             btnNextPieceStatus = _mp.btnNextPiece.Enabled;
             _mp.btnPrevPiece.Enabled = false;
             _mp.btnNextPiece.Enabled = false;
-            _originRowFilter = _dtbFlaws.DefaultView.RowFilter;
 
-            int i = 0;
-            foreach (bool result in _doffResult)
+            if (_dtbFlaws != null)
             {
-                if (result == false)
+                _originRowFilter = _dtbFlaws.DefaultView.RowFilter;
+
+                int i = 0;
+                foreach (bool result in _doffResult)
                 {
-                    double topOfPart = _cuts[i] - JobHelper.PxPInfo.Height;
-                    double bottomOfPart = _cuts[i];
-                    string filterExp = String.Format("MD > {0} AND MD < {1}", topOfPart, bottomOfPart);
-                                
-                    dgvFailPieceList.Rows.Add(i + 1, _dtbFlaws.Select(filterExp).Length);
+                    if (result == false)
+                    {
+                        double topOfPart = _cuts[i] - JobHelper.PxPInfo.Height;
+                        double bottomOfPart = _cuts[i];
+                        string filterExp = String.Format("MD > {0} AND MD < {1}", topOfPart, bottomOfPart);
+
+                        dgvFailPieceList.Rows.Add(i + 1, _dtbFlaws.Select(filterExp).Length);
+                    }
+                    i++;
                 }
-                i++;
             }
         }
 
@@ -83,11 +90,14 @@ namespace NPxP
 
         private void FailList_FormClosing(object sender, FormClosingEventArgs e)
         {
-            changePiece(_originCurrentPage);
-            _mp.btnPrevPiece.Enabled = btnPrevPieceStatus;
-            _mp.btnNextPiece.Enabled = btnNextPieceStatus;
-            _originCurrentPageLabel.Text = _originCurrentPage.ToString();
-            _originCurrentPageLabel.ForeColor = _originCurrentPageColor;
+            if (_originCurrentPage != -1)
+            {
+                changePiece(_originCurrentPage);
+                _mp.btnPrevPiece.Enabled = btnPrevPieceStatus;
+                _mp.btnNextPiece.Enabled = btnNextPieceStatus;
+                _originCurrentPageLabel.Text = _originCurrentPage.ToString();
+                _originCurrentPageLabel.ForeColor = _originCurrentPageColor;
+            }
         }
 
         private void changePiece(int pieceNumber)

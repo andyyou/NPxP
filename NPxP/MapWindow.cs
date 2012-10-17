@@ -21,6 +21,7 @@ namespace NPxP
     {
         #region Local Variables
 
+        private PxPTab _pxp = null; // 用來控制 pxp 頁面元件, 勿隨意使用
         private DataTable _dtbFlaws, _dtbFlawLegends, _dtbPoints, _dtbGrades;
         private List<FlawLegend> _legend;
         private List<NowUnit> _units;
@@ -42,8 +43,9 @@ namespace NPxP
 
         #region Constructor
 
-        public MapWindow()
+        public MapWindow(PxPTab pxp)
         {
+            _pxp = pxp;
             WriteHelper.Log("MapWindow()");
             InitializeComponent();
             CreateShapeRefDic();
@@ -640,7 +642,7 @@ namespace NPxP
             cmbGradeConfigFiles.Enabled = status;
             btnMapSetting.Enabled = status;
             btnGradeSetting.Enabled = status;
-            btnFailPieceList.Enabled = !status;
+            //btnFailPieceList.Enabled = !status;
         }
 
         // Create shape dictionary
@@ -799,6 +801,9 @@ namespace NPxP
 
         private void btnMapSetting_Click(object sender, EventArgs e)
         {
+            // Deal Flaw Legends datasoure
+            ConfigHelper ch = new ConfigHelper();
+
             XYDiagram diagram = null;
             if ((XYDiagram)chartControl.Diagram != null)
             {
@@ -826,8 +831,6 @@ namespace NPxP
                     dr["JobDoffNum"] = 0;
                     _dtbFlawLegends.Rows.Add(dr);
                 }
-                // Deal Flaw Legends datasoure
-                ConfigHelper ch = new ConfigHelper();
 
                 string mapConfig = ch.GetDefaultMapConfigName().Trim();
                 DataTable dtbLegendFromConfig = ch.GetDataTablePrevFlawLegend(mapConfig);
@@ -846,22 +849,6 @@ namespace NPxP
                 dgvFlawLegend.ClearSelection();
                 dgvFlawLegendDetial.ClearSelection();
 
-                // Refresh pxptab tablelayout
-
-                _pnl.ColumnCount = ch.GettlpFlawImagesColumns();
-                _pnl.RowCount = ch.GettlpFlawImagesRows();
-                _pnl.ColumnStyles.Clear();
-                int phdHeight = _pnl.Height / _pnl.RowCount;
-                int phdrWidth = _pnl.Width / _pnl.ColumnCount;
-                for (int i = 0; i < _pnl.RowCount; i++)
-                {
-                    _pnl.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
-                }
-
-                for (int i = 0; i < _pnl.ColumnCount; i++)
-                {
-                    _pnl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-                }
 
                 // Re-configure Chart
                 if (diagram != null)
@@ -871,6 +858,31 @@ namespace NPxP
                     InitChart(width, height);
                     DrawChartPoint();
                 }
+            }
+            // Refresh pxptab tablelayout
+            _pnl.ColumnCount = ch.GettlpFlawImagesColumns();
+            _pnl.RowCount = ch.GettlpFlawImagesRows();
+            _pnl.ColumnStyles.Clear();
+            int phdHeight = _pnl.Height / _pnl.RowCount;
+            int phdrWidth = _pnl.Width / _pnl.ColumnCount;
+            for (int i = 0; i < _pnl.RowCount; i++)
+            {
+                _pnl.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+            }
+
+            for (int i = 0; i < _pnl.ColumnCount; i++)
+            {
+                _pnl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+            }
+            // 呼叫 RefreshtlpImagesControls 重新加入控制項, 然後重新計算總頁數
+            if (_dtbFlaws != null)
+            {
+                _pxp.RefreshtlpImagesControls(1);
+                int dataCount = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter).Length;
+                int totalPage = dataCount % (_pnl.ColumnCount * _pnl.RowCount) == 0 ?
+                             dataCount / (_pnl.ColumnCount * _pnl.RowCount) :
+                             dataCount / (_pnl.ColumnCount * _pnl.RowCount) + 1;
+                _pxp.Controls["lblTotalPage"].Text = totalPage.ToString();
             }
         }
 

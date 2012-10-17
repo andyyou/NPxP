@@ -160,7 +160,7 @@ namespace NPxP
         public void GetMapControlHandle(out IntPtr hndl)
         {
             // WriteHelper.Log("GetMapControlHandle()");
-            _mp = new MapWindow(); // 確保執行順序正確,所以在這邊在 new 物件.
+            _mp = new MapWindow(this); // 確保執行順序正確,所以在這邊在 new 物件.
             hndl = _mp.Handle;
             _mp.InitTableLayout(ref tlpFlawImages); // 為了讓右邊可以即時更新左邊圖片.把參考加給右邊.
         }
@@ -383,7 +383,7 @@ namespace NPxP
             _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
             foreach (IFlawInfo flaw in flaws)
             {
-                //WriteHelper.Log(string.Format("{0},{1},{2}",flaw.FlawID,flaw.MD,flaw.CD));
+                WriteHelper.Log(string.Format("{0},{1},{2}", flaw.FlawID, flaw.MD, flaw.CD));
                 DataRow dr = _dtbFlaws.NewRow();
                 dr["FlawID"] = flaw.FlawID;
                 dr["CD"] = flaw.CD; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺

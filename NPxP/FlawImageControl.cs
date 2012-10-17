@@ -274,6 +274,7 @@ namespace NPxP
             .Where(r => r.Cells["FlawID"].Value.ToString().Equals(_drFlaw["FlawID"].ToString()))
             .First();
             row.Selected = true;
+            dgv.FirstDisplayedScrollingRowIndex = row.Index;
 
         }
 

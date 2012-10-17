@@ -35,6 +35,9 @@
             this.lblSlash = new System.Windows.Forms.Label();
             this.lblTotalPage = new System.Windows.Forms.Label();
             this.lblNowPage = new System.Windows.Forms.Label();
+            this.btnShowGoPage = new System.Windows.Forms.Button();
+            this.txtGoPage = new System.Windows.Forms.TextBox();
+            this.btnGo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlaw)).BeginInit();
             this.SuspendLayout();
             // 
@@ -141,12 +144,43 @@
             this.lblNowPage.TabIndex = 6;
             this.lblNowPage.Text = "---";
             // 
+            // btnShowGoPage
+            // 
+            this.btnShowGoPage.Location = new System.Drawing.Point(599, 688);
+            this.btnShowGoPage.Name = "btnShowGoPage";
+            this.btnShowGoPage.Size = new System.Drawing.Size(130, 41);
+            this.btnShowGoPage.TabIndex = 7;
+            this.btnShowGoPage.TabStop = false;
+            this.btnShowGoPage.Text = "切換頁面";
+            this.btnShowGoPage.UseVisualStyleBackColor = true;
+            this.btnShowGoPage.Click += new System.EventHandler(this.btnShowGoPage_Click);
+            // 
+            // txtGoPage
+            // 
+            this.txtGoPage.Location = new System.Drawing.Point(607, 699);
+            this.txtGoPage.Name = "txtGoPage";
+            this.txtGoPage.Size = new System.Drawing.Size(57, 22);
+            this.txtGoPage.TabIndex = 8;
+            this.txtGoPage.TabStop = false;
+            // 
+            // btnGo
+            // 
+            this.btnGo.Location = new System.Drawing.Point(667, 697);
+            this.btnGo.Name = "btnGo";
+            this.btnGo.Size = new System.Drawing.Size(54, 26);
+            this.btnGo.TabIndex = 9;
+            this.btnGo.TabStop = false;
+            this.btnGo.Text = "OK";
+            this.btnGo.UseVisualStyleBackColor = true;
+            this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
+            // 
             // PxPTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::NPxP.Properties.Resources.BackgroundRight;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.Controls.Add(this.btnShowGoPage);
             this.Controls.Add(this.lblNowPage);
             this.Controls.Add(this.lblTotalPage);
             this.Controls.Add(this.lblSlash);
@@ -154,6 +188,8 @@
             this.Controls.Add(this.btnProvFlawImages);
             this.Controls.Add(this.tlpFlawImages);
             this.Controls.Add(this.dgvFlaw);
+            this.Controls.Add(this.btnGo);
+            this.Controls.Add(this.txtGoPage);
             this.Name = "PxPTab";
             this.Size = new System.Drawing.Size(760, 747);
             ((System.ComponentModel.ISupportInitialize)(this.dgvFlaw)).EndInit();
@@ -171,5 +207,8 @@
         private System.Windows.Forms.Label lblSlash;
         private System.Windows.Forms.Label lblTotalPage;
         private System.Windows.Forms.Label lblNowPage;
+        private System.Windows.Forms.Button btnShowGoPage;
+        private System.Windows.Forms.TextBox txtGoPage;
+        private System.Windows.Forms.Button btnGo;
     }
 }

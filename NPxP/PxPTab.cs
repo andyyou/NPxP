@@ -864,6 +864,15 @@ namespace NPxP
             lblTotalPage.Text = _totalPage.ToString();
             int startFicIndex = (_nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > rows.Length) ? rows.Length : (startFicIndex + pageSize);
+            // 計算完之後,判斷直接跳頁按鈕可否使用.
+            if (_totalPage > 1)
+            {
+                btnShowGoPage.Enabled = true;
+            }
+            else
+            {
+                btnShowGoPage.Enabled = false;
+            }
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
@@ -911,6 +920,51 @@ namespace NPxP
         }
 
         #endregion
+
+        private void btnShowGoPage_Click(object sender, EventArgs e)
+        {
+            btnShowGoPage.Visible = false;
+
+        }
+
+        private void btnGo_Click(object sender, EventArgs e)
+        {
+            int gotoPage = int.TryParse(txtGoPage.Text, out gotoPage) ? gotoPage : 1;
+            if (gotoPage < _totalPage )
+            {
+                Job.SetOffline();
+                // change page to next and check limit.
+                if (_nowPage + 1 > _totalPage)
+                {
+                    _nowPage = _totalPage;
+                }
+                else
+                {
+                    _nowPage = gotoPage;
+                }
+                // re add need controls to tlpImages and update lblNowPage
+                RefreshtlpImagesControls(_nowPage);
+                // check now page and set can using buttons
+                if (_totalPage == 1)
+                {
+                    btnNextFlawImages.Enabled = false;
+                    btnProvFlawImages.Enabled = false;
+                }
+                else if (_nowPage == _totalPage)
+                {
+                    btnNextFlawImages.Enabled = false;
+                    btnProvFlawImages.Enabled = true;
+                }
+                else
+                {
+                    btnNextFlawImages.Enabled = true;
+                    btnProvFlawImages.Enabled = true;
+                }
+            }
+
+            btnShowGoPage.Visible = true;
+
+        }
 
        
 

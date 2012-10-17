@@ -59,6 +59,7 @@ namespace NPxP
             btnNextPieceStatus = _mp.btnNextPiece.Enabled;
             _mp.btnPrevPiece.Enabled = false;
             _mp.btnNextPiece.Enabled = false;
+            _mp.btnShowGoPage.Enabled = false;
 
             if (_dtbFlaws != null)
             {
@@ -95,6 +96,7 @@ namespace NPxP
                 changePiece(_originCurrentPage);
                 _mp.btnPrevPiece.Enabled = btnPrevPieceStatus;
                 _mp.btnNextPiece.Enabled = btnNextPieceStatus;
+                _mp.btnShowGoPage.Enabled = true;
                 _originCurrentPageLabel.Text = _originCurrentPage.ToString();
                 _originCurrentPageLabel.ForeColor = _originCurrentPageColor;
             }

@@ -30,7 +30,7 @@
         {
             this.dgvFlaw = new System.Windows.Forms.DataGridView();
             this.tlpFlawImages = new System.Windows.Forms.TableLayoutPanel();
-            this.btnProvFlawImages = new System.Windows.Forms.Button();
+            this.btnPrevFlawImages = new System.Windows.Forms.Button();
             this.btnNextFlawImages = new System.Windows.Forms.Button();
             this.lblSlash = new System.Windows.Forms.Label();
             this.lblTotalPage = new System.Windows.Forms.Label();
@@ -80,19 +80,19 @@
             this.tlpFlawImages.Size = new System.Drawing.Size(735, 524);
             this.tlpFlawImages.TabIndex = 1;
             // 
-            // btnProvFlawImages
+            // btnPrevFlawImages
             // 
-            this.btnProvFlawImages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnProvFlawImages.Enabled = false;
-            this.btnProvFlawImages.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.btnProvFlawImages.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.btnProvFlawImages.Location = new System.Drawing.Point(177, 688);
-            this.btnProvFlawImages.Name = "btnProvFlawImages";
-            this.btnProvFlawImages.Size = new System.Drawing.Size(52, 41);
-            this.btnProvFlawImages.TabIndex = 2;
-            this.btnProvFlawImages.Text = "<";
-            this.btnProvFlawImages.UseVisualStyleBackColor = true;
-            this.btnProvFlawImages.Click += new System.EventHandler(this.btnProvFlawImages_Click);
+            this.btnPrevFlawImages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnPrevFlawImages.Enabled = false;
+            this.btnPrevFlawImages.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.btnPrevFlawImages.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.btnPrevFlawImages.Location = new System.Drawing.Point(177, 688);
+            this.btnPrevFlawImages.Name = "btnPrevFlawImages";
+            this.btnPrevFlawImages.Size = new System.Drawing.Size(52, 41);
+            this.btnPrevFlawImages.TabIndex = 2;
+            this.btnPrevFlawImages.Text = "<";
+            this.btnPrevFlawImages.UseVisualStyleBackColor = true;
+            this.btnPrevFlawImages.Click += new System.EventHandler(this.btnPrevFlawImages_Click);
             // 
             // btnNextFlawImages
             // 
@@ -146,17 +146,20 @@
             // 
             // btnShowGoPage
             // 
+            this.btnShowGoPage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnShowGoPage.Enabled = false;
             this.btnShowGoPage.Location = new System.Drawing.Point(599, 688);
             this.btnShowGoPage.Name = "btnShowGoPage";
             this.btnShowGoPage.Size = new System.Drawing.Size(130, 41);
             this.btnShowGoPage.TabIndex = 7;
             this.btnShowGoPage.TabStop = false;
-            this.btnShowGoPage.Text = "切換頁面";
+            this.btnShowGoPage.Text = "Goto...";
             this.btnShowGoPage.UseVisualStyleBackColor = true;
             this.btnShowGoPage.Click += new System.EventHandler(this.btnShowGoPage_Click);
             // 
             // txtGoPage
             // 
+            this.txtGoPage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.txtGoPage.Location = new System.Drawing.Point(607, 699);
             this.txtGoPage.Name = "txtGoPage";
             this.txtGoPage.Size = new System.Drawing.Size(57, 22);
@@ -165,6 +168,7 @@
             // 
             // btnGo
             // 
+            this.btnGo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnGo.Location = new System.Drawing.Point(667, 697);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(54, 26);
@@ -185,7 +189,7 @@
             this.Controls.Add(this.lblTotalPage);
             this.Controls.Add(this.lblSlash);
             this.Controls.Add(this.btnNextFlawImages);
-            this.Controls.Add(this.btnProvFlawImages);
+            this.Controls.Add(this.btnPrevFlawImages);
             this.Controls.Add(this.tlpFlawImages);
             this.Controls.Add(this.dgvFlaw);
             this.Controls.Add(this.btnGo);
@@ -202,7 +206,7 @@
 
         private System.Windows.Forms.DataGridView dgvFlaw;
         public System.Windows.Forms.TableLayoutPanel tlpFlawImages;
-        private System.Windows.Forms.Button btnProvFlawImages;
+        private System.Windows.Forms.Button btnPrevFlawImages;
         private System.Windows.Forms.Button btnNextFlawImages;
         private System.Windows.Forms.Label lblSlash;
         private System.Windows.Forms.Label lblTotalPage;

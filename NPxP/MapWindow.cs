@@ -194,6 +194,7 @@ namespace NPxP
             lblNowPiece.ForeColor = SystemColors.ControlDarkDark;
             btnPrevPiece.Enabled = false;
             btnNextPiece.Enabled = false;
+            btnShowGoPage.Enabled = false;
             _jobDoffNum.Clear();
             _doffResult.Clear();
 
@@ -230,6 +231,7 @@ namespace NPxP
             XYDiagram diagram = (XYDiagram)chartControl.Diagram;
             // Setting AxisX format
             diagram.EnableAxisXZooming = true;
+            diagram.EnableAxisXScrolling = true;
             diagram.AxisX.Range.MinValue = 0;
             diagram.AxisX.Range.MaxValue = width;
             diagram.AxisX.Range.ScrollingRange.SetMinMaxValues(0, width);
@@ -242,6 +244,7 @@ namespace NPxP
 
             // Setting AxisY format
             diagram.EnableAxisYZooming = true;
+            diagram.EnableAxisYScrolling = true;
             diagram.AxisY.Range.MinValue = 0;
             diagram.AxisY.Range.MaxValue = height;
             diagram.AxisY.Range.ScrollingRange.SetMinMaxValues(0, height);
@@ -449,7 +452,7 @@ namespace NPxP
         {
             NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
 
-            if (JobHelper.IsOnline)
+            if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)
             {
                 _currentPage = _cuts.Count;
                 _totalPage = _cuts.Count;
@@ -545,6 +548,11 @@ namespace NPxP
             {
                 btnPrevPiece.Enabled = true;
                 btnNextPiece.Enabled = true;
+            }
+
+            if (_totalPage > 0)
+            {
+                btnShowGoPage.Enabled = true;
             }
         }
 
@@ -1185,6 +1193,34 @@ namespace NPxP
                     ff.ShowDialog();
                 }
             }
+        }
+
+        private void btnShowGoPage_Click(object sender, EventArgs e)
+        {
+            btnShowGoPage.Visible = false;
+            txtGoPage.Focus();
+            txtGoPage.SelectAll();
+        }
+
+        private void btnGo_Click(object sender, EventArgs e)
+        {
+            int gotoPage = int.TryParse(txtGoPage.Text, out gotoPage) ? gotoPage : 1;
+            if (gotoPage <= _totalPage && gotoPage > 0)
+            {
+                JobHelper.Job.SetOffline();
+                JobHelper.IsOnline = false;
+
+                _currentPage = gotoPage;
+                _topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
+                double bottomOfPart = _cuts[_currentPage - 1];
+                string filterExp = String.Format("MD > {0} AND MD < {1}", _topOfPart, bottomOfPart);
+                DataView dv = _dtbFlaws.DefaultView;
+                dv.RowFilter = filterExp;
+                DrawChartPoint();
+                UpdateUIControl();
+            }
+
+            btnShowGoPage.Visible = true;
         }
 
         #endregion

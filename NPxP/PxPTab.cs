@@ -215,7 +215,7 @@ namespace NPxP
             lblNowPage.Text = "---";
             lblTotalPage.Text = "---";
             btnNextFlawImages.Enabled = false;
-            btnProvFlawImages.Enabled = false;
+            btnPrevFlawImages.Enabled = false;
             _dvFiliter = new DataView();
            
             // save datas in global helper.
@@ -520,6 +520,12 @@ namespace NPxP
         {
             // WriteHelper.Log("Unplug()");
         }
+
+        // (?) :
+        public void OnClassifyFlaw(ref IFlawInfo flaw, ref bool deleteFlaw)
+        {
+
+        }
         
         #endregion
 
@@ -732,21 +738,26 @@ namespace NPxP
             if (_totalPage == 1)
             {
                 btnNextFlawImages.Enabled = false;
-                btnProvFlawImages.Enabled = false;
+                btnPrevFlawImages.Enabled = false;
             }
             else if (_nowPage == _totalPage)
             {
                 btnNextFlawImages.Enabled = false;
-                btnProvFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = true;
+            }
+            else if (_nowPage == 1)
+            {
+                btnNextFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = false;
             }
             else
             {
                 btnNextFlawImages.Enabled = true;
-                btnProvFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = true;
             }
         }
 
-        private void btnProvFlawImages_Click(object sender, EventArgs e)
+        private void btnPrevFlawImages_Click(object sender, EventArgs e)
         {
             Job.SetOffline();
             // change page to next and check limit.
@@ -764,17 +775,22 @@ namespace NPxP
             if (_totalPage == 1)
             {
                 btnNextFlawImages.Enabled = false;
-                btnProvFlawImages.Enabled = false;
+                btnPrevFlawImages.Enabled = false;
             }
             else if (_nowPage == _totalPage)
             {
                 btnNextFlawImages.Enabled = false;
-                btnProvFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = true;
+            }
+            else if (_nowPage == 1)
+            {
+                btnNextFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = false;
             }
             else
             {
                 btnNextFlawImages.Enabled = true;
-                btnProvFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = true;
             }
         }
 
@@ -888,12 +904,12 @@ namespace NPxP
             if (_totalPage > 1)
             {
                 btnNextFlawImages.Enabled = true;
-                btnProvFlawImages.Enabled = false;
+                btnPrevFlawImages.Enabled = false;
             }
             else
             {
                 btnNextFlawImages.Enabled = false;
-                btnProvFlawImages.Enabled = false;
+                btnPrevFlawImages.Enabled = false;
             }
             dgvFlaw.ClearSelection();
         }
@@ -903,38 +919,24 @@ namespace NPxP
             _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
             _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
             _dtbFlaws.DefaultView.RowFilter = _dtbFlaws.DefaultView.RowFilter;
-            
+
         }
-
-        #endregion
-
-
-
-
-
-        #region IOnClassifyFlaw 成員
-
-        public void OnClassifyFlaw(ref IFlawInfo flaw, ref bool deleteFlaw)
-        {
-            
-        }
-
-        #endregion
 
         private void btnShowGoPage_Click(object sender, EventArgs e)
         {
             btnShowGoPage.Visible = false;
-
+            txtGoPage.Focus();
+            txtGoPage.SelectAll();
         }
 
         private void btnGo_Click(object sender, EventArgs e)
         {
             int gotoPage = int.TryParse(txtGoPage.Text, out gotoPage) ? gotoPage : 1;
-            if (gotoPage < _totalPage )
+            if (gotoPage <= _totalPage && gotoPage > 0)
             {
                 Job.SetOffline();
                 // change page to next and check limit.
-                if (_nowPage + 1 > _totalPage)
+                if (_nowPage > _totalPage)
                 {
                     _nowPage = _totalPage;
                 }
@@ -948,28 +950,29 @@ namespace NPxP
                 if (_totalPage == 1)
                 {
                     btnNextFlawImages.Enabled = false;
-                    btnProvFlawImages.Enabled = false;
+                    btnPrevFlawImages.Enabled = false;
                 }
                 else if (_nowPage == _totalPage)
                 {
                     btnNextFlawImages.Enabled = false;
-                    btnProvFlawImages.Enabled = true;
+                    btnPrevFlawImages.Enabled = true;
+                }
+                else if (_nowPage == 1)
+                {
+                    btnNextFlawImages.Enabled = true;
+                    btnPrevFlawImages.Enabled = false;
                 }
                 else
                 {
                     btnNextFlawImages.Enabled = true;
-                    btnProvFlawImages.Enabled = true;
+                    btnPrevFlawImages.Enabled = true;
                 }
             }
 
             btnShowGoPage.Visible = true;
-
         }
 
-       
-
-        
-
+        #endregion
     }
 
     // Extend class 

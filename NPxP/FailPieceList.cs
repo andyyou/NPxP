@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using NPxP.Helper;
+using System.IO;
 
 namespace NPxP
 {
@@ -23,6 +24,7 @@ namespace NPxP
         private Label _originCurrentPageLabel;
         private int _originCurrentPage = -1;
         private Color _originCurrentPageColor;
+        private double _tmpOffset; // Temp offset value(暫時使用, 以後要刪除)
 
         #endregion
 
@@ -36,7 +38,7 @@ namespace NPxP
             this._doffResult = doffResult;
             this._cuts = cuts;
             this._originCurrentPageLabel = currentPage;
-            if (_dtbFlaws != null)
+            if (_dtbFlaws != null && _dtbFlaws.DefaultView.Count > 0)
             {
                 _originCurrentPage = Convert.ToInt32(_originCurrentPageLabel.Text);
                 _originCurrentPageColor = _originCurrentPageLabel.ForeColor;
@@ -53,7 +55,12 @@ namespace NPxP
         #region Action Events
 
         private void FailList_Load(object sender, EventArgs e)
-        {
+        {// Read temp offset value
+            using (FileStream fileStream = File.Open(PathHelper.SystemConfigFolder + "offset.txt", FileMode.Open))
+            {
+                StreamReader streamReader = new StreamReader(fileStream);
+                _tmpOffset = Convert.ToDouble(streamReader.ReadLine()) / 1000;
+            }
             // Setting button status
             btnPrevPieceStatus = _mp.btnPrevPiece.Enabled;
             btnNextPieceStatus = _mp.btnNextPiece.Enabled;
@@ -61,7 +68,7 @@ namespace NPxP
             _mp.btnNextPiece.Enabled = false;
             _mp.btnShowGoPage.Enabled = false;
 
-            if (_dtbFlaws != null)
+            if (_dtbFlaws != null && _dtbFlaws.DefaultView.Count > 0)
             {
                 _originRowFilter = _dtbFlaws.DefaultView.RowFilter;
 
@@ -72,7 +79,7 @@ namespace NPxP
                     {
                         double topOfPart = _cuts[i] - JobHelper.PxPInfo.Height;
                         double bottomOfPart = _cuts[i];
-                        string filterExp = String.Format("MD > {0} AND MD < {1}", topOfPart, bottomOfPart);
+                        string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", topOfPart, bottomOfPart, _tmpOffset);
 
                         dgvFailPieceList.Rows.Add(i + 1, _dtbFlaws.Select(filterExp).Length);
                     }
@@ -106,7 +113,7 @@ namespace NPxP
         {
             double topOfPart = _cuts[pieceNumber - 1] - JobHelper.PxPInfo.Height;
             double bottomOfPart = _cuts[pieceNumber - 1];
-            string filterExp = String.Format("MD > {0} AND MD < {1}", topOfPart, bottomOfPart);
+            string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", topOfPart, bottomOfPart, _tmpOffset);
 
             DataView dv = _dtbFlaws.DefaultView;
             dv.RowFilter = filterExp;

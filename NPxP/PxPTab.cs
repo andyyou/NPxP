@@ -16,6 +16,7 @@ using System.Reflection;
 using System.Data.SqlClient;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace NPxP
 {
@@ -33,9 +34,10 @@ namespace NPxP
         private DataView _dvFiliter;
         private List<NowUnit> _units;
         private List<double> _cuts;
-        private List<Cut> _newCuts; // Build on JobLoaded.
+        //private List<Cut> _newCuts; // Build on JobLoaded.
         private string _xmlUnitsPath;
         private string _dbConnectString;
+        private double _tmpOffset; // Temp offset value(暫時使用, 以後要刪除)
 
         private int _nowPage, _totalPage; // For TableLayout pages , start from 1.
 
@@ -125,6 +127,13 @@ namespace NPxP
             _xmlUnitsPath = unitsXMLPath;
             LoadXmlToUnitsObject(unitsXMLPath);
             JobHelper.Job = Job;  // 設定 Helper 協助各頁面停止工單等操作
+
+            // Read temp offset value
+            using (FileStream fileStream = File.Open(PathHelper.SystemConfigFolder + "offset.txt", FileMode.Open))
+            {
+                StreamReader streamReader = new StreamReader(fileStream);
+                _tmpOffset = Convert.ToDouble(streamReader.ReadLine()) / 1000;
+            }
         }
 
         // (4)(7)(17)
@@ -211,7 +220,7 @@ namespace NPxP
             // WriteHelper.Log("OnJobLoaded()");
             // Reset to default.
             _cuts = new List<double>();
-            _newCuts = new List<Cut>();
+            //_newCuts = new List<Cut>();
             lblNowPage.Text = "---";
             lblTotalPage.Text = "---";
             btnNextFlawImages.Enabled = false;
@@ -342,8 +351,8 @@ namespace NPxP
                         WriteHelper.Log("CutEvent(): " + eventInfo.MD);
                         _cuts.Add(eventInfo.MD);
                         // UNDONE: New Cut List & Sort
-                        _newCuts.Add(new Cut(eventInfo.MD));
-                        _newCuts.Sort(delegate(Cut c1, Cut c2) { return Comparer<double>.Default.Compare(c1.MD, c2.MD); });
+                        //_newCuts.Add(new Cut(eventInfo.MD));
+                        //_newCuts.Sort(delegate(Cut c1, Cut c2) { return Comparer<double>.Default.Compare(c1.MD, c2.MD); });
 
                         _mp.CalcEntirePieceResult();
 
@@ -358,7 +367,7 @@ namespace NPxP
                             {
                                 // Filter DataGridView
                                 double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
-                                string filterExp = String.Format("MD > {0} AND MD < {1}", prevMD, eventInfo.MD);
+                                string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", prevMD, eventInfo.MD, _tmpOffset);
                                 WriteHelper.Log(filterExp);
                                 DataView dv = _dtbFlaws.DefaultView;
                                 _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);

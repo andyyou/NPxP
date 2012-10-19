@@ -38,6 +38,7 @@ namespace NPxP
         private int _totalScore;
         private double _topOfPart;
         private string _filterType;
+        private double _tmpOffset; // Temp offset value(暫時使用, 以後要刪除)
 
         #endregion
 
@@ -50,6 +51,12 @@ namespace NPxP
             InitializeComponent();
             CreateShapeRefDic();
             chartControl.EmptyChartText.Text = "Flaw Distribution Map";
+            // Read temp offset value
+            using (FileStream fileStream = File.Open(PathHelper.SystemConfigFolder + "offset.txt", FileMode.Open))
+            {
+                StreamReader streamReader = new StreamReader(fileStream);
+                _tmpOffset = Convert.ToDouble(streamReader.ReadLine()) / 1000;
+            }
         }
 
         #endregion
@@ -395,7 +402,7 @@ namespace NPxP
                             annotationGrade = String.Format("({0})", subPieceGrade);
                         }
                         annotation.Text = String.Format("{0}{1}{2}", rangeName, annotationScore, annotationGrade);
-                        string annotationX = Convert.ToString(Convert.ToDouble(drCol["Start"]) + (Convert.ToDouble(drCol["End"]) - Convert.ToDouble(drCol["Start"])) * 0.1);
+                        string annotationX = Convert.ToString(Convert.ToDouble(drCol["Start"]) + (Convert.ToDouble(drCol["End"]) - Convert.ToDouble(drCol["Start"])) * 0.3);
                         string annotationY = Convert.ToString(Convert.ToDouble(drRow["End"]) - (Convert.ToDouble(drRow["End"]) - Convert.ToDouble(drRow["Start"])) * 0.1);
                         paPoint.AxisXCoordinate.AxisValueSerializable = annotationX;
                         paPoint.AxisYCoordinate.AxisValueSerializable = annotationY;
@@ -496,64 +503,68 @@ namespace NPxP
         // Update UI label
         private void UpdateUIControl()
         {
-            if (_doffResult[_currentPage - 1])
+            try
             {
-                lblNowPiece.ForeColor = Color.Lime;
-            }
-            else
-            {
-                lblNowPiece.ForeColor = Color.Red;
-            }
-            lblNowPiece.Text = _currentPage.ToString();
-            lblTotalPiece.Text = _totalPage.ToString();
-            lblDoffValue.Text = _totalPage.ToString();
-            lblScoreValue.Text = _totalScore.ToString();
-
-            if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)
-            {
-                double failCount = _doffResult.Count(n => n.Equals(false));
-                double passCount = _doffResult.Count(n => n.Equals(true));
-                double yield = Math.Round(passCount / (passCount + failCount) * 100, 2);
-                lblFailValue.Text = failCount.ToString();
-                lblPassValue.Text = passCount.ToString();
-                lblYieldValue.Text = String.Format("{0}%", yield);
-
-                // update datagridview flaw quantity
-                foreach (DataGridViewRow dgvr in dgvFlawLegendDetial.Rows)
+                if (_doffResult[_currentPage - 1])
                 {
-                    string flawName = dgvr.Cells["Name"].Value.ToString();
-                    if (_jobDoffNum.ContainsKey(flawName))
+                    lblNowPiece.ForeColor = Color.Lime;
+                }
+                else
+                {
+                    lblNowPiece.ForeColor = Color.Red;
+                }
+                lblNowPiece.Text = _currentPage.ToString();
+                lblTotalPiece.Text = _totalPage.ToString();
+                lblDoffValue.Text = _totalPage.ToString();
+                lblScoreValue.Text = _totalScore.ToString();
+
+                if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)
+                {
+                    double failCount = _doffResult.Count(n => n.Equals(false));
+                    double passCount = _doffResult.Count(n => n.Equals(true));
+                    double yield = Math.Round(passCount / (passCount + failCount) * 100, 2);
+                    lblFailValue.Text = failCount.ToString();
+                    lblPassValue.Text = passCount.ToString();
+                    lblYieldValue.Text = String.Format("{0}%", yield);
+
+                    // update datagridview flaw quantity
+                    foreach (DataGridViewRow dgvr in dgvFlawLegendDetial.Rows)
                     {
-                        dgvr.Cells["JobDoffNum"].Value = _jobDoffNum[flawName];
+                        string flawName = dgvr.Cells["Name"].Value.ToString();
+                        if (_jobDoffNum.ContainsKey(flawName))
+                        {
+                            dgvr.Cells["JobDoffNum"].Value = _jobDoffNum[flawName];
+                        }
                     }
                 }
-            }
 
-            if (_totalPage == 1)
-            {
-                btnPrevPiece.Enabled = false;
-                btnNextPiece.Enabled = false;
-            }
-            else if (_currentPage == 1)
-            {
-                btnPrevPiece.Enabled = false;
-                btnNextPiece.Enabled = true;
-            }
-            else if (_currentPage == _totalPage)
-            {
-                btnPrevPiece.Enabled = true;
-                btnNextPiece.Enabled = false;
-            }
-            else
-            {
-                btnPrevPiece.Enabled = true;
-                btnNextPiece.Enabled = true;
-            }
+                if (_totalPage == 1)
+                {
+                    btnPrevPiece.Enabled = false;
+                    btnNextPiece.Enabled = false;
+                }
+                else if (_currentPage == 1)
+                {
+                    btnPrevPiece.Enabled = false;
+                    btnNextPiece.Enabled = true;
+                }
+                else if (_currentPage == _totalPage)
+                {
+                    btnPrevPiece.Enabled = true;
+                    btnNextPiece.Enabled = false;
+                }
+                else
+                {
+                    btnPrevPiece.Enabled = true;
+                    btnNextPiece.Enabled = true;
+                }
 
-            if (_totalPage > 0)
-            {
-                btnShowGoPage.Enabled = true;
+                if (_totalPage > 0)
+                {
+                    btnShowGoPage.Enabled = true;
+                }
             }
+            catch { }
         }
 
         // Calculate entiry piece score and send NG signal when piece fail
@@ -565,7 +576,7 @@ namespace NPxP
             int score = 0;
             double top = Convert.ToDouble(_cuts.Last()) - JobHelper.PxPInfo.Height;
             double bottom = Convert.ToDouble(_cuts.Last());
-            string rowFilter = String.Format("MD > {0} AND MD < {1}", top, bottom);
+            string rowFilter = String.Format("MD > {0} AND MD < {1} AND CD > {2}", top, bottom, _tmpOffset);
             DataRow[] flawRows = _dtbFlaws.Select(rowFilter);
 
             ConfigHelper ch = new ConfigHelper();
@@ -913,6 +924,21 @@ namespace NPxP
             cmbGradeConfigFiles.DataSource = gradeConfigs;
 
             cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
+
+            // Re-configure Chart
+            XYDiagram diagram = null;
+            if ((XYDiagram)chartControl.Diagram != null)
+            {
+                diagram = (XYDiagram)chartControl.Diagram;
+                double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
+                double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
+                InitChart(width, height);
+
+                if (chartControl.Series != null)
+                {
+                    DrawChartPoint();
+                }
+            }
         }
 
         private void cmbFilterType_SelectedIndexChanged(object sender, EventArgs e)
@@ -969,7 +995,12 @@ namespace NPxP
                 diagram = (XYDiagram)chartControl.Diagram;
                 double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
                 double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
-                DrawChartPoint();
+                InitChart(width, height);
+
+                if (chartControl.Series != null)
+                {
+                    DrawChartPoint();
+                }
             }
             //UNDONE: 歷史資料切換設定時需重判好壞
         }
@@ -1091,7 +1122,7 @@ namespace NPxP
 
                 _topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
                 double bottomOfPart = _cuts[_currentPage - 1];
-                string filterExp = String.Format("MD > {0} AND MD < {1}", _topOfPart, bottomOfPart);
+                string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", _topOfPart, bottomOfPart, _tmpOffset);
                 DataView dv = _dtbFlaws.DefaultView;
                 dv.RowFilter = filterExp;
                 DrawChartPoint();
@@ -1128,7 +1159,7 @@ namespace NPxP
 
                 _topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
                 double bottomOfPart = _cuts[_currentPage - 1];
-                string filterExp = String.Format("MD > {0} AND MD < {1}", _topOfPart, bottomOfPart);
+                string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", _topOfPart, bottomOfPart, _tmpOffset);
                 DataView dv = _dtbFlaws.DefaultView;
                 dv.RowFilter = filterExp;
                 DrawChartPoint();
@@ -1213,7 +1244,7 @@ namespace NPxP
                 _currentPage = gotoPage;
                 _topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
                 double bottomOfPart = _cuts[_currentPage - 1];
-                string filterExp = String.Format("MD > {0} AND MD < {1}", _topOfPart, bottomOfPart);
+                string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", _topOfPart, bottomOfPart, _tmpOffset);
                 DataView dv = _dtbFlaws.DefaultView;
                 dv.RowFilter = filterExp;
                 DrawChartPoint();

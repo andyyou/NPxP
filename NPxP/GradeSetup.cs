@@ -237,74 +237,78 @@ namespace NPxP
 
         private void btnCreateGrid_Click(object sender, EventArgs e)
         {
-            int x = int.TryParse(txtColumns.Text, out x) ? x : 1;
-            int y = int.TryParse(txtRows.Text, out y) ? y : 1;
-
-            _dtbColumns.Clear();
-            for (int i = 0; i < x; i++)
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to create new subpiece setting?", "Create Setting", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (dialogResult == DialogResult.Yes)
             {
-                DataRow dr = _dtbColumns.NewRow();
-                dr["Name"] = i + 1;
-                _dtbColumns.Rows.Add(dr);
-            }
-            _dtbRows.Clear();
-            for (int i = 0; i < y; i++)
-            {
-                DataRow dr = _dtbRows.NewRow();
-                dr["Name"] = i + 1;
-                _dtbRows.Rows.Add(dr);
-            }
+                int x = int.TryParse(txtColumns.Text, out x) ? x : 1;
+                int y = int.TryParse(txtRows.Text, out y) ? y : 1;
 
-            // SubpieceName Reset
-
-            _pointsSubpieceNames = new List<string>();
-            _marksSubpieceNames = new List<string>();
-            _pointsSubpieceNames.Add("All");
-            _marksSubpieceNames.Add("All");
-            for (int i = 0; i < x; i++)
-            {
-                for (int j = 0; j < y; j++)
+                _dtbColumns.Clear();
+                for (int i = 0; i < x; i++)
                 {
-                    string name = String.Format("ROI-{0}{1}", i + 1, j + 1);
-                    _pointsSubpieceNames.Add(name);
-                    _marksSubpieceNames.Add(name);
+                    DataRow dr = _dtbColumns.NewRow();
+                    dr["Name"] = i + 1;
+                    _dtbColumns.Rows.Add(dr);
                 }
-            }
-            cmbSubMarks.DataSource = null;
-            cmbSubMarks.DataSource = _marksSubpieceNames;
-            cmbSubPoints.DataSource = null;
-            cmbSubPoints.DataSource = _pointsSubpieceNames;
-
-            // Add Points set
-            ConfigHelper ch = new ConfigHelper();
-            string map_path = ch.GetDefaultMapConfigName();
-            Dictionary<int, string> legends = ch.GetPrevFlawLegendDictionary(map_path);
-            _dtbPoints.Rows.Clear();
-            foreach (string subpiece in _pointsSubpieceNames)
-            {
-                foreach (KeyValuePair<int, string> l in legends)
+                _dtbRows.Clear();
+                for (int i = 0; i < y; i++)
                 {
-                    // SubpieceName, ClassName, Score
-                    DataRow dr = _dtbPoints.NewRow();
-                    dr["SubpieceName"] = subpiece;
-                    dr["ClassName"] = l.Value;
-                    dr["Score"] = 0;
-                    _dtbPoints.Rows.Add(dr);
+                    DataRow dr = _dtbRows.NewRow();
+                    dr["Name"] = i + 1;
+                    _dtbRows.Rows.Add(dr);
                 }
-            }
 
-            // Refresh Mark
-            foreach (string subpiece in _marksSubpieceNames)
-            {
-                string expr = String.Format("SubpieceName='{0}'", subpiece);
-                DataRow[] drs = _dtbGrades.Select(expr);
-                if (drs.Length < 1)
+                // SubpieceName Reset
+
+                _pointsSubpieceNames = new List<string>();
+                _marksSubpieceNames = new List<string>();
+                _pointsSubpieceNames.Add("All");
+                _marksSubpieceNames.Add("All");
+                for (int i = 0; i < x; i++)
                 {
-                    DataRow dr = _dtbGrades.NewRow();
-                    dr["SubpieceName"] = subpiece;
-                    dr["GradeName"] = "A";
-                    dr["Score"] = 0;
-                    _dtbGrades.Rows.Add(dr);
+                    for (int j = 0; j < y; j++)
+                    {
+                        string name = String.Format("ROI-{0}{1}", i + 1, j + 1);
+                        _pointsSubpieceNames.Add(name);
+                        _marksSubpieceNames.Add(name);
+                    }
+                }
+                cmbSubMarks.DataSource = null;
+                cmbSubMarks.DataSource = _marksSubpieceNames;
+                cmbSubPoints.DataSource = null;
+                cmbSubPoints.DataSource = _pointsSubpieceNames;
+
+                // Add Points set
+                ConfigHelper ch = new ConfigHelper();
+                string map_path = ch.GetDefaultMapConfigName();
+                Dictionary<int, string> legends = ch.GetPrevFlawLegendDictionary(map_path);
+                _dtbPoints.Rows.Clear();
+                foreach (string subpiece in _pointsSubpieceNames)
+                {
+                    foreach (KeyValuePair<int, string> l in legends)
+                    {
+                        // SubpieceName, ClassName, Score
+                        DataRow dr = _dtbPoints.NewRow();
+                        dr["SubpieceName"] = subpiece;
+                        dr["ClassName"] = l.Value;
+                        dr["Score"] = 0;
+                        _dtbPoints.Rows.Add(dr);
+                    }
+                }
+
+                // Refresh Mark
+                foreach (string subpiece in _marksSubpieceNames)
+                {
+                    string expr = String.Format("SubpieceName='{0}'", subpiece);
+                    DataRow[] drs = _dtbGrades.Select(expr);
+                    if (drs.Length < 1)
+                    {
+                        DataRow dr = _dtbGrades.NewRow();
+                        dr["SubpieceName"] = subpiece;
+                        dr["GradeName"] = "A";
+                        dr["Score"] = 0;
+                        _dtbGrades.Rows.Add(dr);
+                    }
                 }
             }
         }
@@ -602,78 +606,82 @@ namespace NPxP
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            // Prepare cmbConfig datasource
-            List<string> gradeConfigs = new List<string>();
-            DirectoryInfo dirInfo = new DirectoryInfo(PathHelper.GradeConfigFolder);
-            FileInfo[] files = dirInfo.GetFiles("*.xml");
-            foreach (FileInfo file in files)
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to reset subpiece setting?", "Reset Setting", MessageBoxButtons.YesNo,MessageBoxIcon.Warning);
+            if (dialogResult == DialogResult.Yes)
             {
-                gradeConfigs.Add(file.Name.ToString().Substring(0, file.Name.ToString().LastIndexOf(".")));
-            }
-            // Binding cmbConfig
-            cmbConfig.DataSource = gradeConfigs;
-            ConfigHelper ch = new ConfigHelper();
-            cmbConfig.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
-
-            //ROI Settings
-            //----------------------------------------------------------------------------------------//
-
-            // Initialize Roi Mode
-            RadioButton[] rdos = { rdoNoRoi, rdoSymmetrical };
-            foreach (RadioButton rdo in rdos)
-            {
-                string roiMode = ch.GetGradeNoRoiMode(cmbConfig.SelectedItem.ToString());
-                if (rdo.Text == roiMode)
+                // Prepare cmbConfig datasource
+                List<string> gradeConfigs = new List<string>();
+                DirectoryInfo dirInfo = new DirectoryInfo(PathHelper.GradeConfigFolder);
+                FileInfo[] files = dirInfo.GetFiles("*.xml");
+                foreach (FileInfo file in files)
                 {
-                    rdo.Checked = true;
+                    gradeConfigs.Add(file.Name.ToString().Substring(0, file.Name.ToString().LastIndexOf(".")));
                 }
-                else
+                // Binding cmbConfig
+                cmbConfig.DataSource = gradeConfigs;
+                ConfigHelper ch = new ConfigHelper();
+                cmbConfig.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
+
+                //ROI Settings
+                //----------------------------------------------------------------------------------------//
+
+                // Initialize Roi Mode
+                RadioButton[] rdos = { rdoNoRoi, rdoSymmetrical };
+                foreach (RadioButton rdo in rdos)
                 {
-                    rdo.Checked = false;
+                    string roiMode = ch.GetGradeNoRoiMode(cmbConfig.SelectedItem.ToString());
+                    if (rdo.Text == roiMode)
+                    {
+                        rdo.Checked = true;
+                    }
+                    else
+                    {
+                        rdo.Checked = false;
+                    }
                 }
+
+                // Initialize TextBox of Columns, Rows
+                txtColumns.Text = ch.GetGradeColumns(cmbConfig.SelectedItem.ToString()).ToString();
+                txtRows.Text = ch.GetGradeRows(cmbConfig.SelectedItem.ToString()).ToString();
+
+
+                // Initialize DataTable of dgvColumns and dgvRows
+                _dtbColumns = ch.GetDataTableOfdgvColumns(cmbConfig.SelectedItem.ToString().Trim());
+                dgvColumns.DataSource = _dtbColumns;
+                _dtbRows = ch.GetDataTableOfdgvRows(cmbConfig.SelectedItem.ToString().Trim());
+                dgvRows.DataSource = _dtbRows;
+
+                // Grade Settings
+                //----------------------------------------------------------------------------------------//
+
+                // Initialize Point is enable. 
+                chkEnablePonit.Checked = ch.IsGradePointEnable(cmbConfig.SelectedItem.ToString().Trim());
+
+                // Initialize SubPiece (cmbSubPoints)
+                _pointsSubpieceNames = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
+
+                // Set dgvPoint datasource
+                _dtbPoints = ch.GetDataTabledgvPoints(cmbConfig.SelectedItem.ToString().Trim());
+                dgvPoint.DataSource = _dtbPoints;
+                DataView dvPoints = _dtbPoints.DefaultView;
+                dvPoints.RowFilter = String.Format("SubpieceName='{0}'", cmbSubPoints.SelectedItem.ToString().Trim());
+
+                // Initialize grade is enable (marks)
+                chkEnableGrade.Checked = ch.IsGradeMarksEnable(cmbConfig.SelectedItem.ToString().Trim());
+
+                // Initialize SubPiece (cmbSubPoints)
+                cmbSubMarks.DataSource = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
+
+                // Set dgvGrade datasource
+                _dtbGrades = ch.GetDataTabledgvGrade(cmbConfig.SelectedItem.ToString().Trim());
+                dgvGrade.DataSource = _dtbGrades;
+                DataView dvGrade = _dtbGrades.DefaultView;
+                dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
+
+                // Initialize Tab of grade/pass or fail
+                chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbConfig.SelectedItem.ToString().Trim());
+                txtFilterScore.Text = ch.GetPassFailScore(cmbConfig.SelectedItem.ToString().Trim()).ToString();
             }
-
-            // Initialize TextBox of Columns, Rows
-            txtColumns.Text = ch.GetGradeColumns(cmbConfig.SelectedItem.ToString()).ToString();
-            txtRows.Text = ch.GetGradeRows(cmbConfig.SelectedItem.ToString()).ToString();
-
-
-            // Initialize DataTable of dgvColumns and dgvRows
-            _dtbColumns = ch.GetDataTableOfdgvColumns(cmbConfig.SelectedItem.ToString().Trim());
-            dgvColumns.DataSource = _dtbColumns;
-            _dtbRows = ch.GetDataTableOfdgvRows(cmbConfig.SelectedItem.ToString().Trim());
-            dgvRows.DataSource = _dtbRows;
-
-            // Grade Settings
-            //----------------------------------------------------------------------------------------//
-
-            // Initialize Point is enable. 
-            chkEnablePonit.Checked = ch.IsGradePointEnable(cmbConfig.SelectedItem.ToString().Trim());
-
-            // Initialize SubPiece (cmbSubPoints)
-            _pointsSubpieceNames = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
-
-            // Set dgvPoint datasource
-            _dtbPoints = ch.GetDataTabledgvPoints(cmbConfig.SelectedItem.ToString().Trim());
-            dgvPoint.DataSource = _dtbPoints;
-            DataView dvPoints = _dtbPoints.DefaultView;
-            dvPoints.RowFilter = String.Format("SubpieceName='{0}'", cmbSubPoints.SelectedItem.ToString().Trim());
-
-            // Initialize grade is enable (marks)
-            chkEnableGrade.Checked = ch.IsGradeMarksEnable(cmbConfig.SelectedItem.ToString().Trim());
-
-            // Initialize SubPiece (cmbSubPoints)
-            cmbSubMarks.DataSource = ch.GetSubMarksNameList(cmbConfig.SelectedItem.ToString().Trim());
-
-            // Set dgvGrade datasource
-            _dtbGrades = ch.GetDataTabledgvGrade(cmbConfig.SelectedItem.ToString().Trim());
-            dgvGrade.DataSource = _dtbGrades;
-            DataView dvGrade = _dtbGrades.DefaultView;
-            dvGrade.RowFilter = String.Format("SubpieceName='{0}'", cmbSubMarks.SelectedItem.ToString().Trim());
-
-            // Initialize Tab of grade/pass or fail
-            chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbConfig.SelectedItem.ToString().Trim());
-            txtFilterScore.Text = ch.GetPassFailScore(cmbConfig.SelectedItem.ToString().Trim()).ToString();
         }
 
         private void txtFilterScore_KeyPress(object sender, KeyPressEventArgs e)

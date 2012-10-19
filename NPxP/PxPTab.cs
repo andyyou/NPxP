@@ -225,6 +225,9 @@ namespace NPxP
             lblTotalPage.Text = "---";
             btnNextFlawImages.Enabled = false;
             btnPrevFlawImages.Enabled = false;
+            btnShowGoPage.Enabled = false;
+            _nowPage = 0;
+            _totalPage = 0;
             _dvFiliter = new DataView();
            
             // save datas in global helper.
@@ -278,6 +281,7 @@ namespace NPxP
             dgvFlaw.DataSource = _dtbFlaws;
 
             // Refresh TableLayoutPanel
+            tlpFlawImages.Controls.Clear();
             tlpFlawImages.ColumnStyles.Clear();
             tlpFlawImages.ColumnCount = ch.GettlpFlawImagesColumns();
             tlpFlawImages.RowCount = ch.GettlpFlawImagesRows();
@@ -319,7 +323,7 @@ namespace NPxP
         {
             JobHelper.IsOnline = isOnline;
             JobHelper.IsOnpeHistory = false;
-            // WriteHelper.Log("OnOnline()");
+            WriteHelper.Log("OnOnline()");
         }
 
         // (19)
@@ -424,13 +428,14 @@ namespace NPxP
                     using (SqlConnection cn = new SqlConnection(_dbConnectString))
                     {
                         cn.Open();
-                        string QueryStr = "Select iImage From dbo.Jobs T1, dbo.Flaw T2, dbo.Image T3 Where T1.klKey = T2.klJobKey AND T2.pklFlawKey = T3.klFlawKey AND T1.JobID = @JobID AND T2.lFlawId = @FlawID";
+                        string QueryStr = "Select iImage, lStation From dbo.Jobs T1, dbo.Flaw T2, dbo.Image T3 Where T1.klKey = T2.klJobKey AND T2.pklFlawKey = T3.klFlawKey AND T1.JobID = @JobID AND T2.lFlawId = @FlawID";
                         SqlCommand cmd = new SqlCommand(QueryStr, cn);
                         cmd.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
                         cmd.Parameters.AddWithValue("@FlawID", flaw.FlawID);
                         SqlDataReader sd = cmd.ExecuteReader();
                         sd.Read();
                         byte[] images = (Byte[])sd["iImage"];
+                        int station = (int)sd["lStation"];
 
                         intW = images[0] + images[1] * 256;
                         intH = images[4] + images[5] * 256;
@@ -452,7 +457,7 @@ namespace NPxP
                             bmpShowImg = ToGrayBitmap(images, intW, intH);
                         }
 
-                        IImageInfo tmpImg = new ImageInfo(bmpShowImg, 0);
+                        IImageInfo tmpImg = new ImageInfo(bmpShowImg, station);
                         IList<IImageInfo> m = flaw.Images;
                         m.Add(tmpImg);
                         dr["Images"] = m;

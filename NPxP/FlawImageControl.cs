@@ -37,6 +37,7 @@ namespace NPxP
         public FlawImageControl(DataRow drFlaw, ref List<NowUnit> units)
         {
             InitializeComponent();
+            Boolean isSelectedTab = false;
             this._drFlaw = drFlaw;
             this._units = units;
             IsDrawBorder = false;
@@ -66,6 +67,11 @@ namespace NPxP
                 {
                     _srcImages[image.Station] = image.Image;
                     _pbRatio[image.Station] = Init_Image(image.Image, tabImages.TabPages[image.Station], _pb[image.Station]);
+                    if (!isSelectedTab)
+                    {
+                        tabImages.SelectedTab = tabImages.TabPages[image.Station];
+                        isSelectedTab = true;
+                    }
                 }
                 for (int i = 0; i < JobHelper.JobInfo.NumberOfStations; i++)
                 {

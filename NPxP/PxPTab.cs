@@ -38,6 +38,7 @@ namespace NPxP
         private string _xmlUnitsPath;
         private string _dbConnectString;
         private double _tmpOffset; // Temp offset value(暫時使用, 以後要刪除)
+        private double _cdOffset; // Temp cd offset value(暫時使用, 以後要刪除)
 
         private int _nowPage, _totalPage; // For TableLayout pages , start from 1.
 
@@ -133,6 +134,13 @@ namespace NPxP
             {
                 StreamReader streamReader = new StreamReader(fileStream);
                 _tmpOffset = Convert.ToDouble(streamReader.ReadLine()) / 1000;
+            }
+
+            // Read temp cd offset value
+            using (FileStream fileStream = File.Open(PathHelper.SystemConfigFolder + "cd-offset.txt", FileMode.Open))
+            {
+                StreamReader streamReader = new StreamReader(fileStream);
+                _cdOffset = Convert.ToDouble(streamReader.ReadLine()) / 1000;
             }
         }
 
@@ -399,7 +407,8 @@ namespace NPxP
                 WriteHelper.Log(string.Format("{0},{1},{2}", flaw.FlawID, flaw.MD, flaw.CD));
                 DataRow dr = _dtbFlaws.NewRow();
                 dr["FlawID"] = flaw.FlawID;
-                dr["CD"] = flaw.CD; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺
+                // 2012-10-19 : 使用 cdOffset 變數調整 cd 數值
+                dr["CD"] = flaw.CD - _cdOffset; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺
                 dr["MD"] = flaw.MD;
                 dr["Area"] = flaw.Area;
                 dr["DateTime"] = flaw.DateTime;
@@ -830,7 +839,18 @@ namespace NPxP
                 case "MD":
                     NowUnit umd = _units.Find(x => x.ComponentName == "Flaw List MD");
                     double md = Convert.ToDouble(e.Value);
-                    e.Value = md * umd.Conversion;
+                    // e.Value = md * umd.Conversion;
+                    // 2012-10-19 Live Coding 小心Bug
+                    double tmpCut = 0;
+                    foreach (double cut in _cuts)
+                    {
+                        if (cut > md)
+                        {
+                            tmpCut = cut;
+                            break;
+                        }
+                    }
+                    e.Value = (md - (tmpCut - JobHelper.PxPInfo.Height)) * umd.Conversion;
                     //e.Value += umd.Symbol;
                     break;
                 case "Width":

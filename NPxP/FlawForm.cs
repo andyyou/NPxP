@@ -113,6 +113,7 @@ namespace NPxP
 
         private void FlawForm_Load(object sender, EventArgs e)
         {
+            Boolean isSelectedTab = false;
             // get current using unit
             NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw List CD");
             NowUnit umd = _units.Find(x => x.ComponentName == "Flaw List MD");
@@ -153,6 +154,11 @@ namespace NPxP
                 {
                     _srcImages[image.Station] = image.Image;
                     _pbRatio[image.Station] = Init_Image(image.Image, tabImages.TabPages[image.Station], _pb[image.Station]);
+                    if (!isSelectedTab)
+                    {
+                        tabImages.SelectedTab = tabImages.TabPages[image.Station];
+                        isSelectedTab = true;
+                    }
                 }
                 for (int i = 0; i < JobHelper.JobInfo.NumberOfStations; i++)
                 {

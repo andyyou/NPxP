@@ -225,6 +225,9 @@ namespace NPxP
             lblTotalPage.Text = "---";
             btnNextFlawImages.Enabled = false;
             btnPrevFlawImages.Enabled = false;
+            btnShowGoPage.Enabled = false;
+            _nowPage = 0;
+            _totalPage = 0;
             _dvFiliter = new DataView();
            
             // save datas in global helper.
@@ -278,6 +281,7 @@ namespace NPxP
             dgvFlaw.DataSource = _dtbFlaws;
 
             // Refresh TableLayoutPanel
+            tlpFlawImages.Controls.Clear();
             tlpFlawImages.ColumnStyles.Clear();
             tlpFlawImages.ColumnCount = ch.GettlpFlawImagesColumns();
             tlpFlawImages.RowCount = ch.GettlpFlawImagesRows();

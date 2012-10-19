@@ -361,7 +361,7 @@ namespace NPxP
                         string subPieceGrade = "F";
                         if (showScore)
                         {
-                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"])/ucd.Conversion, Convert.ToDouble(drCol["End"])/ucd.Conversion, (Convert.ToDouble(drRow["Start"])/ucd.Conversion + _topOfPart), (Convert.ToDouble(drRow["End"])/ucd.Conversion + _topOfPart));
+                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion + _topOfPart), (Convert.ToDouble(drRow["End"]) / ucd.Conversion + _topOfPart));
                             DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
                             foreach (DataRow dr in subFlawRows)
                             {
@@ -416,6 +416,7 @@ namespace NPxP
                     }
                 }
             }
+            DrawDummyPoint();
 
             // Calculate flaw quantity
             Dictionary<string, int> flawLegendRefDic = new Dictionary<string, int>();
@@ -497,6 +498,11 @@ namespace NPxP
                 flawPointView.Color = System.Drawing.ColorTranslator.FromHtml(row["Color"].ToString());
 
                 chartControl.Series.Add(flawPoint);
+            }
+
+            if (chartControl.Series == null)
+            {
+                DrawDummyPoint();
             }
         }
 
@@ -600,7 +606,7 @@ namespace NPxP
 
                             int subPieceScore = 0;
                             //string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + top), (Convert.ToDouble(drRow["End"]) + top));
-                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"])/ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion + top), (Convert.ToDouble(drRow["End"]) / ucd.Conversion + top));
+                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion + top), (Convert.ToDouble(drRow["End"]) / ucd.Conversion + top));
                             DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
                             foreach (DataRow dr in subFlawRows)
                             {
@@ -638,6 +644,10 @@ namespace NPxP
                         _fire.FireEvent(1, 0, 0);
                     }
                 }
+            }
+            else
+            {
+                _doffResult.Add(true);
             }
 
             // Calc flaw number of this job
@@ -722,6 +732,10 @@ namespace NPxP
                         }
                         _doffResult.Add(pieceResult);
                     }
+                    else
+                    {
+                        _doffResult.Add(true);
+                    }
 
                     // Calc flaw number of this job
                     foreach (DataRow dr in flawRows)
@@ -781,6 +795,26 @@ namespace NPxP
             _dtbPoints = ch.GetDataTabledgvPoints(grade_name);
             // Get Grade
             _dtbGrades = ch.GetDataTabledgvGrade(grade_name);
+        }
+
+        // Draw a dummy point(prevent there are no points on the chart)
+        private void DrawDummyPoint()
+        {
+            Series emptyPoint;
+            emptyPoint = new Series("", ViewType.Point);
+            emptyPoint.Points.Add(new SeriesPoint(-1, -1));
+            emptyPoint.ArgumentScaleType = ScaleType.Numerical;
+            emptyPoint.ValueScaleType = ScaleType.Numerical;
+            emptyPoint.CrosshairEnabled = DevExpress.Utils.DefaultBoolean.False;
+            emptyPoint.Label.PointOptions.PointView = PointView.SeriesName;
+            emptyPoint.Visible = true;
+            // Access the view-type-specific options of the series.
+            PointSeriesView emptyPointView = (PointSeriesView)emptyPoint.View;
+            emptyPointView.PointMarkerOptions.Kind = MarkerKind.Circle;
+            emptyPointView.Color = Color.Transparent;
+
+            chartControl.Series.Add(emptyPoint);
+            WriteHelper.Log("Draw Dummy Point!!!");
         }
 
         #endregion
@@ -1016,6 +1050,7 @@ namespace NPxP
 
                 // Re-configure Chart
                 XYDiagram diagram = null;
+                DrawDummyPoint();
                 if ((XYDiagram)chartControl.Diagram != null)
                 {
                     diagram = (XYDiagram)chartControl.Diagram;
@@ -1091,6 +1126,7 @@ namespace NPxP
 
                 // Re-configure Chart
                 XYDiagram diagram = null;
+                DrawDummyPoint();
                 if ((XYDiagram)chartControl.Diagram != null)
                 {
                     diagram = (XYDiagram)chartControl.Diagram;

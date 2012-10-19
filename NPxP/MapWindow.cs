@@ -1362,7 +1362,8 @@ namespace NPxP
                     IEnumerable<DataRow> result = rows.Where(row => row["FlawID"].ToString().Equals(seriesPoint.Name));
 
                     JobHelper.Job.SetOffline();
-                    FlawForm ff = new FlawForm(result.First(), _units);
+                    double topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
+                    FlawForm ff = new FlawForm(result.First(), _units, topOfPart);
                     ff.ShowDialog();
                 }
             }

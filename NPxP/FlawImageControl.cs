@@ -224,12 +224,12 @@ namespace NPxP
 
         public void pb_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                JobHelper.Job.SetOffline();
-                FlawForm ff = new FlawForm(_drFlaw, _units);
-                ff.ShowDialog();
-            }
+            //if (e.Button == MouseButtons.Left)
+            //{
+            //    JobHelper.Job.SetOffline();
+            //    FlawForm ff = new FlawForm(_drFlaw, _units);
+            //    ff.ShowDialog();
+            //}
         }
 
         private void FlawImageControl_Paint(object sender, PaintEventArgs e)

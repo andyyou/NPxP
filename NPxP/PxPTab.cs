@@ -319,7 +319,7 @@ namespace NPxP
         {
             JobHelper.IsOnline = isOnline;
             JobHelper.IsOnpeHistory = false;
-            // WriteHelper.Log("OnOnline()");
+            WriteHelper.Log("OnOnline()");
         }
 
         // (19)

@@ -655,6 +655,91 @@ namespace NPxP
             }
         }
 
+        // Calculate entiry piece score and send NG signal when piece fail (For open history or stop job)
+        public void ReCalcPieceResult()
+        {
+            // clear list
+            _doffResult.Clear();
+            _jobDoffNum.Clear();
+
+            if (_cuts.Count > 0)
+            {
+                foreach (double cut in _cuts)
+                {
+                    // get current using unit
+                    NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
+
+                    int score = 0;
+                    double top = cut - JobHelper.PxPInfo.Height;
+                    double bottom = cut;
+                    string rowFilter = String.Format("MD > {0} AND MD < {1} AND CD > {2}", top, bottom, _tmpOffset);
+                    DataRow[] flawRows = _dtbFlaws.Select(rowFilter);
+
+                    ConfigHelper ch = new ConfigHelper();
+                    string gradeConfigFile = ch.GetDefaultGradeConfigName();
+                    DataTable gradeColumn = ch.GetDataTableOfdgvColumns(gradeConfigFile);
+                    DataTable gradeRow = ch.GetDataTableOfdgvRows(gradeConfigFile);
+                    string roiMode = ch.GetGradeNoRoiMode(gradeConfigFile);
+                    bool showScore = ch.IsGradePointEnable(gradeConfigFile);
+                    double limitScore = ch.GetPassFailScore(gradeConfigFile);
+
+                    if (roiMode == "Symmetrical" && showScore)
+                    {
+                        bool pieceResult;
+                        if (flawRows.Length > 0)
+                        {
+                            foreach (DataRow drCol in gradeColumn.Rows)
+                            {
+                                foreach (DataRow drRow in gradeRow.Rows)
+                                {
+                                    string rangeName = String.Format("{0}{1}", drCol["Name"], drRow["Name"]);
+
+                                    int subPieceScore = 0;
+                                    //string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + top), (Convert.ToDouble(drRow["End"]) + top));
+                                    string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion + top), (Convert.ToDouble(drRow["End"]) / ucd.Conversion + top));
+                                    DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
+                                    foreach (DataRow dr in subFlawRows)
+                                    {
+                                        string pointFilter = String.Format("SubpieceName = 'ROI-{0}' AND ClassName = '{1}'", rangeName, dr["FlawClass"]);
+                                        subPieceScore += Convert.ToInt32(_dtbPoints.Select(pointFilter).First()["Score"]);
+                                    }
+
+                                    score += subPieceScore;
+                                }
+                            }
+                            if (score >= limitScore)
+                            {
+                                pieceResult = false;
+                            }
+                            else
+                            {
+                                pieceResult = true;
+                            }
+                        }
+                        else
+                        {
+                            pieceResult = true;
+                        }
+                        _doffResult.Add(pieceResult);
+                    }
+
+                    // Calc flaw number of this job
+                    foreach (DataRow dr in flawRows)
+                    {
+                        string name = dr["FlawClass"].ToString();
+                        if (!_jobDoffNum.ContainsKey(name))
+                        {
+                            _jobDoffNum.Add(name, 1);
+                        }
+                        else
+                        {
+                            _jobDoffNum[name]++;
+                        }
+                    }
+                }
+            }
+        }
+
         // Enable/Disable UI Control status
         public void SettingUIControlStatus(bool status)
         {
@@ -907,38 +992,49 @@ namespace NPxP
 
         private void btnGradeSetting_Click(object sender, EventArgs e)
         {
-            ConfigHelper ch = new ConfigHelper();
-            GradeSetup gs = new GradeSetup();
-            gs.ShowDialog();
-
-            // re-binding datasource
-            // Prepare cmbGradeConfigFiles datasource
-            List<string> gradeConfigs = new List<string>();
-            DirectoryInfo dirInfo = new DirectoryInfo(PathHelper.GradeConfigFolder);
-            FileInfo[] files = dirInfo.GetFiles("*.xml");
-            foreach (FileInfo file in files)
+            try
             {
-                gradeConfigs.Add(file.Name.ToString().Substring(0, file.Name.ToString().LastIndexOf(".")));
-            }
-            // Binding cmbGradeConfigFiles
-            cmbGradeConfigFiles.DataSource = gradeConfigs;
+                ConfigHelper ch = new ConfigHelper();
+                GradeSetup gs = new GradeSetup();
+                gs.ShowDialog();
 
-            cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
-
-            // Re-configure Chart
-            XYDiagram diagram = null;
-            if ((XYDiagram)chartControl.Diagram != null)
-            {
-                diagram = (XYDiagram)chartControl.Diagram;
-                double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
-                double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
-                InitChart(width, height);
-
-                if (chartControl.Series != null)
+                // re-binding datasource
+                // Prepare cmbGradeConfigFiles datasource
+                List<string> gradeConfigs = new List<string>();
+                DirectoryInfo dirInfo = new DirectoryInfo(PathHelper.GradeConfigFolder);
+                FileInfo[] files = dirInfo.GetFiles("*.xml");
+                foreach (FileInfo file in files)
                 {
-                    DrawChartPoint();
+                    gradeConfigs.Add(file.Name.ToString().Substring(0, file.Name.ToString().LastIndexOf(".")));
+                }
+                // Binding cmbGradeConfigFiles
+                cmbGradeConfigFiles.DataSource = gradeConfigs;
+                cmbGradeConfigFiles.SelectedItem = ch.GetDefaultGradeConfigName().Trim();
+
+                // Reload datatable score
+                ReloadDataTables();
+
+                // Re-configure Chart
+                XYDiagram diagram = null;
+                if ((XYDiagram)chartControl.Diagram != null)
+                {
+                    diagram = (XYDiagram)chartControl.Diagram;
+                    double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
+                    double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
+                    InitChart(width, height);
+
+                    if (chartControl.Series != null)
+                    {
+                        //UNDONE: 歷史資料切換設定時需重判好壞
+                        ReCalcPieceResult();
+                        DrawChartPoint();
+                        JobHelper.IsOnpeHistory = true;
+                        UpdateUIControl();
+                        JobHelper.IsOnpeHistory = false;
+                    }
                 }
             }
+            catch { }
         }
 
         private void cmbFilterType_SelectedIndexChanged(object sender, EventArgs e)
@@ -951,58 +1047,69 @@ namespace NPxP
 
         private void cmbGradeConfigFiles_DropDownClosed(object sender, EventArgs e)
         {
-            ConfigHelper ch = new ConfigHelper();
-            ch.SaveGradeSetupConfigFile(cmbGradeConfigFiles.Text.Trim());
-
-            // Refresh _dtbPoints
-            // update _dtbPoints score.
-            DataTable dtbTmp = ch.GetDataTabledgvPoints(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
-            foreach (DataRow d in dtbTmp.Rows)
+            try
             {
-                string subpiece = d["SubpieceName"].ToString().Trim();
-                string className = d["ClassName"].ToString().Trim();
-                string expr = String.Format("SubpieceName='{0}' AND ClassName='{1}'", subpiece, className);
-                DataRow[] drs = _dtbPoints.Select(expr);
-                if (drs.Length > 0)
+                ConfigHelper ch = new ConfigHelper();
+                ch.SaveGradeSetupConfigFile(cmbGradeConfigFiles.Text.Trim());
+
+                // Refresh _dtbPoints
+                // update _dtbPoints score.
+                DataTable dtbTmp = ch.GetDataTabledgvPoints(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
+                foreach (DataRow d in dtbTmp.Rows)
                 {
-                    foreach (DataRow dr in drs)
+                    string subpiece = d["SubpieceName"].ToString().Trim();
+                    string className = d["ClassName"].ToString().Trim();
+                    string expr = String.Format("SubpieceName='{0}' AND ClassName='{1}'", subpiece, className);
+                    DataRow[] drs = _dtbPoints.Select(expr);
+                    if (drs.Length > 0)
                     {
-                        dr["Score"] = d["Score"];
+                        foreach (DataRow dr in drs)
+                        {
+                            dr["Score"] = d["Score"];
+                        }
+                    }
+                }
+                // update _dtbGrades grade
+                dtbTmp = ch.GetDataTabledgvGrade(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
+                foreach (DataRow d in dtbTmp.Rows)
+                {
+                    string subpiece = d["SubpieceName"].ToString().Trim();
+                    string gradeName = d["GradeName"].ToString().Trim();
+                    string expr = String.Format("SubpieceName='{0}' AND GradeName='{1}'", subpiece, gradeName);
+                    DataRow[] drs = _dtbGrades.Select(expr);
+                    if (drs.Length > 0)
+                    {
+                        foreach (DataRow dr in drs)
+                        {
+                            dr["Score"] = d["Score"];
+                        }
+                    }
+                }
+
+                // Reload datatable score
+                ReloadDataTables();
+
+                // Re-configure Chart
+                XYDiagram diagram = null;
+                if ((XYDiagram)chartControl.Diagram != null)
+                {
+                    diagram = (XYDiagram)chartControl.Diagram;
+                    double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
+                    double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
+                    InitChart(width, height);
+
+                    if (chartControl.Series != null)
+                    {
+                        //UNDONE: 歷史資料切換設定時需重判好壞
+                        ReCalcPieceResult();
+                        DrawChartPoint();
+                        JobHelper.IsOnpeHistory = true;
+                        UpdateUIControl();
+                        JobHelper.IsOnpeHistory = false;
                     }
                 }
             }
-            // update _dtbGrades grade
-            dtbTmp = ch.GetDataTabledgvGrade(cmbGradeConfigFiles.SelectedItem.ToString().Trim());
-            foreach (DataRow d in dtbTmp.Rows)
-            {
-                string subpiece = d["SubpieceName"].ToString().Trim();
-                string gradeName = d["GradeName"].ToString().Trim();
-                string expr = String.Format("SubpieceName='{0}' AND GradeName='{1}'", subpiece, gradeName);
-                DataRow[] drs = _dtbGrades.Select(expr);
-                if (drs.Length > 0)
-                {
-                    foreach (DataRow dr in drs)
-                    {
-                        dr["Score"] = d["Score"];
-                    }
-                }
-            }
-
-            // Re-configure Chart
-            XYDiagram diagram = null;
-            if ((XYDiagram)chartControl.Diagram != null)
-            {
-                diagram = (XYDiagram)chartControl.Diagram;
-                double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
-                double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
-                InitChart(width, height);
-
-                if (chartControl.Series != null)
-                {
-                    DrawChartPoint();
-                }
-            }
-            //UNDONE: 歷史資料切換設定時需重判好壞
+            catch { }
         }
 
         private void btnFailPieceList_Click(object sender, EventArgs e)

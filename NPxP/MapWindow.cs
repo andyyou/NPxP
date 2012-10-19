@@ -801,8 +801,8 @@ namespace NPxP
         private void DrawDummyPoint()
         {
             Series emptyPoint;
-            emptyPoint = new Series("", ViewType.Point);
-            emptyPoint.Points.Add(new SeriesPoint(-1, -1));
+            emptyPoint = new Series("dummy", ViewType.Point);
+            emptyPoint.Points.Add(new SeriesPoint(-10, -10));
             emptyPoint.ArgumentScaleType = ScaleType.Numerical;
             emptyPoint.ValueScaleType = ScaleType.Numerical;
             emptyPoint.CrosshairEnabled = DevExpress.Utils.DefaultBoolean.False;
@@ -810,11 +810,10 @@ namespace NPxP
             emptyPoint.Visible = true;
             // Access the view-type-specific options of the series.
             PointSeriesView emptyPointView = (PointSeriesView)emptyPoint.View;
-            emptyPointView.PointMarkerOptions.Kind = MarkerKind.Circle;
+            emptyPointView.PointMarkerOptions.Kind = MarkerKind.Square;
             emptyPointView.Color = Color.Transparent;
 
             chartControl.Series.Add(emptyPoint);
-            WriteHelper.Log("Draw Dummy Point!!!");
         }
 
         #endregion

@@ -427,6 +427,7 @@
             this.cmbMapSize.Name = "cmbMapSize";
             this.cmbMapSize.Size = new System.Drawing.Size(121, 20);
             this.cmbMapSize.TabIndex = 1;
+            this.cmbMapSize.Visible = false;
             // 
             // lblMapSize
             // 
@@ -436,6 +437,7 @@
             this.lblMapSize.Size = new System.Drawing.Size(48, 12);
             this.lblMapSize.TabIndex = 0;
             this.lblMapSize.Text = "Map Size";
+            this.lblMapSize.Visible = false;
             // 
             // gbSeriesSetting
             // 

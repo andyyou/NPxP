@@ -112,6 +112,10 @@ namespace NPxP
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
                 column.FillWeight = c.Width;
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                if (column.Name == "Name")
+                {
+                    column.ReadOnly = true;
+                }
                 dgvColumns.Columns.Add(column);
             }
             dgvColumns.MultiSelect = false;
@@ -130,6 +134,10 @@ namespace NPxP
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
                 column.FillWeight = c.Width;
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                if (column.Name == "Name")
+                {
+                    column.ReadOnly = true;
+                }
                 dgvRows.Columns.Add(column);
             }
             dgvRows.MultiSelect = false;
@@ -173,7 +181,7 @@ namespace NPxP
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 if (c.Name == "ClassName")
                 {
-                    column.ReadOnly = true;
+                    //column.ReadOnly = true;
                 }
                 dgvPoint.Columns.Add(column);
             }
@@ -199,7 +207,7 @@ namespace NPxP
                 column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 if (c.Name == "GradeName")
                 {
-                    column.ReadOnly = true;
+                    //column.ReadOnly = true;
                 }
                 dgvGrade.Columns.Add(column);
             }
@@ -367,7 +375,6 @@ namespace NPxP
         // Save xml
         private void btnSaveGradeConfigFile_Click(object sender, EventArgs e)
         {
-
             // if some data wrong will tip.
             if (_dtbColumns.Rows.Count < 1 || _dtbRows.Rows.Count < 1 || _dtbPoints.Rows.Count < 1 || _dtbGrades.Rows.Count < 1)
             {
@@ -842,6 +849,7 @@ namespace NPxP
             chkEnablePonit.Checked = ch.IsGradePointEnable(cmbConfig.SelectedItem.ToString().Trim());
 
             // Initialize SubPiece (cmbSubPoints)
+            _pointsSubpieceNames = ch.GetSubPointsNameList(cmbConfig.SelectedItem.ToString().Trim());
             cmbSubPoints.DataSource = _pointsSubpieceNames;
 
             // Set dgvPoint datasource

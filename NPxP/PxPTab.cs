@@ -442,34 +442,37 @@ namespace NPxP
                         cmd.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
                         cmd.Parameters.AddWithValue("@FlawID", flaw.FlawID);
                         SqlDataReader sd = cmd.ExecuteReader();
-                        sd.Read();
-                        byte[] images = (Byte[])sd["iImage"];
-                        int station = (int)sd["lStation"];
 
-                        intW = images[0] + images[1] * 256;
-                        intH = images[4] + images[5] * 256;
-
-                        if (intW == 0 & intH == 0)
+                        IList<IImageInfo> flawImage = flaw.Images;
+                        while (sd.Read())
                         {
-                            intW = 1;
-                            intH = 1;
-                            blnShowImg = false;
-                        }
-                        else
-                        {
-                            blnShowImg = true;
-                        }
-                        Bitmap bmpShowImg = new Bitmap(intW, intH);
+                            byte[] images = (Byte[])sd["iImage"];
+                            int station = (int)sd["lStation"];
 
-                        if (blnShowImg)
-                        {
-                            bmpShowImg = ToGrayBitmap(images, intW, intH);
-                        }
+                            intW = images[0] + images[1] * 256;
+                            intH = images[4] + images[5] * 256;
 
-                        IImageInfo tmpImg = new ImageInfo(bmpShowImg, station);
-                        IList<IImageInfo> m = flaw.Images;
-                        m.Add(tmpImg);
-                        dr["Images"] = m;
+                            if (intW == 0 & intH == 0)
+                            {
+                                intW = 1;
+                                intH = 1;
+                                blnShowImg = false;
+                            }
+                            else
+                            {
+                                blnShowImg = true;
+                            }
+                            Bitmap bmpShowImg = new Bitmap(intW, intH);
+
+                            if (blnShowImg)
+                            {
+                                bmpShowImg = ToGrayBitmap(images, intW, intH);
+                            }
+
+                            IImageInfo tmpImg = new ImageInfo(bmpShowImg, station);
+                            flawImage.Add(tmpImg);
+                        }
+                        dr["Images"] = flawImage;
                     }
                 }
                 else

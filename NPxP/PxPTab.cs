@@ -360,36 +360,46 @@ namespace NPxP
                         break;
 
                     case e_EventID.CUT_SIGNAL:
-                        WriteHelper.Log("CutEvent(): " + eventInfo.MD);
+                        //WriteHelper.Log("CutEvent(): " + eventInfo.MD);
+                        //_cuts.Add(eventInfo.MD);
+                        //// UNDONE: New Cut List & Sort
+                        ////_newCuts.Add(new Cut(eventInfo.MD));
+                        ////_newCuts.Sort(delegate(Cut c1, Cut c2) { return Comparer<double>.Default.Compare(c1.MD, c2.MD); });
+
+                        //_mp.CalcEntirePieceResult();
+
+                        //if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
+                        //{
+                        //    if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
+                        //    {
+                        //        // Update MapWindow
+                        //        _mp.UpdatePagesCount();
+                        //    }
+                        //    else
+                        //    {
+                        //        // Filter DataGridView
+                        //        double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
+                        //        string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", prevMD, eventInfo.MD, _tmpOffset);
+                        //        WriteHelper.Log(filterExp);
+                        //        DataView dv = _dtbFlaws.DefaultView;
+                        //        _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
+                        //        _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
+                        //        dv.RowFilter = filterExp;
+
+                        //        // Update MapWindow
+                        //        _mp.DrawChartPoint(prevMD);
+                        //    }
+                        //}
+
+
                         _cuts.Add(eventInfo.MD);
-                        // UNDONE: New Cut List & Sort
-                        //_newCuts.Add(new Cut(eventInfo.MD));
-                        //_newCuts.Sort(delegate(Cut c1, Cut c2) { return Comparer<double>.Default.Compare(c1.MD, c2.MD); });
+                        if (_cuts.Count == 1)
+                        {
+                            DataHelper dh = new DataHelper();
+                            dh.GetFlawDataFromDb(ref _dtbFlaws, _dbConnectString);
+                        }
 
                         _mp.CalcEntirePieceResult();
-
-                        if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
-                        {
-                            if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
-                            {
-                                // Update MapWindow
-                                _mp.UpdatePagesCount();
-                            }
-                            else
-                            {
-                                // Filter DataGridView
-                                double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
-                                string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", prevMD, eventInfo.MD, _tmpOffset);
-                                WriteHelper.Log(filterExp);
-                                DataView dv = _dtbFlaws.DefaultView;
-                                _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
-                                _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
-                                dv.RowFilter = filterExp;
-
-                                // Update MapWindow
-                                _mp.DrawChartPoint(prevMD);
-                            }
-                        }
                         break;
                     default:
                         break;
@@ -400,87 +410,89 @@ namespace NPxP
         // (D) :資料流入
         public void OnFlaws(IList<IFlawInfo> flaws)
         {
-            // 確保右邊TableLayout更新只在Cut發生,因為發生: Cut卡在資料中間的狀況.
-            _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
-            foreach (IFlawInfo flaw in flaws)
-            {
-                WriteHelper.Log(string.Format("{0},{1},{2}", flaw.FlawID, flaw.MD, flaw.CD));
-                DataRow dr = _dtbFlaws.NewRow();
-                dr["FlawID"] = flaw.FlawID;
-                // 2012-10-19 : 使用 cdOffset 變數調整 cd 數值
-                dr["CD"] = flaw.CD - _cdOffset; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺
-                dr["MD"] = flaw.MD;
-                dr["Area"] = flaw.Area;
-                dr["DateTime"] = flaw.DateTime;
-                dr["FlawClass"] = flaw.FlawClass;
-                dr["FlawType"] = flaw.FlawType;
-                dr["LeftEdge"] = flaw.LeftEdge;
-                dr["LeftRollCD"] = flaw.LeftRollCD;
-                dr["Length"] = flaw.Length;
-                dr["RightEdge"] = flaw.RightEdge;
-                dr["RightRollCD"] = flaw.RightRollCD;
-                dr["Roll"] = flaw.Roll;
-                dr["RollMD"] = flaw.RollMD;
-                dr["Width"] = flaw.Width;
-                // deal plug properties
-                int opv;
-                if (JobHelper.SeverityInfo.Count > 0)
-                    dr["Priority"] = JobHelper.SeverityInfo[0].Flaws.TryGetValue(flaw.FlawType, out opv) ? opv : 0;
-                else
-                    dr["Priority"] = 0;
-                // 因讀取歷史資料, 特別處理 Image
-                if (JobHelper.IsOnpeHistory)
-                {
-                    bool blnShowImg = false;
-                    int intW = 0;
-                    int intH = 0;
-                    using (SqlConnection cn = new SqlConnection(_dbConnectString))
-                    {
-                        cn.Open();
-                        string QueryStr = "Select iImage, lStation From dbo.Jobs T1, dbo.Flaw T2, dbo.Image T3 Where T1.klKey = T2.klJobKey AND T2.pklFlawKey = T3.klFlawKey AND T1.JobID = @JobID AND T2.lFlawId = @FlawID";
-                        SqlCommand cmd = new SqlCommand(QueryStr, cn);
-                        cmd.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
-                        cmd.Parameters.AddWithValue("@FlawID", flaw.FlawID);
-                        SqlDataReader sd = cmd.ExecuteReader();
-                        sd.Read();
-                        byte[] images = (Byte[])sd["iImage"];
-                        int station = (int)sd["lStation"];
+            //// 確保右邊TableLayout更新只在Cut發生,因為發生: Cut卡在資料中間的狀況.
+            //_dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
+            //foreach (IFlawInfo flaw in flaws)
+            //{
+            //    WriteHelper.Log(string.Format("{0},{1},{2}", flaw.FlawID, flaw.MD, flaw.CD));
+            //    DataRow dr = _dtbFlaws.NewRow();
+            //    dr["FlawID"] = flaw.FlawID;
+            //    // 2012-10-19 : 使用 cdOffset 變數調整 cd 數值
+            //    dr["CD"] = flaw.CD - _cdOffset; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺
+            //    dr["MD"] = flaw.MD;
+            //    dr["Area"] = flaw.Area;
+            //    dr["DateTime"] = flaw.DateTime;
+            //    dr["FlawClass"] = flaw.FlawClass;
+            //    dr["FlawType"] = flaw.FlawType;
+            //    dr["LeftEdge"] = flaw.LeftEdge;
+            //    dr["LeftRollCD"] = flaw.LeftRollCD;
+            //    dr["Length"] = flaw.Length;
+            //    dr["RightEdge"] = flaw.RightEdge;
+            //    dr["RightRollCD"] = flaw.RightRollCD;
+            //    dr["Roll"] = flaw.Roll;
+            //    dr["RollMD"] = flaw.RollMD;
+            //    dr["Width"] = flaw.Width;
+            //    // deal plug properties
+            //    int opv;
+            //    if (JobHelper.SeverityInfo.Count > 0)
+            //        dr["Priority"] = JobHelper.SeverityInfo[0].Flaws.TryGetValue(flaw.FlawType, out opv) ? opv : 0;
+            //    else
+            //        dr["Priority"] = 0;
+            //    // 因讀取歷史資料, 特別處理 Image
+            //    if (JobHelper.IsOnpeHistory)
+            //    {
+            //        bool blnShowImg = false;
+            //        int intW = 0;
+            //        int intH = 0;
+            //        using (SqlConnection cn = new SqlConnection(_dbConnectString))
+            //        {
+            //            cn.Open();
+            //            string QueryStr = "Select iImage, lStation From dbo.Jobs T1, dbo.Flaw T2, dbo.Image T3 Where T1.klKey = T2.klJobKey AND T2.pklFlawKey = T3.klFlawKey AND T1.JobID = @JobID AND T2.lFlawId = @FlawID";
+            //            SqlCommand cmd = new SqlCommand(QueryStr, cn);
+            //            cmd.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
+            //            cmd.Parameters.AddWithValue("@FlawID", flaw.FlawID);
+            //            SqlDataReader sd = cmd.ExecuteReader();
+            //            IList<IImageInfo> imgList = flaw.Images;
+            //            while (sd.Read())
+            //            {
+            //                byte[] images = (Byte[])sd["iImage"];
+            //                int station = (int)sd["lStation"];
 
-                        intW = images[0] + images[1] * 256;
-                        intH = images[4] + images[5] * 256;
+            //                intW = images[0] + images[1] * 256;
+            //                intH = images[4] + images[5] * 256;
 
-                        if (intW == 0 & intH == 0)
-                        {
-                            intW = 1;
-                            intH = 1;
-                            blnShowImg = false;
-                        }
-                        else
-                        {
-                            blnShowImg = true;
-                        }
-                        Bitmap bmpShowImg = new Bitmap(intW, intH);
+            //                if (intW == 0 & intH == 0)
+            //                {
+            //                    intW = 1;
+            //                    intH = 1;
+            //                    blnShowImg = false;
+            //                }
+            //                else
+            //                {
+            //                    blnShowImg = true;
+            //                }
+            //                Bitmap bmpShowImg = new Bitmap(intW, intH);
 
-                        if (blnShowImg)
-                        {
-                            bmpShowImg = ToGrayBitmap(images, intW, intH);
-                        }
+            //                if (blnShowImg)
+            //                {
+            //                    bmpShowImg = ToGrayBitmap(images, intW, intH);
+            //                }
 
-                        IImageInfo tmpImg = new ImageInfo(bmpShowImg, station);
-                        IList<IImageInfo> m = flaw.Images;
-                        m.Add(tmpImg);
-                        dr["Images"] = m;
-                    }
-                }
-                else
-                {
-                    dr["Images"] = flaw.Images;
-                }
+            //                IImageInfo tmpImg = new ImageInfo(bmpShowImg, station);
+            //                imgList.Add(tmpImg);
+            //            }
+            //            dr["Images"] = imgList;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        dr["Images"] = flaw.Images;
+            //    }
 
-                // add record to datatable
-                _dtbFlaws.Rows.Add(dr);
-            }
-            //WriteHelper.Log("OnFlaws()");
+            //    // add record to datatable
+            //    _dtbFlaws.Rows.Add(dr);
+            //}
+            ////WriteHelper.Log("OnFlaws()");
         }
 
         // (D)

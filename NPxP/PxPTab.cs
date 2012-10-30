@@ -649,6 +649,7 @@ namespace NPxP
         // 更新 tlpImages 內部 Controls , 更新 lblNowPage , 指定畫邊框 ID
         public void RefreshtlpImagesControls(int nowPage, int paintRowID)
         {
+            _nowPage = nowPage;
             // Clear  TableLayout of FlawImages's controls
             tlpFlawImages.Controls.Clear();
             // Calculate about init.
@@ -953,7 +954,8 @@ namespace NPxP
             _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
             _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
             _dtbFlaws.DefaultView.RowFilter = _dtbFlaws.DefaultView.RowFilter;
-
+            _nowPage = 1;
+            RefreshtlpImagesControls(_nowPage);
         }
 
         private void btnShowGoPage_Click(object sender, EventArgs e)

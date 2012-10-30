@@ -5,4 +5,9 @@
     <StartProgram>C:\Program Files (x86)\Web Ranger\Web Inspector\WebInspector.exe</StartProgram>
     <StartWorkingDirectory>C:\Program Files (x86)\Web Ranger\Plugins\</StartWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files (x86)\Web Ranger\Web Inspector\WebInspector.exe</StartProgram>
+    <StartWorkingDirectory>C:\Program Files (x86)\Web Ranger\Plugins\</StartWorkingDirectory>
+  </PropertyGroup>
 </Project>

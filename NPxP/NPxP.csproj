@@ -101,6 +101,7 @@
     </Compile>
     <Compile Include="Model\Column.cs" />
     <Compile Include="Model\Cut.cs" />
+    <Compile Include="Model\ImageInfo.cs" />
     <Compile Include="Model\NowUnit.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

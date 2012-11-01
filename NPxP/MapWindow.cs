@@ -31,14 +31,12 @@ namespace NPxP
         private IWRFireEvent _fire;
         private Dictionary<string, MarkerKind> _dicSeriesShape;
         private Dictionary<string, string> _dicLegendShape;
-        private Dictionary<string, int> _jobDoffNum;
+        public Dictionary<string, int> _jobDoffNum;
         private FailPieceList fpl = null;
 
         private int _currentPage, _totalPage; // Start from 1
         private int _totalScore;
-        private double _topOfPart;
         private string _filterType;
-        private double _tmpOffset; // Temp offset value(暫時使用, 以後要刪除)
 
         #endregion
 
@@ -51,12 +49,6 @@ namespace NPxP
             InitializeComponent();
             CreateShapeRefDic();
             chartControl.EmptyChartText.Text = "Flaw Distribution Map";
-            // Read temp offset value
-            using (FileStream fileStream = File.Open(PathHelper.SystemConfigFolder + "offset.txt", FileMode.Open))
-            {
-                StreamReader streamReader = new StreamReader(fileStream);
-                _tmpOffset = Convert.ToDouble(streamReader.ReadLine()) / 1000;
-            }
         }
 
         #endregion
@@ -212,7 +204,7 @@ namespace NPxP
         }
 
         // Initial flaw chart
-        public void InitChart(double width, double height)
+        public void InitChart(/*double width, double height*/)
         {
             ConfigHelper ch = new ConfigHelper();
             string mapConfigFile = ch.GetDefaultMapConfigName();
@@ -225,6 +217,9 @@ namespace NPxP
             double countCdSize = ch.GetCountSizeCD(mapConfigFile);
             double countMdSize = ch.GetCountSizeMD(mapConfigFile);
             string bottomAxes = ch.GetBottomAxes(mapConfigFile);
+            NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+            double mapWidth = JobHelper.PxPInfo.Width * unitFlawMapCD.Conversion;
+            double mapHeight = JobHelper.PxPInfo.Height * unitFlawMapCD.Conversion;
 
             if (chartControl.Series != null)
             {
@@ -240,8 +235,8 @@ namespace NPxP
             diagram.EnableAxisXZooming = true;
             diagram.EnableAxisXScrolling = true;
             diagram.AxisX.Range.MinValue = 0;
-            diagram.AxisX.Range.MaxValue = width;
-            diagram.AxisX.Range.ScrollingRange.SetMinMaxValues(0, width);
+            diagram.AxisX.Range.MaxValue = mapWidth;
+            diagram.AxisX.Range.ScrollingRange.SetMinMaxValues(0, mapWidth);
             diagram.AxisX.NumericOptions.Format = NumericFormat.Number;
             diagram.AxisX.NumericOptions.Precision = 6;
             diagram.AxisX.Reverse = isCdInvert;
@@ -253,8 +248,8 @@ namespace NPxP
             diagram.EnableAxisYZooming = true;
             diagram.EnableAxisYScrolling = true;
             diagram.AxisY.Range.MinValue = 0;
-            diagram.AxisY.Range.MaxValue = height;
-            diagram.AxisY.Range.ScrollingRange.SetMinMaxValues(0, height);
+            diagram.AxisY.Range.MaxValue = mapHeight;
+            diagram.AxisY.Range.ScrollingRange.SetMinMaxValues(0, mapHeight);
             diagram.AxisY.NumericOptions.Format = NumericFormat.Number;
             diagram.AxisY.NumericOptions.Precision = 6;
             diagram.AxisY.Reverse = isMdInvert;
@@ -270,8 +265,8 @@ namespace NPxP
             }
             else // Equal cell count
             {
-                diagram.AxisX.GridSpacing = width / countCdSize;
-                diagram.AxisY.GridSpacing = height / countMdSize;
+                diagram.AxisX.GridSpacing = mapWidth / countCdSize;
+                diagram.AxisY.GridSpacing = mapHeight / countMdSize;
             }
 
             // Setting Axes position
@@ -321,7 +316,7 @@ namespace NPxP
             NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
 
             _totalScore = 0;
-            DataRow[] flawRows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter);
+            DataRow[] flawRows = _dtbFlaws.Select();
 
             ConfigHelper ch = new ConfigHelper();
             string gradeConfigFile = ch.GetDefaultGradeConfigName();
@@ -361,7 +356,7 @@ namespace NPxP
                         string subPieceGrade = "F";
                         if (showScore)
                         {
-                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion + _topOfPart), (Convert.ToDouble(drRow["End"]) / ucd.Conversion + _topOfPart));
+                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion), (Convert.ToDouble(drRow["End"]) / ucd.Conversion));
                             DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
                             foreach (DataRow dr in subFlawRows)
                             {
@@ -448,14 +443,6 @@ namespace NPxP
             UpdateUIControl();
         }
 
-        // Draw point at chart(For Online and Fail Piece List)
-        public void DrawChartPoint(double topOfPart)
-        {
-            _topOfPart = topOfPart;
-            DrawChartPoint();
-        }
-
-        // Draw point at chart
         public void DrawChartPoint()
         {
             NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
@@ -468,7 +455,7 @@ namespace NPxP
                 UpdateUIControl();
             }
 
-            DataRow[] flawRows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter);
+            DataRow[] flawRows = _dtbFlaws.Select();
 
             chartControl.Series.Clear();
             DrawSubPiece();
@@ -478,7 +465,7 @@ namespace NPxP
             {
                 flawPoint = new Series(dr["FlawID"].ToString(), ViewType.Point);
                 double cd = Convert.ToDouble(dr["CD"]) * ucd.Conversion;
-                double md = (Convert.ToDouble(dr["MD"]) - _topOfPart)* ucd.Conversion;
+                double md = Convert.ToDouble(dr["MD"]) * ucd.Conversion;
                 string flawClass = dr["FlawClass"].ToString();
 
                 string filterExp = String.Format("Name = '{0}'", flawClass);
@@ -580,10 +567,7 @@ namespace NPxP
             NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
 
             int score = 0;
-            double top = Convert.ToDouble(_cuts.Last()) - JobHelper.PxPInfo.Height;
-            double bottom = Convert.ToDouble(_cuts.Last());
-            string rowFilter = String.Format("MD > {0} AND MD < {1} AND CD > {2}", top, bottom, _tmpOffset);
-            DataRow[] flawRows = _dtbFlaws.Select(rowFilter);
+            DataRow[] flawRows = _dtbFlaws.Select();
 
             ConfigHelper ch = new ConfigHelper();
             string gradeConfigFile = ch.GetDefaultGradeConfigName();
@@ -605,8 +589,7 @@ namespace NPxP
                             string rangeName = String.Format("{0}{1}", drCol["Name"], drRow["Name"]);
 
                             int subPieceScore = 0;
-                            //string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + top), (Convert.ToDouble(drRow["End"]) + top));
-                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion + top), (Convert.ToDouble(drRow["End"]) / ucd.Conversion + top));
+                            string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion), (Convert.ToDouble(drRow["End"]) / ucd.Conversion));
                             DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
                             foreach (DataRow dr in subFlawRows)
                             {
@@ -651,17 +634,26 @@ namespace NPxP
             }
 
             // Calc flaw number of this job
-            foreach (DataRow dr in flawRows)
+            if (!JobHelper.IsOnpeHistory)
             {
-                string name = dr["FlawClass"].ToString();
-                if (!_jobDoffNum.ContainsKey(name))
+                foreach (DataRow dr in flawRows)
                 {
-                    _jobDoffNum.Add(name, 1);
+                    string name = dr["FlawClass"].ToString();
+                    if (!_jobDoffNum.ContainsKey(name))
+                    {
+                        _jobDoffNum.Add(name, 1);
+                    }
+                    else
+                    {
+                        _jobDoffNum[name]++;
+                    }
                 }
-                else
-                {
-                    _jobDoffNum[name]++;
-                }
+            }
+
+            // For open history use, only update pages count when cut pieces greater than 1
+            if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
+            {
+                UpdatePagesCount();
             }
         }
 
@@ -680,10 +672,7 @@ namespace NPxP
                     NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
 
                     int score = 0;
-                    double top = cut - JobHelper.PxPInfo.Height;
-                    double bottom = cut;
-                    string rowFilter = String.Format("MD > {0} AND MD < {1} AND CD > {2}", top, bottom, _tmpOffset);
-                    DataRow[] flawRows = _dtbFlaws.Select(rowFilter);
+                    DataRow[] flawRows = _dtbFlaws.Select();
 
                     ConfigHelper ch = new ConfigHelper();
                     string gradeConfigFile = ch.GetDefaultGradeConfigName();
@@ -705,8 +694,7 @@ namespace NPxP
                                     string rangeName = String.Format("{0}{1}", drCol["Name"], drRow["Name"]);
 
                                     int subPieceScore = 0;
-                                    //string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", drCol["Start"], drCol["End"], (Convert.ToDouble(drRow["Start"]) + top), (Convert.ToDouble(drRow["End"]) + top));
-                                    string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion + top), (Convert.ToDouble(drRow["End"]) / ucd.Conversion + top));
+                                    string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion), (Convert.ToDouble(drRow["End"]) / ucd.Conversion));
                                     DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
                                     foreach (DataRow dr in subFlawRows)
                                     {
@@ -990,9 +978,7 @@ namespace NPxP
                 // Re-configure Chart
                 if (diagram != null)
                 {
-                    double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
-                    double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
-                    InitChart(width, height);
+                    InitChart();
                     DrawChartPoint();
                 }
             }
@@ -1015,7 +1001,7 @@ namespace NPxP
             if (_dtbFlaws != null)
             {
                 _pxp.RefreshtlpImagesControls(1);
-                int dataCount = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter).Length;
+                int dataCount = _dtbFlaws.Select().Length;
                 int totalPage = dataCount % (_pnl.ColumnCount * _pnl.RowCount) == 0 ?
                              dataCount / (_pnl.ColumnCount * _pnl.RowCount) :
                              dataCount / (_pnl.ColumnCount * _pnl.RowCount) + 1;
@@ -1048,14 +1034,10 @@ namespace NPxP
                 ReloadDataTables();
 
                 // Re-configure Chart
-                XYDiagram diagram = null;
                 DrawDummyPoint();
                 if ((XYDiagram)chartControl.Diagram != null)
                 {
-                    diagram = (XYDiagram)chartControl.Diagram;
-                    double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
-                    double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
-                    InitChart(width, height);
+                    InitChart();
 
                     if (chartControl.Series != null)
                     {
@@ -1124,14 +1106,10 @@ namespace NPxP
                 ReloadDataTables();
 
                 // Re-configure Chart
-                XYDiagram diagram = null;
                 DrawDummyPoint();
                 if ((XYDiagram)chartControl.Diagram != null)
                 {
-                    diagram = (XYDiagram)chartControl.Diagram;
-                    double width = Convert.ToDouble(diagram.AxisX.Range.ScrollingRange.MaxValue);
-                    double height = Convert.ToDouble(diagram.AxisY.Range.ScrollingRange.MaxValue);
-                    InitChart(width, height);
+                    InitChart();
 
                     if (chartControl.Series != null)
                     {
@@ -1262,11 +1240,18 @@ namespace NPxP
                     _currentPage--;
                 }
 
-                _topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
                 double bottomOfPart = _cuts[_currentPage - 1];
-                string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", _topOfPart, bottomOfPart, _tmpOffset);
-                DataView dv = _dtbFlaws.DefaultView;
-                dv.RowFilter = filterExp;
+                double topOfPart = bottomOfPart - JobHelper.PxPInfo.Height;
+
+                NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+                double cdOffset = JobHelper.PxPInfo.LeftOffset / unitFlawMapCD.Conversion;
+
+                DataHelper dh = new DataHelper();
+                dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, bottomOfPart);
+
+                // Create flaw image controls
+                _pxp.CreateFlawImageControl();
+
                 DrawChartPoint();
                 UpdateUIControl();
             }
@@ -1299,11 +1284,18 @@ namespace NPxP
                     _currentPage++;
                 }
 
-                _topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
                 double bottomOfPart = _cuts[_currentPage - 1];
-                string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", _topOfPart, bottomOfPart, _tmpOffset);
-                DataView dv = _dtbFlaws.DefaultView;
-                dv.RowFilter = filterExp;
+                double topOfPart = bottomOfPart - JobHelper.PxPInfo.Height;
+
+                NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+                double cdOffset = JobHelper.PxPInfo.LeftOffset / unitFlawMapCD.Conversion;
+
+                DataHelper dh = new DataHelper();
+                dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, bottomOfPart);
+                
+                // Create flaw image controls
+                _pxp.CreateFlawImageControl();
+
                 DrawChartPoint();
                 UpdateUIControl();
             }
@@ -1358,12 +1350,11 @@ namespace NPxP
                 if (hi.SeriesPoint != null)
                 {
                     Series seriesPoint = (Series)hi.Series;
-                    DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter);
+                    DataRow[] rows = _dtbFlaws.Select();
                     IEnumerable<DataRow> result = rows.Where(row => row["FlawID"].ToString().Equals(seriesPoint.Name));
 
                     JobHelper.Job.SetOffline();
-                    double topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
-                    FlawForm ff = new FlawForm(result.First(), _units, topOfPart);
+                    FlawForm ff = new FlawForm(result.First(), _units);
                     ff.ShowDialog();
                 }
             }
@@ -1385,16 +1376,44 @@ namespace NPxP
                 JobHelper.IsOnline = false;
 
                 _currentPage = gotoPage;
-                _topOfPart = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
                 double bottomOfPart = _cuts[_currentPage - 1];
-                string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", _topOfPart, bottomOfPart, _tmpOffset);
-                DataView dv = _dtbFlaws.DefaultView;
-                dv.RowFilter = filterExp;
+                double topOfPart = bottomOfPart - JobHelper.PxPInfo.Height;
+
+                NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+                double cdOffset = JobHelper.PxPInfo.LeftOffset / unitFlawMapCD.Conversion;
+
+                DataHelper dh = new DataHelper();
+                dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, bottomOfPart);
+
+                // Create flaw image controls
+                _pxp.CreateFlawImageControl();
+
                 DrawChartPoint();
                 UpdateUIControl();
             }
 
             btnShowGoPage.Visible = true;
+        }
+
+        public void JumpToSpecificPiece(int pieceNumber)
+        {
+            JobHelper.Job.SetOffline();
+            JobHelper.IsOnline = false;
+
+            double bottomOfPart = _cuts[pieceNumber - 1];
+            double topOfPart = bottomOfPart - JobHelper.PxPInfo.Height;
+
+            NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+            double cdOffset = JobHelper.PxPInfo.LeftOffset / unitFlawMapCD.Conversion;
+
+            DataHelper dh = new DataHelper();
+            dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, bottomOfPart);
+
+            // Create flaw image controls
+            _pxp.CreateFlawImageControl();
+
+            DrawChartPoint();
+            UpdateUIControl();
         }
 
         #endregion

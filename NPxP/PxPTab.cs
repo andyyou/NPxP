@@ -72,7 +72,7 @@ namespace NPxP
                 DataGridViewColumn column = new DataGridViewColumn();
                 column.CellTemplate = cell;
                 column.Name = c.Name;
-                column.HeaderText = c.Name;
+                column.HeaderText = c.Name;  // if want to use switch lang edit here.
                 column.Width = c.Width;
                 column.DataPropertyName = c.Name;
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
@@ -82,7 +82,7 @@ namespace NPxP
             dgvFlaw.AutoGenerateColumns = false;
            
             // initialize tlpFlawImages layout without pictures.
-            SetDoubleBuffered(tlpFlawImages); // start double buffer.
+            SetDoubleBuffered(tlpFlawImages); // start double buffer for impore effect.
             tlpFlawImages.ColumnStyles.Clear();
             tlpFlawImages.ColumnCount = ch.GettlpFlawImagesColumns();
             tlpFlawImages.RowCount = ch.GettlpFlawImagesRows();
@@ -121,7 +121,7 @@ namespace NPxP
         {
             // WriteHelper.Log("Initialize()");
             _xmlUnitsPath = unitsXMLPath;
-            LoadXmlToUnitsObject(unitsXMLPath);
+            LoadXmlToUnitsObject(unitsXMLPath); // Save units value to "_units"
             JobHelper.Job = Job;  // 設定 Helper 協助各頁面停止工單等操作
         }
 
@@ -158,7 +158,7 @@ namespace NPxP
         public void GetMapControlHandle(out IntPtr hndl)
         {
             // WriteHelper.Log("GetMapControlHandle()");
-            _mp = new MapWindow(this); // 確保執行順序正確,所以在這邊在 new 物件.
+            _mp = new MapWindow(this); // 確保執行順序正確,所以在這邊在 new 物件, this 把 PxPTab 傳過去給 MapWindow
             hndl = _mp.Handle;
             _mp.InitTableLayout(ref tlpFlawImages); // 為了讓右邊可以即時更新左邊圖片.把參考加給右邊.
         }
@@ -216,24 +216,15 @@ namespace NPxP
             btnShowGoPage.Enabled = false;
             _nowPage = 0;
             _totalPage = 0;
-           
+
             // save datas in global helper.
             JobHelper.FlawTypes = flawTypes;
             JobHelper.JobInfo = jobInfo;
             JobHelper.Lanes = lanes;
             JobHelper.SeverityInfo = severityInfo;
 
-            //update dgvFlaw HeaderText + (Unit)
-            NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
-            dgvFlaw.Columns["CD"].HeaderText = dgvFlaw.Columns["CD"].Name + String.Format("({0})", unitFlawListCD.Symbol);
-            NowUnit unitFlawListMD = _units.Find(x => x.ComponentName == "Flaw List MD");
-            dgvFlaw.Columns["MD"].HeaderText = dgvFlaw.Columns["MD"].Name + String.Format("({0})", unitFlawListMD.Symbol);
-            NowUnit unitFlawListWidth = _units.Find(x => x.ComponentName == "Flaw List Width");
-            dgvFlaw.Columns["Width"].HeaderText = dgvFlaw.Columns["Width"].Name + String.Format("({0})", unitFlawListWidth.Symbol);
-            NowUnit unitFlawListLength = _units.Find(x => x.ComponentName == "Flaw List Height");
-            dgvFlaw.Columns["Length"].HeaderText =  dgvFlaw.Columns["Length"].Name + String.Format("({0})", unitFlawListLength.Symbol);
-            NowUnit unitFlawListArea = _units.Find(x => x.ComponentName == "Flaw List Area");
-            dgvFlaw.Columns["Area"].HeaderText = dgvFlaw.Columns["Area"].Name + String.Format("({0})", unitFlawListArea.Symbol);
+            //update dgvFlaw HeaderText + (Unit)  ** 2012/11/05 if want to use switch lang edit here.
+            RefreshdtbFlawsUnit();
             
             // initialize datatable  flaw format without data.
             _dtbFlaws = new DataTable("Flaws");
@@ -257,8 +248,6 @@ namespace NPxP
            
             // other columns for deal grade and score.
             _dtbFlaws.Columns.Add("Priority", typeof(int));
-            _dtbFlaws.Columns.Add("PointScore", typeof(double));
-            _dtbFlaws.Columns.Add("SubPieceName", typeof(string));
             
             // sort by default column
             ConfigHelper ch = new ConfigHelper();
@@ -294,7 +283,7 @@ namespace NPxP
             _mp.InitUnits(ref _units);
             _mp.InitCutList(ref _cuts);
 
-            // UNDONE: New Cut List
+            // ref Fire object
             _mp.InitFire(ref Fire);
 
             // Initial Flaw Chart FlawLegend
@@ -304,9 +293,9 @@ namespace NPxP
         // (18) :執行每一個步驟都會檢查
         public void OnOnline(bool isOnline)
         {
+            // WriteHelper.Log("OnOnline()");
             JobHelper.IsOnline = isOnline;
             JobHelper.IsOpenHistory = false;
-            WriteHelper.Log("OnOnline()");
         }
 
         // (19)
@@ -339,9 +328,9 @@ namespace NPxP
 
                         NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
                         double cdOffset = JobHelper.PxPInfo.LeftOffset / unitFlawMapCD.Conversion;
-
+                      
                         _cuts.Add(eventInfo.MD);
-
+               
                         if (JobHelper.IsOnline || (JobHelper.IsOpenHistory && _cuts.Count == 1))
                         {
                             double topOfPart = eventInfo.MD - JobHelper.PxPInfo.Height;
@@ -351,11 +340,9 @@ namespace NPxP
 
                             // Create flaw image controls
                             CreateFlawImageControl();
-
                             // Update MapWindow
                             _mp.DrawChartPoint();
                         }
-
                         _mp.CalcEntirePieceResult();
                         break;
                     default:
@@ -373,7 +360,7 @@ namespace NPxP
         // (D)
         public void OnCut(double md)
         {
-            WriteHelper.Log("Ture OnCut()");
+            // WriteHelper.Log("Ture OnCut()");
             GC.Collect();
         }
 
@@ -392,16 +379,7 @@ namespace NPxP
                 LoadXmlToUnitsObject(_xmlUnitsPath);
             }
             // update dgvFlaw HeaderText + (Unit)
-            NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
-            dgvFlaw.Columns["CD"].HeaderText = dgvFlaw.Columns["CD"].Name + String.Format("({0})", unitFlawListCD.Symbol);
-            NowUnit unitFlawListMD = _units.Find(x => x.ComponentName == "Flaw List MD");
-            dgvFlaw.Columns["MD"].HeaderText = dgvFlaw.Columns["MD"].Name + String.Format("({0})", unitFlawListMD.Symbol);
-            NowUnit unitFlawListWidth = _units.Find(x => x.ComponentName == "Flaw List Width");
-            dgvFlaw.Columns["Width"].HeaderText = dgvFlaw.Columns["Width"].Name + String.Format("({0})", unitFlawListWidth.Symbol);
-            NowUnit unitFlawListLength = _units.Find(x => x.ComponentName == "Flaw List Height");
-            dgvFlaw.Columns["Length"].HeaderText = dgvFlaw.Columns["Length"].Name + String.Format("({0})", unitFlawListLength.Symbol);
-            NowUnit unitFlawListArea = _units.Find(x => x.ComponentName == "Flaw List Area");
-            dgvFlaw.Columns["Area"].HeaderText = dgvFlaw.Columns["Area"].Name + String.Format("({0})", unitFlawListArea.Symbol);
+            RefreshdtbFlawsUnit();
         }
 
         // (D) 
@@ -518,6 +496,7 @@ namespace NPxP
         // 更新 tlpImages 內部 Controls , 更新 lblNowPage
         public void RefreshtlpImagesControls(int nowPage)
         {
+            _nowPage = nowPage;
             // Clear  TableLayout of FlawImages's controls
             tlpFlawImages.Controls.Clear();
             // Calculate about init.
@@ -577,6 +556,57 @@ namespace NPxP
             }
         }
 
+        // 更新 重新載入單位
+        public void RefreshdtbFlawsUnit()
+        {
+            NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
+            dgvFlaw.Columns["CD"].HeaderText = dgvFlaw.Columns["CD"].Name + String.Format("({0})", unitFlawListCD.Symbol);
+            NowUnit unitFlawListMD = _units.Find(x => x.ComponentName == "Flaw List MD");
+            dgvFlaw.Columns["MD"].HeaderText = dgvFlaw.Columns["MD"].Name + String.Format("({0})", unitFlawListMD.Symbol);
+            NowUnit unitFlawListWidth = _units.Find(x => x.ComponentName == "Flaw List Width");
+            dgvFlaw.Columns["Width"].HeaderText = dgvFlaw.Columns["Width"].Name + String.Format("({0})", unitFlawListWidth.Symbol);
+            NowUnit unitFlawListLength = _units.Find(x => x.ComponentName == "Flaw List Height");
+            dgvFlaw.Columns["Length"].HeaderText = dgvFlaw.Columns["Length"].Name + String.Format("({0})", unitFlawListLength.Symbol);
+            NowUnit unitFlawListArea = _units.Find(x => x.ComponentName == "Flaw List Area");
+            dgvFlaw.Columns["Area"].HeaderText = dgvFlaw.Columns["Area"].Name + String.Format("({0})", unitFlawListArea.Symbol);
+        }
+
+        // Check UI Buttons can using?
+        public void CheckPageUIState()
+        {
+            // for go to page
+            if (_totalPage > 1)
+            {
+                btnShowGoPage.Enabled = true;
+            }
+            else
+            {
+                btnShowGoPage.Enabled = false;
+            }
+
+            // for navigator page
+            if (_totalPage == 1)
+            {
+                btnNextFlawImages.Enabled = false;
+                btnPrevFlawImages.Enabled = false;
+            }
+            else if (_nowPage == _totalPage)
+            {
+                btnNextFlawImages.Enabled = false;
+                btnPrevFlawImages.Enabled = true;
+            }
+            else if (_nowPage == 1)
+            {
+                btnNextFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = false;
+            }
+            else
+            {
+                btnNextFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = true;
+            }
+        }
+
         #endregion
 
         //-------------------------------------------------------------------------------------------//
@@ -598,26 +628,7 @@ namespace NPxP
             // re add need controls to tlpImages and update lblNowPage
             RefreshtlpImagesControls(_nowPage);
             // check now page and set can using buttons
-            if (_totalPage == 1)
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else if (_nowPage == _totalPage)
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = true;
-            }
-            else if (_nowPage == 1)
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = true;
-            }
+            CheckPageUIState();
         }
 
         private void btnPrevFlawImages_Click(object sender, EventArgs e)
@@ -635,26 +646,7 @@ namespace NPxP
             // re add need controls to tlpImages and update lblNowPage.
             RefreshtlpImagesControls(_nowPage);
             // check now page and set can using buttons
-            if (_totalPage == 1)
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else if (_nowPage == _totalPage)
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = true;
-            }
-            else if (_nowPage == 1)
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = true;
-            }
+            CheckPageUIState();
         }
 
         private void dgvFlaw_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -664,6 +656,7 @@ namespace NPxP
             int toPage = e.RowIndex / pageSize + 1;
             // re add need controls to tlpImages and update lblNowPage
             RefreshtlpImagesControls(toPage, e.RowIndex);
+            CheckPageUIState();
         }
 
         private void dgvFlaw_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -727,15 +720,7 @@ namespace NPxP
             lblTotalPage.Text = _totalPage.ToString();
             int startFicIndex = (_nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > rows.Length) ? rows.Length : (startFicIndex + pageSize);
-            // 計算完之後,判斷直接跳頁按鈕可否使用.
-            if (_totalPage > 1)
-            {
-                btnShowGoPage.Enabled = true;
-            }
-            else
-            {
-                btnShowGoPage.Enabled = false;
-            }
+           
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
@@ -748,16 +733,7 @@ namespace NPxP
             }
 
             // Set can using buttons when oncut all button reset.
-            if (_totalPage > 1)
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = false;
-            }
+            CheckPageUIState();
             dgvFlaw.ClearSelection();
         }
 
@@ -765,6 +741,7 @@ namespace NPxP
         {
             _nowPage = 1;
             RefreshtlpImagesControls(_nowPage);
+            CheckPageUIState();
         }
 
         private void btnShowGoPage_Click(object sender, EventArgs e)
@@ -772,6 +749,7 @@ namespace NPxP
             btnShowGoPage.Visible = false;
             txtGoPage.Focus();
             txtGoPage.SelectAll();
+           
         }
 
         private void btnGo_Click(object sender, EventArgs e)
@@ -792,26 +770,7 @@ namespace NPxP
                 // re add need controls to tlpImages and update lblNowPage
                 RefreshtlpImagesControls(_nowPage);
                 // check now page and set can using buttons
-                if (_totalPage == 1)
-                {
-                    btnNextFlawImages.Enabled = false;
-                    btnPrevFlawImages.Enabled = false;
-                }
-                else if (_nowPage == _totalPage)
-                {
-                    btnNextFlawImages.Enabled = false;
-                    btnPrevFlawImages.Enabled = true;
-                }
-                else if (_nowPage == 1)
-                {
-                    btnNextFlawImages.Enabled = true;
-                    btnPrevFlawImages.Enabled = false;
-                }
-                else
-                {
-                    btnNextFlawImages.Enabled = true;
-                    btnPrevFlawImages.Enabled = true;
-                }
+                CheckPageUIState();
             }
 
             btnShowGoPage.Visible = true;

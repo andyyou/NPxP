@@ -31,14 +31,9 @@ namespace NPxP
 
         private MapWindow _mp;
         private DataTable _dtbFlaws;
-        private DataView _dvFiliter;
         private List<NowUnit> _units;
         private List<double> _cuts;
-        //private List<Cut> _newCuts; // Build on JobLoaded.
         private string _xmlUnitsPath;
-        private string _dbConnectString;
-        private double _tmpOffset; // Temp offset value(暫時使用, 以後要刪除)
-        private double _cdOffset; // Temp cd offset value(暫時使用, 以後要刪除)
 
         private int _nowPage, _totalPage; // For TableLayout pages , start from 1.
 
@@ -77,7 +72,7 @@ namespace NPxP
                 DataGridViewColumn column = new DataGridViewColumn();
                 column.CellTemplate = cell;
                 column.Name = c.Name;
-                column.HeaderText = c.Name;
+                column.HeaderText = c.Name;  // if want to use switch lang edit here.
                 column.Width = c.Width;
                 column.DataPropertyName = c.Name;
                 column.SortMode = DataGridViewColumnSortMode.Automatic;
@@ -87,7 +82,7 @@ namespace NPxP
             dgvFlaw.AutoGenerateColumns = false;
            
             // initialize tlpFlawImages layout without pictures.
-            SetDoubleBuffered(tlpFlawImages); // start double buffer.
+            SetDoubleBuffered(tlpFlawImages); // start double buffer for impore effect.
             tlpFlawImages.ColumnStyles.Clear();
             tlpFlawImages.ColumnCount = ch.GettlpFlawImagesColumns();
             tlpFlawImages.RowCount = ch.GettlpFlawImagesRows();
@@ -126,22 +121,8 @@ namespace NPxP
         {
             // WriteHelper.Log("Initialize()");
             _xmlUnitsPath = unitsXMLPath;
-            LoadXmlToUnitsObject(unitsXMLPath);
+            LoadXmlToUnitsObject(unitsXMLPath); // Save units value to "_units"
             JobHelper.Job = Job;  // 設定 Helper 協助各頁面停止工單等操作
-
-            // Read temp offset value
-            using (FileStream fileStream = File.Open(PathHelper.SystemConfigFolder + "offset.txt", FileMode.Open))
-            {
-                StreamReader streamReader = new StreamReader(fileStream);
-                _tmpOffset = Convert.ToDouble(streamReader.ReadLine()) / 1000;
-            }
-
-            // Read temp cd offset value
-            using (FileStream fileStream = File.Open(PathHelper.SystemConfigFolder + "cd-offset.txt", FileMode.Open))
-            {
-                StreamReader streamReader = new StreamReader(fileStream);
-                _cdOffset = Convert.ToDouble(streamReader.ReadLine()) / 1000;
-            }
         }
 
         // (4)(7)(17)
@@ -177,7 +158,7 @@ namespace NPxP
         public void GetMapControlHandle(out IntPtr hndl)
         {
             // WriteHelper.Log("GetMapControlHandle()");
-            _mp = new MapWindow(this); // 確保執行順序正確,所以在這邊在 new 物件.
+            _mp = new MapWindow(this); // 確保執行順序正確,所以在這邊在 new 物件, this 把 PxPTab 傳過去給 MapWindow
             hndl = _mp.Handle;
             _mp.InitTableLayout(ref tlpFlawImages); // 為了讓右邊可以即時更新左邊圖片.把參考加給右邊.
         }
@@ -193,7 +174,7 @@ namespace NPxP
         public void OnWebDBConnected(IWebDBConnectionInfo info)
         {
             // WriteHelper.Log("OnWebDBConnected()");
-            _dbConnectString = String.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3};", info.ServerName, info.DatabaseName, info.UserName, info.Password);
+            JobHelper.DbConnectString = String.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3};", info.ServerName, info.DatabaseName, info.UserName, info.Password);
         }
 
         // (12)
@@ -228,7 +209,6 @@ namespace NPxP
             // WriteHelper.Log("OnJobLoaded()");
             // Reset to default.
             _cuts = new List<double>();
-            //_newCuts = new List<Cut>();
             lblNowPage.Text = "---";
             lblTotalPage.Text = "---";
             btnNextFlawImages.Enabled = false;
@@ -236,25 +216,15 @@ namespace NPxP
             btnShowGoPage.Enabled = false;
             _nowPage = 0;
             _totalPage = 0;
-            _dvFiliter = new DataView();
-           
+
             // save datas in global helper.
             JobHelper.FlawTypes = flawTypes;
             JobHelper.JobInfo = jobInfo;
             JobHelper.Lanes = lanes;
             JobHelper.SeverityInfo = severityInfo;
 
-            //update dgvFlaw HeaderText + (Unit)
-            NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
-            dgvFlaw.Columns["CD"].HeaderText = dgvFlaw.Columns["CD"].Name + String.Format("({0})", unitFlawListCD.Symbol);
-            NowUnit unitFlawListMD = _units.Find(x => x.ComponentName == "Flaw List MD");
-            dgvFlaw.Columns["MD"].HeaderText = dgvFlaw.Columns["MD"].Name + String.Format("({0})", unitFlawListMD.Symbol);
-            NowUnit unitFlawListWidth = _units.Find(x => x.ComponentName == "Flaw List Width");
-            dgvFlaw.Columns["Width"].HeaderText = dgvFlaw.Columns["Width"].Name + String.Format("({0})", unitFlawListWidth.Symbol);
-            NowUnit unitFlawListLength = _units.Find(x => x.ComponentName == "Flaw List Height");
-            dgvFlaw.Columns["Length"].HeaderText =  dgvFlaw.Columns["Length"].Name + String.Format("({0})", unitFlawListLength.Symbol);
-            NowUnit unitFlawListArea = _units.Find(x => x.ComponentName == "Flaw List Area");
-            dgvFlaw.Columns["Area"].HeaderText = dgvFlaw.Columns["Area"].Name + String.Format("({0})", unitFlawListArea.Symbol);
+            //update dgvFlaw HeaderText + (Unit)  ** 2012/11/05 if want to use switch lang edit here.
+            RefreshdtbFlawsUnit();
             
             // initialize datatable  flaw format without data.
             _dtbFlaws = new DataTable("Flaws");
@@ -278,8 +248,6 @@ namespace NPxP
            
             // other columns for deal grade and score.
             _dtbFlaws.Columns.Add("Priority", typeof(int));
-            _dtbFlaws.Columns.Add("PointScore", typeof(double));
-            _dtbFlaws.Columns.Add("SubPieceName", typeof(string));
             
             // sort by default column
             ConfigHelper ch = new ConfigHelper();
@@ -315,23 +283,19 @@ namespace NPxP
             _mp.InitUnits(ref _units);
             _mp.InitCutList(ref _cuts);
 
-            // UNDONE: New Cut List
-            // _mp.InitCutList(ref _newCuts);
+            // ref Fire object
             _mp.InitFire(ref Fire);
 
             // Initial Flaw Chart FlawLegend
-            NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
-            double mapWidth = JobHelper.PxPInfo.Width * unitFlawMapCD.Conversion;
-            double mapHeight = JobHelper.PxPInfo.Height * unitFlawMapCD.Conversion;
-            _mp.InitChart(mapWidth, mapHeight);
+            _mp.InitChart();
         }
 
         // (18) :執行每一個步驟都會檢查
         public void OnOnline(bool isOnline)
         {
+            // WriteHelper.Log("OnOnline()");
             JobHelper.IsOnline = isOnline;
-            JobHelper.IsOnpeHistory = false;
-            WriteHelper.Log("OnOnline()");
+            JobHelper.IsOpenHistory = false;
         }
 
         // (19)
@@ -360,36 +324,26 @@ namespace NPxP
                         break;
 
                     case e_EventID.CUT_SIGNAL:
-                        WriteHelper.Log("CutEvent(): " + eventInfo.MD);
+                        //WriteHelper.Log("CutEvent(): " + eventInfo.MD);
+
+                        NowUnit unitFlawMapCD = _units.Find(x => x.ComponentName == "Flaw Map CD");
+                        double cdOffset = JobHelper.PxPInfo.LeftOffset / unitFlawMapCD.Conversion;
+                      
                         _cuts.Add(eventInfo.MD);
-                        // UNDONE: New Cut List & Sort
-                        //_newCuts.Add(new Cut(eventInfo.MD));
-                        //_newCuts.Sort(delegate(Cut c1, Cut c2) { return Comparer<double>.Default.Compare(c1.MD, c2.MD); });
-
-                        _mp.CalcEntirePieceResult();
-
-                        if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)  // 如果 Cut Online 才更新 GridView 和 DataTable Range.
+               
+                        if (JobHelper.IsOnline || (JobHelper.IsOpenHistory && _cuts.Count == 1))
                         {
-                            if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
-                            {
-                                // Update MapWindow
-                                _mp.UpdatePagesCount();
-                            }
-                            else
-                            {
-                                // Filter DataGridView
-                                double prevMD = eventInfo.MD - JobHelper.PxPInfo.Height;
-                                string filterExp = String.Format("MD > {0} AND MD < {1} AND CD > {2}", prevMD, eventInfo.MD, _tmpOffset);
-                                WriteHelper.Log(filterExp);
-                                DataView dv = _dtbFlaws.DefaultView;
-                                _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
-                                _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
-                                dv.RowFilter = filterExp;
+                            double topOfPart = eventInfo.MD - JobHelper.PxPInfo.Height;
 
-                                // Update MapWindow
-                                _mp.DrawChartPoint(prevMD);
-                            }
+                            DataHelper dh = new DataHelper();
+                            dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, eventInfo.MD);
+
+                            // Create flaw image controls
+                            CreateFlawImageControl();
+                            // Update MapWindow
+                            _mp.DrawChartPoint();
                         }
+                        _mp.CalcEntirePieceResult();
                         break;
                     default:
                         break;
@@ -400,96 +354,13 @@ namespace NPxP
         // (D) :資料流入
         public void OnFlaws(IList<IFlawInfo> flaws)
         {
-            // 確保右邊TableLayout更新只在Cut發生,因為發生: Cut卡在資料中間的狀況.
-            _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
-            foreach (IFlawInfo flaw in flaws)
-            {
-                WriteHelper.Log(string.Format("{0},{1},{2}", flaw.FlawID, flaw.MD, flaw.CD));
-                DataRow dr = _dtbFlaws.NewRow();
-                dr["FlawID"] = flaw.FlawID;
-                // 2012-10-19 : 使用 cdOffset 變數調整 cd 數值
-                dr["CD"] = flaw.CD - _cdOffset; // Notice: DataTable 和 PxPInfo.Width, Height 資料保持單位 公尺
-                dr["MD"] = flaw.MD;
-                dr["Area"] = flaw.Area;
-                dr["DateTime"] = flaw.DateTime;
-                dr["FlawClass"] = flaw.FlawClass;
-                dr["FlawType"] = flaw.FlawType;
-                dr["LeftEdge"] = flaw.LeftEdge;
-                dr["LeftRollCD"] = flaw.LeftRollCD;
-                dr["Length"] = flaw.Length;
-                dr["RightEdge"] = flaw.RightEdge;
-                dr["RightRollCD"] = flaw.RightRollCD;
-                dr["Roll"] = flaw.Roll;
-                dr["RollMD"] = flaw.RollMD;
-                dr["Width"] = flaw.Width;
-                // deal plug properties
-                int opv;
-                if (JobHelper.SeverityInfo.Count > 0)
-                    dr["Priority"] = JobHelper.SeverityInfo[0].Flaws.TryGetValue(flaw.FlawType, out opv) ? opv : 0;
-                else
-                    dr["Priority"] = 0;
-                // 因讀取歷史資料, 特別處理 Image
-                if (JobHelper.IsOnpeHistory)
-                {
-                    bool blnShowImg = false;
-                    int intW = 0;
-                    int intH = 0;
-                    using (SqlConnection cn = new SqlConnection(_dbConnectString))
-                    {
-                        cn.Open();
-                        string QueryStr = "Select iImage, lStation From dbo.Jobs T1, dbo.Flaw T2, dbo.Image T3 Where T1.klKey = T2.klJobKey AND T2.pklFlawKey = T3.klFlawKey AND T1.JobID = @JobID AND T2.lFlawId = @FlawID";
-                        SqlCommand cmd = new SqlCommand(QueryStr, cn);
-                        cmd.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
-                        cmd.Parameters.AddWithValue("@FlawID", flaw.FlawID);
-                        SqlDataReader sd = cmd.ExecuteReader();
-
-                        IList<IImageInfo> flawImage = flaw.Images;
-                        while (sd.Read())
-                        {
-                            byte[] images = (Byte[])sd["iImage"];
-                            int station = (int)sd["lStation"];
-
-                            intW = images[0] + images[1] * 256;
-                            intH = images[4] + images[5] * 256;
-
-                            if (intW == 0 & intH == 0)
-                            {
-                                intW = 1;
-                                intH = 1;
-                                blnShowImg = false;
-                            }
-                            else
-                            {
-                                blnShowImg = true;
-                            }
-                            Bitmap bmpShowImg = new Bitmap(intW, intH);
-
-                            if (blnShowImg)
-                            {
-                                bmpShowImg = ToGrayBitmap(images, intW, intH);
-                            }
-
-                            IImageInfo tmpImg = new ImageInfo(bmpShowImg, station);
-                            flawImage.Add(tmpImg);
-                        }
-                        dr["Images"] = flawImage;
-                    }
-                }
-                else
-                {
-                    dr["Images"] = flaw.Images;
-                }
-
-                // add record to datatable
-                _dtbFlaws.Rows.Add(dr);
-            }
             //WriteHelper.Log("OnFlaws()");
         }
 
         // (D)
         public void OnCut(double md)
         {
-            WriteHelper.Log("Ture OnCut()");
+            // WriteHelper.Log("Ture OnCut()");
             GC.Collect();
         }
 
@@ -508,16 +379,7 @@ namespace NPxP
                 LoadXmlToUnitsObject(_xmlUnitsPath);
             }
             // update dgvFlaw HeaderText + (Unit)
-            NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
-            dgvFlaw.Columns["CD"].HeaderText = dgvFlaw.Columns["CD"].Name + String.Format("({0})", unitFlawListCD.Symbol);
-            NowUnit unitFlawListMD = _units.Find(x => x.ComponentName == "Flaw List MD");
-            dgvFlaw.Columns["MD"].HeaderText = dgvFlaw.Columns["MD"].Name + String.Format("({0})", unitFlawListMD.Symbol);
-            NowUnit unitFlawListWidth = _units.Find(x => x.ComponentName == "Flaw List Width");
-            dgvFlaw.Columns["Width"].HeaderText = dgvFlaw.Columns["Width"].Name + String.Format("({0})", unitFlawListWidth.Symbol);
-            NowUnit unitFlawListLength = _units.Find(x => x.ComponentName == "Flaw List Height");
-            dgvFlaw.Columns["Length"].HeaderText = dgvFlaw.Columns["Length"].Name + String.Format("({0})", unitFlawListLength.Symbol);
-            NowUnit unitFlawListArea = _units.Find(x => x.ComponentName == "Flaw List Area");
-            dgvFlaw.Columns["Area"].HeaderText = dgvFlaw.Columns["Area"].Name + String.Format("({0})", unitFlawListArea.Symbol);
+            RefreshdtbFlawsUnit();
         }
 
         // (D) 
@@ -530,14 +392,34 @@ namespace NPxP
         public void OnOpenHistory(double startMD, double stopMD)
         {
             // WriteHelper.Log("OnOpenHistory()");
-            JobHelper.IsOnpeHistory = true;
+            JobHelper.IsOpenHistory = true;
         }
 
         // (25) :停止工單
         public void OnJobStopped(double md)
         {
             // WriteHelper.Log("OnJobStopped()");
-            JobHelper.IsOnpeHistory = false;
+            if (JobHelper.IsOpenHistory)
+            {
+                string mdRange = "(";
+                foreach (double bottomOfPart in _cuts)
+                {
+                    double topOfPart = bottomOfPart - JobHelper.PxPInfo.Height;
+                    mdRange = string.Format("{0}(T2.dMD > {1} AND T2.dMD < {2})", mdRange, topOfPart, bottomOfPart);
+
+                    if (bottomOfPart != _cuts.Last())
+                    {
+                        mdRange += " OR ";
+                    }
+                }
+                mdRange += ")";
+
+                var jobDoffNum = _mp._jobDoffNum;
+                DataHelper dh = new DataHelper();
+                dh.GetEachFlawQuantity(ref jobDoffNum, mdRange);
+                _mp.UpdatePagesCount();
+            }
+            JobHelper.IsOpenHistory = false;
             _mp.SettingUIControlStatus(true);
         }
 
@@ -550,7 +432,7 @@ namespace NPxP
         // (?) :
         public void OnClassifyFlaw(ref IFlawInfo flaw, ref bool deleteFlaw)
         {
-
+            // WriteHelper.Log("OnClassifyFlaw()");
         }
         
         #endregion
@@ -614,6 +496,7 @@ namespace NPxP
         // 更新 tlpImages 內部 Controls , 更新 lblNowPage
         public void RefreshtlpImagesControls(int nowPage)
         {
+            _nowPage = nowPage;
             // Clear  TableLayout of FlawImages's controls
             tlpFlawImages.Controls.Clear();
             // Calculate about init.
@@ -621,26 +504,15 @@ namespace NPxP
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
             lblNowPage.Text = nowPage.ToString();
-            // Get now filter rows  Sort DataRow[]: 因為 _dtbFlaws.Select() 後資料排序會亂掉.
-            string sortedColumn = dgvFlaw.SortedColumn.Name;
-            string sortOrder = "";
-            if (dgvFlaw.SortOrder.ToString() == "Ascending")
-            {
-                sortOrder = "ASC";
-            }
-            else
-            {
-                sortOrder = "DESC";
-            }
-            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder); 
-            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter, sortString);
+            // Get flaw rows
+            DataRow[] rows = _dtbFlaws.Select();
 
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units, ref _mp);
                 SetDoubleBuffered(fi);
                 fi.Width = holderWidth;
                 fi.Height = holderHeight;
@@ -660,27 +532,16 @@ namespace NPxP
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
             lblNowPage.Text = nowPage.ToString();
-            // Get now filter rows
-            // Sort DataRow[]: 因為 _dtbFlaws.Select() 後資料排序會亂掉.
-            string sortedColumn = dgvFlaw.SortedColumn.Name;
-            string sortOrder = "";
-            if (dgvFlaw.SortOrder.ToString() == "Ascending")
-            {
-                sortOrder = "ASC";
-            }
-            else
-            {
-                sortOrder = "DESC";
-            }
-            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
-            DataRow[] rows = _dtbFlaws.Select(_dtbFlaws.DefaultView.RowFilter, sortString); 
+            // Get flaw rows
+            DataRow[] rows = _dtbFlaws.Select();
+
             int startFicIndex = (nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > _dtbFlaws.DefaultView.Count) ? _dtbFlaws.DefaultView.Count : (startFicIndex + pageSize);
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
 
-                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units, ref _mp);
                 SetDoubleBuffered(fi);
                 // set draw border
                 if(i == paintRowID)
@@ -695,52 +556,56 @@ namespace NPxP
             }
         }
 
-        // Function of Image
-        public static Bitmap ToGrayBitmap(byte[] rawValues, int width, int height)
+        // 更新 重新載入單位
+        public void RefreshdtbFlawsUnit()
         {
-            // Declare bitmap variable and lock memory
-            Bitmap bmp = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height),
-                ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
-
-            // Get image parameter
-            int stride = bmpData.Stride;  // Width of scan line
-            int offset = stride - width;  // Display width and the scan line width of the gap
-            IntPtr iptr = bmpData.Scan0;  // Get bmpData start position in memory
-            int scanBytes = stride * height;  // Size of the memory area
-
-            // Convert the original display size of the byte array into an array of bytes actually stored in the memory
-            int posScan = 0, posReal = 0;  // Declare two pointer, point to source and destination arrays
-            byte[] pixelValues = new byte[scanBytes];  // Declare array size
-            for (int x = 0; x < height; x++)
-            {
-                // Emulate line scanning
-                for (int y = 0; y < width; y++)
-                {
-                    pixelValues[posScan++] = rawValues[posReal++];
-                }
-                posScan += offset;  //Line scan finished
-            }
-
-            // Using Marshal.Copy function copy pixelValues to BitmapData
-            Marshal.Copy(pixelValues, 0, iptr, scanBytes);
-            bmp.UnlockBits(bmpData);  // Unlock memory
-
-            // Change 8 bit bitmap index table to Grayscale
-            ColorPalette tempPalette;
-            using (Bitmap tempBmp = new Bitmap(1, 1, PixelFormat.Format8bppIndexed))
-            {
-                tempPalette = tempBmp.Palette;
-            }
-            for (int i = 0; i < 256; i++)
-            {
-                tempPalette.Entries[i] = Color.FromArgb(i, i, i);
-            }
-
-            bmp.Palette = tempPalette;
-            return bmp;
+            NowUnit unitFlawListCD = _units.Find(x => x.ComponentName == "Flaw List CD");
+            dgvFlaw.Columns["CD"].HeaderText = dgvFlaw.Columns["CD"].Name + String.Format("({0})", unitFlawListCD.Symbol);
+            NowUnit unitFlawListMD = _units.Find(x => x.ComponentName == "Flaw List MD");
+            dgvFlaw.Columns["MD"].HeaderText = dgvFlaw.Columns["MD"].Name + String.Format("({0})", unitFlawListMD.Symbol);
+            NowUnit unitFlawListWidth = _units.Find(x => x.ComponentName == "Flaw List Width");
+            dgvFlaw.Columns["Width"].HeaderText = dgvFlaw.Columns["Width"].Name + String.Format("({0})", unitFlawListWidth.Symbol);
+            NowUnit unitFlawListLength = _units.Find(x => x.ComponentName == "Flaw List Height");
+            dgvFlaw.Columns["Length"].HeaderText = dgvFlaw.Columns["Length"].Name + String.Format("({0})", unitFlawListLength.Symbol);
+            NowUnit unitFlawListArea = _units.Find(x => x.ComponentName == "Flaw List Area");
+            dgvFlaw.Columns["Area"].HeaderText = dgvFlaw.Columns["Area"].Name + String.Format("({0})", unitFlawListArea.Symbol);
         }
 
+        // Check UI Buttons can using?
+        public void CheckPageUIState()
+        {
+            // for go to page
+            if (_totalPage > 1)
+            {
+                btnShowGoPage.Enabled = true;
+            }
+            else
+            {
+                btnShowGoPage.Enabled = false;
+            }
+
+            // for navigator page
+            if (_totalPage == 1)
+            {
+                btnNextFlawImages.Enabled = false;
+                btnPrevFlawImages.Enabled = false;
+            }
+            else if (_nowPage == _totalPage)
+            {
+                btnNextFlawImages.Enabled = false;
+                btnPrevFlawImages.Enabled = true;
+            }
+            else if (_nowPage == 1)
+            {
+                btnNextFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = false;
+            }
+            else
+            {
+                btnNextFlawImages.Enabled = true;
+                btnPrevFlawImages.Enabled = true;
+            }
+        }
         #endregion
 
         //-------------------------------------------------------------------------------------------//
@@ -762,26 +627,7 @@ namespace NPxP
             // re add need controls to tlpImages and update lblNowPage
             RefreshtlpImagesControls(_nowPage);
             // check now page and set can using buttons
-            if (_totalPage == 1)
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else if (_nowPage == _totalPage)
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = true;
-            }
-            else if (_nowPage == 1)
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = true;
-            }
+            CheckPageUIState();
         }
 
         private void btnPrevFlawImages_Click(object sender, EventArgs e)
@@ -799,26 +645,7 @@ namespace NPxP
             // re add need controls to tlpImages and update lblNowPage.
             RefreshtlpImagesControls(_nowPage);
             // check now page and set can using buttons
-            if (_totalPage == 1)
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else if (_nowPage == _totalPage)
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = true;
-            }
-            else if (_nowPage == 1)
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = true;
-            }
+            CheckPageUIState();
         }
 
         private void dgvFlaw_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -828,6 +655,7 @@ namespace NPxP
             int toPage = e.RowIndex / pageSize + 1;
             // re add need controls to tlpImages and update lblNowPage
             RefreshtlpImagesControls(toPage, e.RowIndex);
+            CheckPageUIState();
         }
 
         private void dgvFlaw_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -843,18 +671,7 @@ namespace NPxP
                 case "MD":
                     NowUnit umd = _units.Find(x => x.ComponentName == "Flaw List MD");
                     double md = Convert.ToDouble(e.Value);
-                    // e.Value = md * umd.Conversion;
-                    // 2012-10-19 Live Coding 小心Bug
-                    double tmpCut = 0;
-                    foreach (double cut in _cuts)
-                    {
-                        if (cut > md)
-                        {
-                            tmpCut = cut;
-                            break;
-                        }
-                    }
-                    e.Value = (md - (tmpCut - JobHelper.PxPInfo.Height)) * umd.Conversion;
+                    e.Value = md * umd.Conversion;
                     //e.Value += umd.Symbol;
                     break;
                 case "Width":
@@ -879,29 +696,13 @@ namespace NPxP
 
         }
 
-        public void DataTable_RowFilterChange(object sender, ListChangedEventArgs e)
+        public void CreateFlawImageControl()
         {
-            // UNDONE: 這邊改成使用GirdView資料列, 因為GridView排序之後會和下面對不起來.
-            // UNDONE: FlawImageControl加入時效能不佳須改善.
-            // Clear tableLyout controls and search data. 
-            DataView dv = sender as DataView;
             tlpFlawImages.Controls.Clear();
             int holderWidth = tlpFlawImages.Width / tlpFlawImages.ColumnCount;
             int holderHeight = tlpFlawImages.Height / tlpFlawImages.RowCount;
 
-            // Sort DataRow[]: 因為 _dtbFlaws.Select() 後資料排序會亂掉.
-            string sortedColumn = dgvFlaw.SortedColumn.Name;
-            string sortOrder = "";
-            if (dgvFlaw.SortOrder.ToString() == "Ascending")
-            {
-                sortOrder = "ASC";
-            }
-            else
-            {
-                sortOrder = "DESC";
-            }
-            string sortString = string.Format("{0} {1}, FlawID", sortedColumn, sortOrder);
-            DataRow[] rows = _dtbFlaws.Select(dv.RowFilter, sortString);
+            DataRow[] rows = _dtbFlaws.Select();
 
             // Calculate pages & set label and buttons
             int pageSize = tlpFlawImages.ColumnCount * tlpFlawImages.RowCount;
@@ -918,19 +719,11 @@ namespace NPxP
             lblTotalPage.Text = _totalPage.ToString();
             int startFicIndex = (_nowPage - 1) * pageSize;
             int endFicIndex = ((startFicIndex + pageSize) > rows.Length) ? rows.Length : (startFicIndex + pageSize);
-            // 計算完之後,判斷直接跳頁按鈕可否使用.
-            if (_totalPage > 1)
-            {
-                btnShowGoPage.Enabled = true;
-            }
-            else
-            {
-                btnShowGoPage.Enabled = false;
-            }
+           
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units, ref _mp);
                 SetDoubleBuffered(fi);
                 fi.Width = holderWidth;
                 fi.Height = holderHeight;
@@ -939,26 +732,15 @@ namespace NPxP
             }
 
             // Set can using buttons when oncut all button reset.
-            if (_totalPage > 1)
-            {
-                btnNextFlawImages.Enabled = true;
-                btnPrevFlawImages.Enabled = false;
-            }
-            else
-            {
-                btnNextFlawImages.Enabled = false;
-                btnPrevFlawImages.Enabled = false;
-            }
+            CheckPageUIState();
             dgvFlaw.ClearSelection();
         }
 
         private void dgvFlaw_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            _dtbFlaws.DefaultView.ListChanged -= new ListChangedEventHandler(this.DataTable_RowFilterChange);
-            _dtbFlaws.DefaultView.ListChanged += new ListChangedEventHandler(this.DataTable_RowFilterChange);
-            _dtbFlaws.DefaultView.RowFilter = _dtbFlaws.DefaultView.RowFilter;
             _nowPage = 1;
             RefreshtlpImagesControls(_nowPage);
+            CheckPageUIState();
         }
 
         private void btnShowGoPage_Click(object sender, EventArgs e)
@@ -966,6 +748,7 @@ namespace NPxP
             btnShowGoPage.Visible = false;
             txtGoPage.Focus();
             txtGoPage.SelectAll();
+           
         }
 
         private void btnGo_Click(object sender, EventArgs e)
@@ -986,46 +769,10 @@ namespace NPxP
                 // re add need controls to tlpImages and update lblNowPage
                 RefreshtlpImagesControls(_nowPage);
                 // check now page and set can using buttons
-                if (_totalPage == 1)
-                {
-                    btnNextFlawImages.Enabled = false;
-                    btnPrevFlawImages.Enabled = false;
-                }
-                else if (_nowPage == _totalPage)
-                {
-                    btnNextFlawImages.Enabled = false;
-                    btnPrevFlawImages.Enabled = true;
-                }
-                else if (_nowPage == 1)
-                {
-                    btnNextFlawImages.Enabled = true;
-                    btnPrevFlawImages.Enabled = false;
-                }
-                else
-                {
-                    btnNextFlawImages.Enabled = true;
-                    btnPrevFlawImages.Enabled = true;
-                }
+                CheckPageUIState();
             }
 
             btnShowGoPage.Visible = true;
-        }
-
-        #endregion
-    }
-
-    // Extend class 
-    public class ImageInfo : IImageInfo
-    {
-        #region IImageInfo 成員
-
-        public System.Drawing.Bitmap Image { set; get; }
-        public int Station { set; get; }
-
-        public ImageInfo(System.Drawing.Bitmap image, int station)
-        {
-            this.Image = image;
-            this.Station = station;
         }
 
         #endregion

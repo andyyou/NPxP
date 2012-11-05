@@ -23,18 +23,16 @@ namespace NPxP
         private double[] _pbRatio;
         private Image[] _srcImages;
         private List<NowUnit> _units;
-        private double _topOfPart;
 
         #endregion
 
         #region Constructor
 
-        public FlawForm(DataRow drFlaw, List<NowUnit> units, double topOfPart)
+        public FlawForm(DataRow drFlaw, List<NowUnit> units)
         {
             InitializeComponent();
             _drFlaw = drFlaw;
             _units = new List<NowUnit>(units);
-            _topOfPart = topOfPart;
         }
 
         #endregion
@@ -129,7 +127,7 @@ namespace NPxP
             lblFlawTypeVal.Text = _drFlaw["FlawType"].ToString();
             double cd = Convert.ToDouble(_drFlaw["CD"]) * ucd.Conversion;
             lblCDVal.Text = cd.ToString();
-            double md = (Convert.ToDouble(_drFlaw["MD"]) - _topOfPart) * umd.Conversion;
+            double md = Convert.ToDouble(_drFlaw["MD"]) * umd.Conversion;
             lblMDVal.Text = md.ToString();
             lblLengthVal.Text = _drFlaw["Length"].ToString();
             lblWidthVal.Text = _drFlaw["Width"].ToString();

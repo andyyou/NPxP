@@ -436,8 +436,9 @@ namespace NPxP
                 }
                 mdRange += ")";
 
+                var jobDoffNum = _mp._jobDoffNum;
                 DataHelper dh = new DataHelper();
-                dh.GetEachFlawQuantity(ref _mp._jobDoffNum, mdRange);
+                dh.GetEachFlawQuantity(ref jobDoffNum, mdRange);
                 _mp.UpdatePagesCount();
             }
             JobHelper.IsOpenHistory = false;

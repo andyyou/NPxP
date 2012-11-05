@@ -606,6 +606,7 @@ namespace NPxP
                 btnPrevFlawImages.Enabled = true;
             }
         }
+
         #endregion
 
         //-------------------------------------------------------------------------------------------//
@@ -656,6 +657,9 @@ namespace NPxP
             // re add need controls to tlpImages and update lblNowPage
             RefreshtlpImagesControls(toPage, e.RowIndex);
             CheckPageUIState();
+
+            // Show flaw annotation
+            _mp.ShowFlawAnnotation(dgvFlaw.Rows[e.RowIndex].Cells["FlawID"].Value.ToString());
         }
 
         private void dgvFlaw_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)

@@ -18,7 +18,6 @@ namespace NPxP
 
         private MapWindow _mp;
         private DataTable _dtbFlaws;
-        private string _originRowFilter;
         private List<bool> _doffResult;
         private bool btnPrevPieceStatus, btnNextPieceStatus;
         private List<double> _cuts;
@@ -65,8 +64,6 @@ namespace NPxP
 
             if (_dtbFlaws != null && _dtbFlaws.Select().Length > 0)
             {
-                _originRowFilter = _dtbFlaws.DefaultView.RowFilter;
-
                 int i = 0;
                 foreach (bool result in _doffResult)
                 {

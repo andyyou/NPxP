@@ -31,7 +31,6 @@ namespace NPxP
 
         private MapWindow _mp;
         private DataTable _dtbFlaws;
-        private DataView _dvFiliter;
         private List<NowUnit> _units;
         private List<double> _cuts;
         private string _xmlUnitsPath;
@@ -217,7 +216,6 @@ namespace NPxP
             btnShowGoPage.Enabled = false;
             _nowPage = 0;
             _totalPage = 0;
-            _dvFiliter = new DataView();
            
             // save datas in global helper.
             JobHelper.FlawTypes = flawTypes;
@@ -307,7 +305,7 @@ namespace NPxP
         public void OnOnline(bool isOnline)
         {
             JobHelper.IsOnline = isOnline;
-            JobHelper.IsOnpeHistory = false;
+            JobHelper.IsOpenHistory = false;
             WriteHelper.Log("OnOnline()");
         }
 
@@ -344,25 +342,18 @@ namespace NPxP
 
                         _cuts.Add(eventInfo.MD);
 
-                        if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)
+                        if (JobHelper.IsOnline || (JobHelper.IsOpenHistory && _cuts.Count == 1))
                         {
-                            if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
-                            {
-                                //_mp.UpdatePagesCount();
-                            }
-                            else
-                            {
-                                double topOfPart = eventInfo.MD - JobHelper.PxPInfo.Height;
+                            double topOfPart = eventInfo.MD - JobHelper.PxPInfo.Height;
 
-                                DataHelper dh = new DataHelper();
-                                dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, eventInfo.MD);
+                            DataHelper dh = new DataHelper();
+                            dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, eventInfo.MD);
 
-                                // Create flaw image controls
-                                CreateFlawImageControl();
+                            // Create flaw image controls
+                            CreateFlawImageControl();
 
-                                // Update MapWindow
-                                _mp.DrawChartPoint();
-                            }
+                            // Update MapWindow
+                            _mp.DrawChartPoint();
                         }
 
                         _mp.CalcEntirePieceResult();
@@ -423,14 +414,14 @@ namespace NPxP
         public void OnOpenHistory(double startMD, double stopMD)
         {
             // WriteHelper.Log("OnOpenHistory()");
-            JobHelper.IsOnpeHistory = true;
+            JobHelper.IsOpenHistory = true;
         }
 
         // (25) :停止工單
         public void OnJobStopped(double md)
         {
             // WriteHelper.Log("OnJobStopped()");
-            if (JobHelper.IsOnpeHistory)
+            if (JobHelper.IsOpenHistory)
             {
                 string mdRange = "(";
                 foreach (double bottomOfPart in _cuts)
@@ -449,7 +440,7 @@ namespace NPxP
                 dh.GetEachFlawQuantity(ref _mp._jobDoffNum, mdRange);
                 _mp.UpdatePagesCount();
             }
-            JobHelper.IsOnpeHistory = false;
+            JobHelper.IsOpenHistory = false;
             _mp.SettingUIControlStatus(true);
         }
 
@@ -541,7 +532,7 @@ namespace NPxP
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units, ref _mp);
                 SetDoubleBuffered(fi);
                 fi.Width = holderWidth;
                 fi.Height = holderHeight;
@@ -570,7 +561,7 @@ namespace NPxP
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
 
-                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units, ref _mp);
                 SetDoubleBuffered(fi);
                 // set draw border
                 if(i == paintRowID)
@@ -747,7 +738,7 @@ namespace NPxP
             // Add FlawImageControl in tableLayout.
             for (int i = startFicIndex; i < endFicIndex; i++)
             {
-                FlawImageControl fi = new FlawImageControl(rows[i], ref _units);
+                FlawImageControl fi = new FlawImageControl(rows[i], ref _units, ref _mp);
                 SetDoubleBuffered(fi);
                 fi.Width = holderWidth;
                 fi.Height = holderHeight;

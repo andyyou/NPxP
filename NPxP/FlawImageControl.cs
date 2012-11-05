@@ -23,6 +23,7 @@ namespace NPxP
         private double[] _pbRatio;
         private Image[] _srcImages;
         private List<NowUnit> _units;
+        private MapWindow _mp;
 
         #endregion
 
@@ -34,12 +35,13 @@ namespace NPxP
 
         #region Constructor
 
-        public FlawImageControl(DataRow drFlaw, ref List<NowUnit> units)
+        public FlawImageControl(DataRow drFlaw, ref List<NowUnit> units, ref MapWindow mp)
         {
             InitializeComponent();
             Boolean isSelectedTab = false;
             this._drFlaw = drFlaw;
             this._units = units;
+            this._mp = mp;
             IsDrawBorder = false;
             lblFlawID.Text += drFlaw["FlawID"].ToString();
             _pb = new PictureBox[JobHelper.JobInfo.NumberOfStations];
@@ -282,6 +284,7 @@ namespace NPxP
             row.Selected = true;
             dgv.FirstDisplayedScrollingRowIndex = row.Index;
 
+            _mp.ShowFlawAnnotation(_drFlaw["FlawID"].ToString());
         }
 
         #endregion    

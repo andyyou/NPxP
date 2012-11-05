@@ -37,6 +37,7 @@ namespace NPxP
         private int _currentPage, _totalPage; // Start from 1
         private int _totalScore;
         private string _filterType;
+        private string _showFlawAnnotation = "";
 
         #endregion
 
@@ -197,7 +198,7 @@ namespace NPxP
             _jobDoffNum.Clear();
             _doffResult.Clear();
 
-            if (JobHelper.IsOnpeHistory)
+            if (JobHelper.IsOpenHistory)
             {
                 cmbFilterType.SelectedItem = "All";
             }
@@ -445,9 +446,12 @@ namespace NPxP
 
         public void DrawChartPoint()
         {
+            // Hide flaw points annotation
+            _showFlawAnnotation = "";
+
             NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
 
-            if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)
+            if (JobHelper.IsOnline || JobHelper.IsOpenHistory)
             {
                 _currentPage = _cuts.Count;
                 _totalPage = _cuts.Count;
@@ -511,7 +515,7 @@ namespace NPxP
                 lblDoffValue.Text = _totalPage.ToString();
                 lblScoreValue.Text = _totalScore.ToString();
 
-                if (JobHelper.IsOnline || JobHelper.IsOnpeHistory)
+                if (JobHelper.IsOnline || JobHelper.IsOpenHistory)
                 {
                     double failCount = _doffResult.Count(n => n.Equals(false));
                     double passCount = _doffResult.Count(n => n.Equals(true));
@@ -616,7 +620,7 @@ namespace NPxP
                 _doffResult.Add(pieceResult);
 
                 // Fire when doff is fail
-                if (!JobHelper.IsOnpeHistory)
+                if (!JobHelper.IsOpenHistory)
                 {
                     if (pieceResult == false)
                     {
@@ -634,7 +638,7 @@ namespace NPxP
             }
 
             // Calc flaw number of this job
-            if (!JobHelper.IsOnpeHistory)
+            if (!JobHelper.IsOpenHistory)
             {
                 foreach (DataRow dr in flawRows)
                 {
@@ -651,7 +655,7 @@ namespace NPxP
             }
 
             // For open history use, only update pages count when cut pieces greater than 1
-            if (JobHelper.IsOnpeHistory && _cuts.Count > 1)
+            if (JobHelper.IsOpenHistory && _cuts.Count > 1)
             {
                 UpdatePagesCount();
             }
@@ -802,6 +806,16 @@ namespace NPxP
             emptyPointView.Color = Color.Transparent;
 
             chartControl.Series.Add(emptyPoint);
+        }
+
+        public void ShowFlawAnnotation(string flawId)
+        {
+            if (_showFlawAnnotation != "")
+            {
+                chartControl.Series[_showFlawAnnotation].LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+            }
+            _showFlawAnnotation = flawId;
+            chartControl.Series[flawId].LabelsVisibility = DevExpress.Utils.DefaultBoolean.True;
         }
 
         #endregion
@@ -1044,9 +1058,9 @@ namespace NPxP
                         //UNDONE: 歷史資料切換設定時需重判好壞
                         ReCalcPieceResult();
                         DrawChartPoint();
-                        JobHelper.IsOnpeHistory = true;
+                        JobHelper.IsOpenHistory = true;
                         UpdateUIControl();
-                        JobHelper.IsOnpeHistory = false;
+                        JobHelper.IsOpenHistory = false;
                     }
                 }
             }
@@ -1116,9 +1130,9 @@ namespace NPxP
                         //UNDONE: 歷史資料切換設定時需重判好壞
                         ReCalcPieceResult();
                         DrawChartPoint();
-                        JobHelper.IsOnpeHistory = true;
+                        JobHelper.IsOpenHistory = true;
                         UpdateUIControl();
-                        JobHelper.IsOnpeHistory = false;
+                        JobHelper.IsOpenHistory = false;
                     }
                 }
             }
@@ -1301,12 +1315,6 @@ namespace NPxP
             }
         }
 
-        private void chartControl_Click(object sender, EventArgs e)
-        {
-            JobHelper.Job.SetOffline();
-            JobHelper.IsOnline = false;
-        }
-
         private void chartControl_BoundDataChanged(object sender, EventArgs e)
         {
             foreach (Series series in this.chartControl.Series)
@@ -1331,13 +1339,30 @@ namespace NPxP
                 {
                     if (!(s.View is RangeAreaSeriesView) && s.LegendText != "")
                     {
-                        s.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+                        if (!s.Name.Equals(_showFlawAnnotation))
+                        {
+                            s.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+                        }
 
                         string filterExp = String.Format("Name = '{0}'", s.LegendText);
                         DataRow row = _dtbFlawLegends.Select(filterExp).First();
                         s.View.Color = System.Drawing.ColorTranslator.FromHtml(row["Color"].ToString());
                     }
                 }
+            }
+        }
+
+        private void chartControl_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                JobHelper.Job.SetOffline();
+                JobHelper.IsOnline = false;
+            }
+            else if (e.Button == MouseButtons.Right && _showFlawAnnotation != "")
+            {
+                chartControl.Series[_showFlawAnnotation].LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
+                _showFlawAnnotation = "";
             }
         }
 

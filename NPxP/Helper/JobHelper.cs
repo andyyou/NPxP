@@ -15,14 +15,14 @@ namespace NPxP.Helper
         public static IPxPInfo PxPInfo { set; get; }
         public static IWRJob Job;
         public static bool IsOnline { set; get; }
-        public static bool IsOnpeHistory { set; get; }
+        public static bool IsOpenHistory { set; get; }
         public static string DbConnectString { set; get; }
 
         static JobHelper()
         {
             // Default
             IsOnline = false;
-            IsOnpeHistory = false;
+            IsOpenHistory = false;
             DbConnectString = "";
         }
     }

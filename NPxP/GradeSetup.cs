@@ -19,7 +19,7 @@ namespace NPxP
     {
         #region Local Variables
 
-        private DataTable _dtbColumns, _dtbRows, _dtbPoints, _dtbGrades;
+        private DataTable _dtbColumns, _dtbRows, _dtbPoints, _dtbGrades, _dtbPassFail;
         private List<string> _pointsSubpieceNames, _marksSubpieceNames;
 
         #endregion
@@ -214,6 +214,33 @@ namespace NPxP
             dgvGrade.MultiSelect = false;
             dgvGrade.AutoGenerateColumns = false;
 
+            //
+            // Initialize dgvPassFail without data
+            Column pfName = new Column(0, "Grade", 200);
+            score = new Column(1, "Score", 200);
+            columns = new List<Column>();
+            columns.Add(pfName);
+            columns.Add(score);
+            foreach (Column c in columns)
+            {
+                DataGridViewCell cell = new DataGridViewTextBoxCell();
+                DataGridViewColumn column = new DataGridViewColumn();
+                column.CellTemplate = cell;
+                column.Name = c.Name;
+                column.HeaderText = c.Name;
+                column.Width = c.Width;
+                column.DataPropertyName = c.Name;
+                column.SortMode = DataGridViewColumnSortMode.Automatic;
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                if (c.Name == "Grade")
+                {
+                    column.ReadOnly = true;
+                }
+                dgvPassFail.Columns.Add(column);
+            }
+            dgvPassFail.MultiSelect = false;
+            dgvPassFail.AutoGenerateColumns = false;
+
             // Set dgvPoint datasource
             _dtbPoints = ch.GetDataTabledgvPoints(cmbConfig.SelectedItem.ToString().Trim());
             dgvPoint.DataSource = _dtbPoints;
@@ -235,7 +262,11 @@ namespace NPxP
 
             // Initialize Tab of grade/pass or fail
             chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbConfig.SelectedItem.ToString().Trim());
-            txtFilterScore.Text = ch.GetPassFailScore(cmbConfig.SelectedItem.ToString().Trim()).ToString();
+
+            // set dgvPassFail datasource
+            _dtbPassFail = ch.GetDataTabledgvPassFail(cmbConfig.SelectedItem.ToString().Trim());
+            dgvPassFail.DataSource = _dtbPassFail;
+            
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -303,21 +334,30 @@ namespace NPxP
                         _dtbPoints.Rows.Add(dr);
                     }
                 }
-
-                // Refresh Mark
+                // Rebuild Mark
                 foreach (string subpiece in _marksSubpieceNames)
                 {
                     string expr = String.Format("SubpieceName='{0}'", subpiece);
                     DataRow[] drs = _dtbGrades.Select(expr);
-                    if (drs.Length < 1)
-                    {
-                        DataRow dr = _dtbGrades.NewRow();
-                        dr["SubpieceName"] = subpiece;
-                        dr["GradeName"] = "A";
-                        dr["Score"] = 0;
-                        _dtbGrades.Rows.Add(dr);
-                    }
+                    foreach (var row in drs)
+                        row.Delete();
+
+                    DataRow dr = _dtbGrades.NewRow();
+                    dr["SubpieceName"] = subpiece;
+                    dr["GradeName"] = "A";
+                    dr["Score"] = 0;
+                    _dtbGrades.Rows.Add(dr);
+
                 }
+
+                // Rebuild Pass Fail
+              
+                _dtbPassFail.Rows.Clear();
+                DataRow drPassFail = _dtbPassFail.NewRow();
+                drPassFail["Grade"] = "A";
+                drPassFail["Score"] = 0;
+                _dtbPassFail.Rows.Add(drPassFail);
+
             }
         }
 
@@ -376,14 +416,14 @@ namespace NPxP
         private void btnSaveGradeConfigFile_Click(object sender, EventArgs e)
         {
             // if some data wrong will tip.
-            if (_dtbColumns.Rows.Count < 1 || _dtbRows.Rows.Count < 1 || _dtbPoints.Rows.Count < 1 || _dtbGrades.Rows.Count < 1)
+            if (_dtbColumns.Rows.Count < 1 || _dtbRows.Rows.Count < 1 || _dtbPoints.Rows.Count < 1 || _dtbGrades.Rows.Count < 1 || _dtbPassFail.Rows.Count < 1)
             {
                 MessageBox.Show("Input has null value.");
                 return;
             }
 
             DataHelper dh = new DataHelper();
-            if (dh.HasNull(_dtbColumns) || dh.HasNull(_dtbRows) || dh.HasNull(_dtbPoints) || dh.HasNull(_dtbGrades))
+            if (dh.HasNull(_dtbColumns) || dh.HasNull(_dtbRows) || dh.HasNull(_dtbPoints) || dh.HasNull(_dtbGrades) || dh.HasNull(_dtbPassFail))
             {
                 MessageBox.Show("Input has null value.");
                 return;
@@ -550,9 +590,27 @@ namespace NPxP
             // Pass or Fail
             // Save filter score is enable?
             navigator.SelectSingleNode("//grade/pass_fail/enable").SetValue(chkEnablePFS.Checked.ToString());
-            int filterScore = int.TryParse(txtFilterScore.Text, out filterScore) ? filterScore : 0;
-            navigator.SelectSingleNode("//grade/pass_fail/score").SetValue(filterScore.ToString());
 
+            // Pass Fail
+            // Remove old pass fail(score) for add new record . (_dtbPassFail)
+            if (navigator.Select("//grade//pass_fail/score").Count > 0)
+            {
+                XPathNavigator first = navigator.SelectSingleNode("//grade/pass_fail/score[1]");
+                XPathNavigator last = navigator.SelectSingleNode("//grade/pass_fail/score[last()]");
+                navigator.MoveTo(first);
+                navigator.DeleteRange(last);
+            }
+            
+            // save _dtbPassFail
+            //Move to last column element and add name value.
+            DataRow[] drsPassFail = _dtbPassFail.Select();
+            foreach (DataRow dr in drsPassFail)
+            {
+                string className = dr["Grade"].ToString();
+                string score = dr["Score"].ToString();
+                navigator.SelectSingleNode("//grade/pass_fail").AppendChildElement(string.Empty, "score", string.Empty, score);
+                navigator.SelectSingleNode("//grade/pass_fail/score[last()]").CreateAttribute(string.Empty, "id", string.Empty, className);
+            }
 
             // Finish Save
             //----------------------------------------------------------------------------------//
@@ -687,21 +745,13 @@ namespace NPxP
 
                 // Initialize Tab of grade/pass or fail
                 chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbConfig.SelectedItem.ToString().Trim());
-                txtFilterScore.Text = ch.GetPassFailScore(cmbConfig.SelectedItem.ToString().Trim()).ToString();
+                
+                // set dgvPassFail datasource
+                _dtbPassFail = ch.GetDataTabledgvPassFail(cmbConfig.SelectedItem.ToString().Trim());
+                dgvPassFail.DataSource = _dtbPassFail;
             }
         }
 
-        private void txtFilterScore_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (Char.IsDigit(e.KeyChar) || Char.IsControl(e.KeyChar))
-            {
-                e.Handled = false;
-            }
-            else
-            {
-                e.Handled = true;
-            }
-        }
 
         private void dgvPoint_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
@@ -791,6 +841,65 @@ namespace NPxP
                 chrNo++;
             }
         }
+        // dgvPassFail
+        private void dgvPassFail_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            if (dgvPassFail.Rows.Count <= 1)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void dgvPassFail_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == dgvPassFail.Rows.Count - 1 && dgvPassFail.Rows.Count < 5)
+            {
+                DataRow dr = _dtbPassFail.NewRow();
+                dr["Grade"] = "A";
+                dr["Score"] = 0;
+                _dtbPassFail.Rows.Add(dr);
+                DataRow[] drs = _dtbPassFail.Select();
+                int chrNo = 65;
+
+                foreach (DataRow d in drs)
+                {
+                    d["Grade"] = Chr(chrNo).ToString();
+                    chrNo++;
+                }
+            }
+            else
+            {
+                if (e.RowIndex == 4)
+                    MessageBox.Show("Other score belone grade \"F\" ");
+            }
+        }
+
+        private void dgvPassFail_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            if (String.IsNullOrEmpty(e.FormattedValue.ToString()))
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void dgvPassFail_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.Cancel = false;
+            MessageBox.Show("Input value format error.");
+        }
+
+        private void dgvPassFail_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            DataRow[] drs = _dtbPassFail.Select();
+            int chrNo = 65;
+
+            foreach (DataRow d in drs)
+            {
+                d["Grade"] = Chr(chrNo).ToString();
+                chrNo++;
+            }
+        }
+
 
         private void cmbConfig_DropDownClosed(object sender, EventArgs e)
         {
@@ -890,7 +999,10 @@ namespace NPxP
 
             // Initialize Tab of grade/pass or fail
             chkEnablePFS.Checked = ch.IsGradePassFailEnable(cmbConfig.SelectedItem.ToString().Trim());
-            txtFilterScore.Text = ch.GetPassFailScore(cmbConfig.SelectedItem.ToString().Trim()).ToString();
+
+            // set dgvPassFail datasource
+            _dtbPassFail = ch.GetDataTabledgvPassFail(cmbConfig.SelectedItem.ToString().Trim());
+            dgvPassFail.DataSource = _dtbPassFail;
         }
 
         private void chkEnablePonit_CheckedChanged(object sender, EventArgs e)
@@ -927,7 +1039,7 @@ namespace NPxP
 
         private void chkEnablePFS_CheckedChanged(object sender, EventArgs e)
         {
-            txtFilterScore.Enabled = chkEnablePFS.Checked;
+            dgvPassFail.Enabled = chkEnablePFS.Checked;
             if (chkEnablePFS.Checked)
             {
                 chkEnablePonit.Checked = true;
@@ -955,5 +1067,16 @@ namespace NPxP
         }
 
         #endregion       
+
+       
+
+       
+        
+
+       
+
+        
+
+       
     }
 }

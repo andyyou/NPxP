@@ -62,8 +62,8 @@
             this.lbSubPieceOfGrade = new System.Windows.Forms.Label();
             this.cmbSubMarks = new System.Windows.Forms.ComboBox();
             this.tpPassOrFail = new System.Windows.Forms.TabPage();
+            this.dgvPassFail = new System.Windows.Forms.DataGridView();
             this.lblScore = new System.Windows.Forms.Label();
-            this.txtFilterScore = new System.Windows.Forms.TextBox();
             this.chkEnablePFS = new System.Windows.Forms.CheckBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSaveGradeConfigFile = new System.Windows.Forms.Button();
@@ -84,6 +84,7 @@
             this.grbGradeSetting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvGrade)).BeginInit();
             this.tpPassOrFail.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPassFail)).BeginInit();
             this.SuspendLayout();
             // 
             // tabGradeSetup
@@ -471,8 +472,8 @@
             // 
             // tpPassOrFail
             // 
+            this.tpPassOrFail.Controls.Add(this.dgvPassFail);
             this.tpPassOrFail.Controls.Add(this.lblScore);
-            this.tpPassOrFail.Controls.Add(this.txtFilterScore);
             this.tpPassOrFail.Controls.Add(this.chkEnablePFS);
             this.tpPassOrFail.Location = new System.Drawing.Point(4, 25);
             this.tpPassOrFail.Name = "tpPassOrFail";
@@ -482,6 +483,25 @@
             this.tpPassOrFail.Text = "Pass / Fail";
             this.tpPassOrFail.UseVisualStyleBackColor = true;
             // 
+            // dgvPassFail
+            // 
+            this.dgvPassFail.AllowUserToAddRows = false;
+            this.dgvPassFail.AllowUserToResizeColumns = false;
+            this.dgvPassFail.AllowUserToResizeRows = false;
+            this.dgvPassFail.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvPassFail.Location = new System.Drawing.Point(15, 69);
+            this.dgvPassFail.MultiSelect = false;
+            this.dgvPassFail.Name = "dgvPassFail";
+            this.dgvPassFail.RowTemplate.Height = 24;
+            this.dgvPassFail.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvPassFail.Size = new System.Drawing.Size(462, 292);
+            this.dgvPassFail.TabIndex = 3;
+            this.dgvPassFail.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dgvPassFail_UserDeletingRow);
+            this.dgvPassFail.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgvPassFail_CellValidating);
+            this.dgvPassFail.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPassFail_CellEndEdit);
+            this.dgvPassFail.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgvPassFail_DataError);
+            this.dgvPassFail.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dgvPassFail_RowsRemoved);
+            // 
             // lblScore
             // 
             this.lblScore.AutoSize = true;
@@ -490,15 +510,6 @@
             this.lblScore.Size = new System.Drawing.Size(31, 12);
             this.lblScore.TabIndex = 2;
             this.lblScore.Text = "Score";
-            // 
-            // txtFilterScore
-            // 
-            this.txtFilterScore.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtFilterScore.Location = new System.Drawing.Point(50, 41);
-            this.txtFilterScore.Name = "txtFilterScore";
-            this.txtFilterScore.Size = new System.Drawing.Size(100, 22);
-            this.txtFilterScore.TabIndex = 1;
-            this.txtFilterScore.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFilterScore_KeyPress);
             // 
             // chkEnablePFS
             // 
@@ -585,6 +596,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvGrade)).EndInit();
             this.tpPassOrFail.ResumeLayout(false);
             this.tpPassOrFail.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvPassFail)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -626,13 +638,13 @@
         private System.Windows.Forms.ComboBox cmbSubMarks;
         private System.Windows.Forms.TabPage tpPassOrFail;
         private System.Windows.Forms.Label lblScore;
-        private System.Windows.Forms.TextBox txtFilterScore;
         private System.Windows.Forms.CheckBox chkEnablePFS;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSaveGradeConfigFile;
         private System.Windows.Forms.Label lblGradeConfig;
         private System.Windows.Forms.ComboBox cmbConfig;
         private System.Windows.Forms.Button btnReset;
+        private System.Windows.Forms.DataGridView dgvPassFail;
 
     }
 }

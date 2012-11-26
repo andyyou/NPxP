@@ -651,6 +651,32 @@ namespace NPxP.Helper
                 return dtb;
             }
         }
+        // 取得 所有 GradeSetup.cs/ dgvPassFail DataTable 
+        public DataTable GetDataTabledgvPassFail(string fileName)
+        { 
+            DataTable dtb = new DataTable();
+            dtb.Columns.Add("Grade", typeof(string));
+            dtb.Columns.Add("Score", typeof(int));
+
+            string grade_config_path = PathHelper.GradeConfigFolder + fileName + ".xml";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string expr = String.Format("//config/grade/pass_fail/score");
+                XPathNodeIterator node = navigator.Select(expr);
+                while (node.MoveNext())
+                {
+                    string grade = node.Current.SelectSingleNode("@id").Value;
+                    int score = Convert.ToInt32(node.Current.Value);
+                    DataRow dr = dtb.NewRow();
+                    dr["Grade"] = grade;
+                    dr["Score"] = score;
+                    dtb.Rows.Add(dr);
+                }
+                return dtb;
+            }
+        }
         // 取得 Grade / marks(grade) is enable
         public bool IsGradeMarksEnable(string fileName)
         {

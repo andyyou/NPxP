@@ -35,13 +35,13 @@
     <flaw_legend>
       <flaw_type>1000</flaw_type>
       <name>Not Classified</name>
-      <color>#FF0000</color>
+      <color>#000000</color>
       <shape>Triangle</shape>
     </flaw_legend>
     <flaw_legend>
       <flaw_type>1005</flaw_type>
       <name>正面刮傷</name>
-      <color>#98FB98</color>
+      <color>#000000</color>
       <shape>Circle</shape>
     </flaw_legend>
     <flaw_legend>

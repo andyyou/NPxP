@@ -39,52 +39,28 @@
       <shape>Triangle</shape>
     </flaw_legend>
     <flaw_legend>
-      <flaw_type>1005</flaw_type>
-      <name>正面刮傷</name>
-      <color>#98FB98</color>
-      <shape>Circle</shape>
+      <flaw_type>1001</flaw_type>
+      <name>ST1 Dark spot</name>
+      <color>#FF8040</color>
+      <shape>InvertedTriangle</shape>
     </flaw_legend>
     <flaw_legend>
-      <flaw_type>1006</flaw_type>
-      <name>正面斑點雜質</name>
+      <flaw_type>1002</flaw_type>
+      <name>ST1 Bright spot</name>
       <color>#FFD700</color>
+      <shape>Square</shape>
+    </flaw_legend>
+    <flaw_legend>
+      <flaw_type>1003</flaw_type>
+      <name>ST2 Dark spot</name>
+      <color>#008000</color>
       <shape>Circle</shape>
     </flaw_legend>
     <flaw_legend>
-      <flaw_type>1007</flaw_type>
-      <name>正面刮傷-1</name>
-      <color>#98FB98</color>
-      <shape>Circle</shape>
-    </flaw_legend>
-    <flaw_legend>
-      <flaw_type>1008</flaw_type>
-      <name>正面墊傷</name>
-      <color>#FFFF00</color>
-      <shape>Circle</shape>
-    </flaw_legend>
-    <flaw_legend>
-      <flaw_type>1009</flaw_type>
-      <name>背面刮傷</name>
+      <flaw_type>1004</flaw_type>
+      <name>ST2 Bright spot</name>
       <color>#0000FF</color>
-      <shape>Circle</shape>
-    </flaw_legend>
-    <flaw_legend>
-      <flaw_type>1010</flaw_type>
-      <name>背面斑點雜質</name>
-      <color>#800080</color>
-      <shape>Circle</shape>
-    </flaw_legend>
-    <flaw_legend>
-      <flaw_type>1011</flaw_type>
-      <name>背面刮傷-1</name>
-      <color>#0000FF</color>
-      <shape>Circle</shape>
-    </flaw_legend>
-    <flaw_legend>
-      <flaw_type>1012</flaw_type>
-      <name>背面墊傷</name>
-      <color>#00005E</color>
-      <shape>Circle</shape>
+      <shape>Cross</shape>
     </flaw_legend>
   </map_window>
 </config>

@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<config>
+  <roi>
+    <mode>Symmetrical</mode>
+    <columns>
+      <size>3</size>
+      <column>
+        <name>1</name>
+        <start>10</start>
+        <end>410</end>
+      </column>
+      <column>
+        <name>2</name>
+        <start>420</start>
+        <end>820</end>
+      </column>
+      <column>
+        <name>3</name>
+        <start>830</start>
+        <end>1230</end>
+      </column>
+    </columns>
+    <rows>
+      <size>2</size>
+      <row>
+        <name>1</name>
+        <start>10</start>
+        <end>510</end>
+      </row>
+      <row>
+        <name>2</name>
+        <start>530</start>
+        <end>1030</end>
+      </row>
+    </rows>
+  </roi>
+  <grade>
+    <points>
+      <enable>True</enable>
+      <sub_piece>
+        <name>All</name>
+        <flawtype_score id="1000">0</flawtype_score>
+        <flawtype_score id="1001">1</flawtype_score>
+        <flawtype_score id="1002">3</flawtype_score>
+        <flawtype_score id="1003">5</flawtype_score>
+        <flawtype_score id="1004">7</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-11</name>
+        <flawtype_score id="1000">0</flawtype_score>
+        <flawtype_score id="1001">1</flawtype_score>
+        <flawtype_score id="1002">3</flawtype_score>
+        <flawtype_score id="1003">5</flawtype_score>
+        <flawtype_score id="1004">7</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-12</name>
+        <flawtype_score id="1000">0</flawtype_score>
+        <flawtype_score id="1001">1</flawtype_score>
+        <flawtype_score id="1002">3</flawtype_score>
+        <flawtype_score id="1003">5</flawtype_score>
+        <flawtype_score id="1004">7</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-21</name>
+        <flawtype_score id="1000">0</flawtype_score>
+        <flawtype_score id="1001">1</flawtype_score>
+        <flawtype_score id="1002">3</flawtype_score>
+        <flawtype_score id="1003">5</flawtype_score>
+        <flawtype_score id="1004">7</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-22</name>
+        <flawtype_score id="1000">0</flawtype_score>
+        <flawtype_score id="1001">1</flawtype_score>
+        <flawtype_score id="1002">3</flawtype_score>
+        <flawtype_score id="1003">5</flawtype_score>
+        <flawtype_score id="1004">7</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-31</name>
+        <flawtype_score id="1000">0</flawtype_score>
+        <flawtype_score id="1001">1</flawtype_score>
+        <flawtype_score id="1002">3</flawtype_score>
+        <flawtype_score id="1003">5</flawtype_score>
+        <flawtype_score id="1004">7</flawtype_score>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-32</name>
+        <flawtype_score id="1000">0</flawtype_score>
+        <flawtype_score id="1001">1</flawtype_score>
+        <flawtype_score id="1002">3</flawtype_score>
+        <flawtype_score id="1003">5</flawtype_score>
+        <flawtype_score id="1004">7</flawtype_score>
+      </sub_piece>
+    </points>
+    <marks>
+      <enable>True</enable>
+      <sub_piece>
+        <name>All</name>
+        <mark id="A">0</mark>
+        <mark id="B">3</mark>
+        <mark id="C">7</mark>
+        <mark id="D">12</mark>
+        <mark id="E">20</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-11</name>
+        <mark id="A">0</mark>
+        <mark id="B">3</mark>
+        <mark id="C">7</mark>
+        <mark id="D">12</mark>
+        <mark id="E">20</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-12</name>
+        <mark id="A">0</mark>
+        <mark id="B">3</mark>
+        <mark id="C">7</mark>
+        <mark id="D">12</mark>
+        <mark id="E">20</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-21</name>
+        <mark id="A">0</mark>
+        <mark id="B">3</mark>
+        <mark id="C">7</mark>
+        <mark id="D">12</mark>
+        <mark id="E">20</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-22</name>
+        <mark id="A">0</mark>
+        <mark id="B">3</mark>
+        <mark id="C">7</mark>
+        <mark id="D">12</mark>
+        <mark id="E">20</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-31</name>
+        <mark id="A">0</mark>
+        <mark id="B">3</mark>
+        <mark id="C">7</mark>
+        <mark id="D">12</mark>
+        <mark id="E">20</mark>
+      </sub_piece>
+      <sub_piece>
+        <name>ROI-32</name>
+        <mark id="A">0</mark>
+        <mark id="B">3</mark>
+        <mark id="C">7</mark>
+        <mark id="D">12</mark>
+        <mark id="E">20</mark>
+      </sub_piece>
+    </marks>
+    <pass_fail>
+      <enable>True</enable>
+      <score>10</score>
+    </pass_fail>
+  </grade>
+</config>

@@ -1,48 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <system>
   <map_conf_name>default</map_conf_name>
   <grade_conf_name>default</grade_conf_name>
+  <!-- 顯示項目 0:All, 1:Pass, 2:Fail -->
+  <filter_display>0</filter_display>
   <dgv_flaw>
     <column>
       <name>Priority</name>
-      <size>100</size>
+      <width>78</width>
       <index>0</index>
     </column>
     <column>
       <name>FlawID</name>
-      <size>100</size>
-      <index>1</index>
-    </column>
-    <column>
-      <name>FlawClass</name>
-      <size>100</size>
-      <index>5</index>
-    </column>
-    <column>
-      <name>MD</name>
-      <size>100</size>
-      <index>4</index>
-    </column>
-    <column>
-      <name>CD</name>
-      <size>100</size>
-      <index>3</index>
-    </column>
-    <column>
-      <name>Area</name>
-      <size>100</size>
+      <width>100</width>
       <index>2</index>
     </column>
     <column>
+      <name>FlawClass</name>
+      <width>100</width>
+      <index>1</index>
+    </column>
+    <column>
+      <name>MD</name>
+      <width>137</width>
+      <index>3</index>
+    </column>
+    <column>
+      <name>CD</name>
+      <width>100</width>
+      <index>4</index>
+    </column>
+    <column>
+      <name>Area</name>
+      <width>100</width>
+      <index>5</index>
+    </column>
+    <column>
       <name>Width</name>
-      <size>100</size>
-      <index>11</index>
+      <width>100</width>
+      <index>6</index>
     </column>
     <column>
       <name>Length</name>
-      <size>100</size>
-      <index>10</index>
+      <width>100</width>
+      <index>7</index>
     </column>
-    <orderby>Priority</orderby>
+    <orderby>FlawID</orderby>
   </dgv_flaw>
 </system>

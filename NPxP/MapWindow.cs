@@ -571,19 +571,21 @@ namespace NPxP
             NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
 
             int score = 0;
+            bool pieceResult = false;
+            string pieceLevel = "F";
             DataRow[] flawRows = _dtbFlaws.Select();
 
             ConfigHelper ch = new ConfigHelper();
             string gradeConfigFile = ch.GetDefaultGradeConfigName();
             DataTable gradeColumn = ch.GetDataTableOfdgvColumns(gradeConfigFile);
             DataTable gradeRow = ch.GetDataTableOfdgvRows(gradeConfigFile);
+            DataTable passFailScore = ch.GetDataTabledgvPassFail(gradeConfigFile);
             string roiMode = ch.GetGradeNoRoiMode(gradeConfigFile);
             bool showScore = ch.IsGradePointEnable(gradeConfigFile);
-            double limitScore = ch.GetPassFailScore(gradeConfigFile);
+            //double limitScore = ch.GetPassFailScore(gradeConfigFile);
 
             if (roiMode == "Symmetrical" && showScore)
             {
-                bool pieceResult;
                 if (flawRows.Length > 0)
                 {
                     foreach (DataRow drCol in gradeColumn.Rows)
@@ -604,37 +606,75 @@ namespace NPxP
                             score += subPieceScore;
                         }
                     }
-                    if (score >= limitScore)
+                    //if (score >= limitScore)
+                    //{
+                    //    pieceResult = false;
+                    //}
+                    //else
+                    //{
+                    //    pieceResult = true;
+                    //}
+                    foreach (DataRow dr in passFailScore.Rows)
                     {
-                        pieceResult = false;
-                    }
-                    else
-                    {
-                        pieceResult = true;
+                        if (score <= Convert.ToInt32(dr["Score"]))
+                        {
+                            pieceResult = true;
+                            pieceLevel = dr["Grade"].ToString();
+                            break;
+                        }
                     }
                 }
                 else
                 {
                     pieceResult = true;
+                    pieceLevel = "A";
                 }
                 _doffResult.Add(pieceResult);
 
-                // Fire when doff is fail
-                if (!JobHelper.IsOpenHistory)
-                {
-                    if (pieceResult == false)
-                    {
-                        _fire.FireEvent(0, 0, 0);
-                    }
-                    else
-                    {
-                        _fire.FireEvent(1, 0, 0);
-                    }
-                }
             }
             else
             {
                 _doffResult.Add(true);
+                pieceResult = true;
+                pieceLevel = "A";
+            }
+
+            // Fire when doff is fail
+            if (!JobHelper.IsOpenHistory)
+            {
+                //if (pieceResult == false)
+                //{
+                //    _fire.FireEvent(0, 0, 0);
+                //}
+                //else
+                //{
+                //    _fire.FireEvent(1, 0, 0);
+                //}
+                if (pieceResult == false)
+                {
+                    _fire.FireEvent(5, 0, 0);
+                }
+                else
+                {
+                    switch (pieceLevel)
+                    {
+                        case "A":
+                            _fire.FireEvent(0, 0, 0);
+                            break;
+                        case "B":
+                            _fire.FireEvent(1, 0, 0);
+                            break;
+                        case "C":
+                            _fire.FireEvent(2, 0, 0);
+                            break;
+                        case "D":
+                            _fire.FireEvent(3, 0, 0);
+                            break;
+                        case "E":
+                            _fire.FireEvent(4, 0, 0);
+                            break;
+                    }
+                }
             }
 
             // Calc flaw number of this job
@@ -670,10 +710,17 @@ namespace NPxP
 
             if (_cuts.Count > 0)
             {
+                // get current using unit
+                NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
+                double cdOffset = JobHelper.PxPInfo.LeftOffset / ucd.Conversion;
+
+                DataHelper dh = new DataHelper();
+
                 foreach (double cut in _cuts)
                 {
-                    // get current using unit
-                    NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
+                    double topOfPart = cut - JobHelper.PxPInfo.Height;
+
+                    dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, cut);
 
                     int score = 0;
                     DataRow[] flawRows = _dtbFlaws.Select();
@@ -682,13 +729,14 @@ namespace NPxP
                     string gradeConfigFile = ch.GetDefaultGradeConfigName();
                     DataTable gradeColumn = ch.GetDataTableOfdgvColumns(gradeConfigFile);
                     DataTable gradeRow = ch.GetDataTableOfdgvRows(gradeConfigFile);
+                    DataTable passFailScore = ch.GetDataTabledgvPassFail(gradeConfigFile);
                     string roiMode = ch.GetGradeNoRoiMode(gradeConfigFile);
                     bool showScore = ch.IsGradePointEnable(gradeConfigFile);
-                    double limitScore = ch.GetPassFailScore(gradeConfigFile);
+                    //double limitScore = ch.GetPassFailScore(gradeConfigFile);
 
                     if (roiMode == "Symmetrical" && showScore)
                     {
-                        bool pieceResult;
+                        bool pieceResult = false;
                         if (flawRows.Length > 0)
                         {
                             foreach (DataRow drCol in gradeColumn.Rows)
@@ -709,13 +757,21 @@ namespace NPxP
                                     score += subPieceScore;
                                 }
                             }
-                            if (score >= limitScore)
+                            //if (score >= limitScore)
+                            //{
+                            //    pieceResult = false;
+                            //}
+                            //else
+                            //{
+                            //    pieceResult = true;
+                            //}
+                            foreach (DataRow dr in passFailScore.Rows)
                             {
                                 pieceResult = false;
-                            }
-                            else
-                            {
-                                pieceResult = true;
+                                if (score <= Convert.ToInt32(dr["Score"]))
+                                {
+                                    pieceResult = true;
+                                }
                             }
                         }
                         else
@@ -743,6 +799,10 @@ namespace NPxP
                         }
                     }
                 }
+                // Get current page flaws data
+                double top = _cuts[_currentPage - 1] - JobHelper.PxPInfo.Height;
+
+                dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, top, _cuts[_currentPage - 1]);
             }
         }
 
@@ -806,6 +866,7 @@ namespace NPxP
             emptyPointView.Color = Color.Transparent;
 
             chartControl.Series.Add(emptyPoint);
+            chartControl.Legend.Visible = false;
         }
 
         public void ShowFlawAnnotation(string flawId)

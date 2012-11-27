@@ -331,17 +331,21 @@ namespace NPxP
                       
                         _cuts.Add(eventInfo.MD);
                
-                        if (JobHelper.IsOnline || (JobHelper.IsOpenHistory && _cuts.Count == 1))
+                        //if (JobHelper.IsOnline || (JobHelper.IsOpenHistory && _cuts.Count == 1))
+                        if (JobHelper.IsOnline || JobHelper.IsOpenHistory)
                         {
                             double topOfPart = eventInfo.MD - JobHelper.PxPInfo.Height;
 
                             DataHelper dh = new DataHelper();
                             dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, eventInfo.MD);
 
-                            // Create flaw image controls
-                            CreateFlawImageControl();
-                            // Update MapWindow
-                            _mp.DrawChartPoint();
+                            if (JobHelper.IsOnline || (JobHelper.IsOpenHistory && _cuts.Count == 1))
+                            {
+                                // Create flaw image controls
+                                CreateFlawImageControl();
+                                // Update MapWindow
+                                _mp.DrawChartPoint();
+                            }
                         }
                         _mp.CalcEntirePieceResult();
                         break;
@@ -421,6 +425,7 @@ namespace NPxP
             }
             JobHelper.IsOpenHistory = false;
             _mp.SettingUIControlStatus(true);
+            _mp.JumpToSpecificPiece(1);
         }
 
         // (End -1)

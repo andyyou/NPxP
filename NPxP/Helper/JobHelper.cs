@@ -17,6 +17,7 @@ namespace NPxP.Helper
         public static bool IsOnline { set; get; }
         public static bool IsOpenHistory { set; get; }
         public static string DbConnectString { set; get; }
+        public static int JobKey { set; get; }
 
         static JobHelper()
         {
@@ -24,6 +25,7 @@ namespace NPxP.Helper
             IsOnline = false;
             IsOpenHistory = false;
             DbConnectString = "";
+            JobKey = 0;
         }
     }
 }

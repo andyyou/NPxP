@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using NPxP.Model;
+using System.Xml;
 
 namespace NPxP.Helper
 {
@@ -211,6 +212,144 @@ namespace NPxP.Helper
                 }
             }
         }
+
+        public bool AppendXmlToJobsPxPInfo()
+        {
+            bool isFinished = false;
+            if (JobHelper.JobKey != 0)
+            {
+                StringBuilder dbPxPInfo = new StringBuilder();
+                using (SqlConnection cn = new SqlConnection(_dbConnectString))
+                {
+                    cn.Open();
+                    string queryString = @"Select PxPInfo From dbo.Jobs Where klKey = @JobKey";
+                    SqlCommand cmd = new SqlCommand(queryString, cn);
+                    cmd.Parameters.AddWithValue("@JobKey", JobHelper.JobKey);
+
+                    SqlDataReader sd = cmd.ExecuteReader();
+                    if (sd.HasRows)
+                    {
+                        sd.Read();
+                        dbPxPInfo.Append(sd["PxPInfo"].ToString());
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+                // append system config
+                dbPxPInfo.Append("<!--System Start-->\n");
+                dbPxPInfo.Append("$");
+                XmlDocument docSystem = new XmlDocument();
+                string sysConfig = PathHelper.SystemConfigFolder + "default.xml";
+                docSystem.Load(sysConfig);
+                dbPxPInfo.Append(docSystem.InnerXml);
+
+                // append map config
+                dbPxPInfo.Append("<!--Map Start-->\n");
+                dbPxPInfo.Append("$");
+                XmlDocument docMapConfig = new XmlDocument();
+                ConfigHelper ch = new ConfigHelper();
+                string mapConfig = PathHelper.MapConfigFolder + ch.GetDefaultMapConfigName().Trim() + ".xml";
+                docMapConfig.Load(mapConfig);
+                dbPxPInfo.Append(docMapConfig.InnerXml);
+
+                // append grade config
+                dbPxPInfo.Append("<!--Grade Start-->\n");
+                dbPxPInfo.Append("$");
+                XmlDocument docGradeConfig = new XmlDocument();
+                string gradeConfig = PathHelper.GradeConfigFolder + ch.GetDefaultGradeConfigName().Trim() + ".xml";
+                docGradeConfig.Load(gradeConfig);
+                dbPxPInfo.Append(docGradeConfig.InnerXml);
+
+                using (SqlConnection cn = new SqlConnection(_dbConnectString))
+                {
+                    cn.Open();
+                    try
+                    {
+                        string updateQuery = @"Update dbo.Jobs SET PxPInfo = @PxPInfo WHERE klKey = @JobKey";
+                        SqlCommand cmd = new SqlCommand(updateQuery, cn);
+                        cmd.Parameters.AddWithValue("@JobKey", JobHelper.JobKey);
+                        cmd.Parameters.AddWithValue("@PxPInfo", dbPxPInfo.ToString());
+                        cmd.ExecuteNonQuery();
+                        isFinished = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        isFinished = false;
+                        WriteHelper.Log(ex.Message);
+                    }
+                }
+            }
+            return isFinished;
+        }
+        // Initialize database dbo.Jobs.PxPInfo xml 
+        public bool ReadDatabaseToObject()
+        {
+            using (SqlConnection cn = new SqlConnection(_dbConnectString))
+            {
+                cn.Open();
+                string queryString = @"Select PxPInfo From dbo.Jobs Where klKey = @JobKey";
+                SqlCommand cmd = new SqlCommand(queryString, cn);
+                cmd.Parameters.AddWithValue("@JobKey", JobHelper.JobKey);
+
+                SqlDataReader sd = cmd.ExecuteReader();
+                if (sd.HasRows)
+                {
+                    sd.Read();
+                    string[] documnets = sd["PxPInfo"].ToString().Split(new char[]{'$'});
+                    if (documnets.Length == 4)
+                    {
+                        XmlDocument sys = new XmlDocument();
+                        sys.LoadXml(documnets[1]);
+                        try
+                        {
+                            sys.Save(PathHelper.SystemConfigFolder + "default.database");
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteHelper.Log(ex.Message);
+                        }
+
+                        XmlDocument map = new XmlDocument();
+                        map.LoadXml(documnets[2]);
+                        try
+                        {
+                            map.Save(PathHelper.MapConfigFolder + "default.database");
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteHelper.Log(ex.Message);
+                        }
+
+                        XmlDocument grade = new XmlDocument();
+                        grade.LoadXml(documnets[3]);
+                        try
+                        {
+                            grade.Save(PathHelper.GradeConfigFolder + "default.database");
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteHelper.Log(ex.Message);
+                        }
+                    }
+                    else
+                    {
+                        WriteHelper.Log("PxPInfo 沒有NPxP XML");
+                        return false;
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+               
+            }
+        }
+
 
         // Function of Image
         public static Bitmap ToGrayBitmap(byte[] rawValues, int width, int height)

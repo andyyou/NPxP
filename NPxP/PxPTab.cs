@@ -444,7 +444,9 @@ namespace NPxP
                 }
                 else
                 {
-                    mdRange += "1 = 1";
+                    MessageBox.Show("This job is not Piece by Piece, Can't use this plugin!");
+                    return;
+                   
                 }
 
                 mdRange += ")";
@@ -453,6 +455,7 @@ namespace NPxP
                 DataHelper dh = new DataHelper();
                 dh.GetEachFlawQuantity(ref jobDoffNum, mdRange);
                 _mp.UpdatePagesCount();
+                _mp.JumpToSpecificPiece(1);
             }
             else
             {
@@ -470,7 +473,7 @@ namespace NPxP
             }
             JobHelper.IsOpenHistory = false;
             _mp.SettingUIControlStatus(true);
-            _mp.JumpToSpecificPiece(1);
+           
         }
 
         // (End -1)

@@ -304,6 +304,7 @@ namespace NPxP
         {
             JobHelper.JobKey = jobKey;
             // WriteHelper.Log("OnJobStarted()");
+            JobHelper.JobKey = jobKey;
             _mp.SettingUIControlStatus(false);
             _mp.ReloadDataTables();
             if (JobHelper.IsOpenHistory)
@@ -348,24 +349,29 @@ namespace NPxP
                         double cdOffset = JobHelper.PxPInfo.LeftOffset / unitFlawMapCD.Conversion;
                       
                         _cuts.Add(eventInfo.MD);
-               
+
+                        double topOfPart = eventInfo.MD - JobHelper.PxPInfo.Height;
+                        DataHelper dh = new DataHelper();               
                         //if (JobHelper.IsOnline || (JobHelper.IsOpenHistory && _cuts.Count == 1))
                         if (JobHelper.IsOnline || JobHelper.IsOpenHistory)
                         {
-                            double topOfPart = eventInfo.MD - JobHelper.PxPInfo.Height;
-
-                            DataHelper dh = new DataHelper();
                             dh.GetFlawDataFromDb(ref _dtbFlaws, cdOffset, topOfPart, eventInfo.MD);
-
-                            if (JobHelper.IsOnline || (JobHelper.IsOpenHistory && _cuts.Count == 1))
-                            {
-                                // Create flaw image controls
-                                CreateFlawImageControl();
-                                // Update MapWindow
-                                _mp.DrawChartPoint();
-                            }
+                            _mp.CalcEntirePieceResult();
                         }
-                        _mp.CalcEntirePieceResult();
+                        if (!JobHelper.IsOnline && !JobHelper.IsOpenHistory)
+                        {
+                            DataTable dtbFlaws = _dtbFlaws;
+                            dtbFlaws.Clear();
+                            dh.GetFlawDataFromDb(ref dtbFlaws, cdOffset, topOfPart, eventInfo.MD);
+                            _mp.CalcEntirePieceResult(dtbFlaws);
+                        }
+                        if (JobHelper.IsOnline || (JobHelper.IsOpenHistory && _cuts.Count == 1))
+                        {
+                            // Create flaw image controls
+                            CreateFlawImageControl();
+                            // Update MapWindow
+                            _mp.DrawChartPoint();
+                        }
                         break;
                     default:
                         break;
@@ -473,7 +479,6 @@ namespace NPxP
             }
             JobHelper.IsOpenHistory = false;
             _mp.SettingUIControlStatus(true);
-           
         }
 
         // (End -1)
@@ -772,7 +777,9 @@ namespace NPxP
                              rows.Length / pageSize :
                              rows.Length / pageSize + 1;
                 if (_totalPage == 0)
+                {
                     _totalPage = 1;
+                }
             }
             lblNowPage.Text = _nowPage.ToString();
             lblTotalPage.Text = _totalPage.ToString();

@@ -66,11 +66,13 @@ namespace NPxP.Helper
                                              T2.klJobKey = T3.fkJobKey AND
                                              T2.lFlawClassType = T3.lID AND
                                              T1.JobID = @JobID AND
+                                             T1.klKey = @JobKey AND
                                              T2.dMD > @MdBegin AND
                                              T2.dMD < @MdEnd
                                        Order by lFlawId";
 
                 SqlCommand cmd = new SqlCommand(queryString, cn);
+                cmd.Parameters.AddWithValue("@JobKey", JobHelper.JobKey);
                 cmd.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
                 cmd.Parameters.AddWithValue("@MdBegin", mdBegin);
                 cmd.Parameters.AddWithValue("@MdEnd", mdEnd);
@@ -112,8 +114,10 @@ namespace NPxP.Helper
                                     Where T1.klKey = T2.klJobKey AND
                                           T2.pklFlawKey = T3.klFlawKey AND
                                           T1.JobID = @JobID AND
+                                          T1.klKey = @JobKey AND
                                           T2.lFlawId = @FlawID";
                         SqlCommand cmd2 = new SqlCommand(queryString2, cn2);
+                        cmd2.Parameters.AddWithValue("@JobKey", JobHelper.JobKey);
                         cmd2.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
                         cmd2.Parameters.AddWithValue("@FlawID", dr["FlawID"]);
                         SqlDataReader sd2 = cmd2.ExecuteReader();
@@ -172,9 +176,11 @@ namespace NPxP.Helper
                                              T2.klJobKey = T3.fkJobKey AND
                                              T2.lFlawClassType = T3.lID AND
                                              T1.JobID = @JobID AND
+                                             T1.klKey = @JobKey AND
                                              T2.dMD > @MdBegin AND
                                              T2.dMD < @MdEnd";
                 SqlCommand cmd = new SqlCommand(queryString, cn);
+                cmd.Parameters.AddWithValue("@JobKey", JobHelper.JobKey);
                 cmd.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
                 cmd.Parameters.AddWithValue("@MdBegin", mdBegin);
                 cmd.Parameters.AddWithValue("@MdEnd", mdEnd);
@@ -198,10 +204,12 @@ namespace NPxP.Helper
                                        Where T1.klKey = T2.klJobKey AND
                                              T2.klJobKey = T3.fkJobKey AND
                                              T2.lFlawClassType = T3.lID AND
-                                             T1.JobID = @JobID AND ";
+                                             T1.JobID = @JobID AND
+                                             T1.klKey = @JobKey AND ";
                 queryString += string.Format("{0} Group by lID, sName Order by lID", mdRange);
 
                 SqlCommand cmd = new SqlCommand(queryString, cn);
+                cmd.Parameters.AddWithValue("@JobKey", JobHelper.JobKey);
                 cmd.Parameters.AddWithValue("@JobID", JobHelper.JobInfo.JobID);
                 SqlDataReader sd = cmd.ExecuteReader();
 

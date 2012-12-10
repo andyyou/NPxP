@@ -564,8 +564,13 @@ namespace NPxP
             catch { }
         }
 
-        // Calculate entiry piece score and send NG signal when piece fail
         public void CalcEntirePieceResult()
+        {
+            CalcEntirePieceResult(_dtbFlaws);
+        }
+
+        // Calculate entiry piece score and send NG signal when piece fail
+        public void CalcEntirePieceResult(DataTable dtbFlaws)
         {
             // get current using unit
             NowUnit ucd = _units.Find(x => x.ComponentName == "Flaw Map CD");
@@ -573,7 +578,7 @@ namespace NPxP
             int score = 0;
             bool pieceResult = false;
             string pieceLevel = "F";
-            DataRow[] flawRows = _dtbFlaws.Select();
+            DataRow[] flawRows = dtbFlaws.Select();
 
             ConfigHelper ch = new ConfigHelper();
             string gradeConfigFile = ch.GetDefaultGradeConfigName();
@@ -596,7 +601,7 @@ namespace NPxP
 
                             int subPieceScore = 0;
                             string subPieceFilter = String.Format("(CD >= {0} AND CD <= {1}) AND (MD > {2} AND MD < {3})", Convert.ToDouble(drCol["Start"]) / ucd.Conversion, Convert.ToDouble(drCol["End"]) / ucd.Conversion, (Convert.ToDouble(drRow["Start"]) / ucd.Conversion), (Convert.ToDouble(drRow["End"]) / ucd.Conversion));
-                            DataRow[] subFlawRows = _dtbFlaws.Select(subPieceFilter);
+                            DataRow[] subFlawRows = dtbFlaws.Select(subPieceFilter);
                             foreach (DataRow dr in subFlawRows)
                             {
                                 string pointFilter = String.Format("SubpieceName = 'ROI-{0}' AND ClassName = '{1}'", rangeName, dr["FlawClass"]);
@@ -675,11 +680,8 @@ namespace NPxP
                             break;
                     }
                 }
-            }
-
-            // Calc flaw number of this job
-            if (!JobHelper.IsOpenHistory)
-            {
+            
+                // Calc flaw number of this job
                 foreach (DataRow dr in flawRows)
                 {
                     string name = dr["FlawClass"].ToString();

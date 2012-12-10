@@ -771,6 +771,8 @@ namespace NPxP
                 _totalPage = rows.Length % pageSize == 0 ?
                              rows.Length / pageSize :
                              rows.Length / pageSize + 1;
+                if (_totalPage == 0)
+                    _totalPage = 1;
             }
             lblNowPage.Text = _nowPage.ToString();
             lblTotalPage.Text = _totalPage.ToString();

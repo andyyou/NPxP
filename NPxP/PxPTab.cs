@@ -201,6 +201,7 @@ namespace NPxP
         {
             // WriteHelper.Log("OnPxPConfig()");
             JobHelper.PxPInfo = info;
+            
         }
 
         // (16)
@@ -301,10 +302,27 @@ namespace NPxP
         // (19)
         public void OnJobStarted(int jobKey)
         {
+            JobHelper.JobKey = jobKey;
             // WriteHelper.Log("OnJobStarted()");
             JobHelper.JobKey = jobKey;
             _mp.SettingUIControlStatus(false);
             _mp.ReloadDataTables();
+            if (JobHelper.IsOpenHistory)
+            {
+                #region 說明
+                /*
+                 * 讀取history時要讀取database中的dbo.Jobs.PxPInfo欄位
+                 * 流程:  透過DataHelper.ReadDatabaseToObject() 先把資料庫中的xml轉存為各目錄下的 default.database
+                 *        再用ConfigHelper去讀取default.database 
+                 */
+                #endregion
+                // Prepare database dbo.Jobs.PxPInfo => local *.database files
+                DataHelper dh = new DataHelper();
+                dh.ReadDatabaseToObject();
+            }
+            
+            
+
         }
 
         // (20) :設定幾個 Events 就會觸發幾次
@@ -401,8 +419,12 @@ namespace NPxP
         // (D) :開啟歷史資料
         public void OnOpenHistory(double startMD, double stopMD)
         {
+            
+
             // WriteHelper.Log("OnOpenHistory()");
             JobHelper.IsOpenHistory = true;
+            
+            
         }
 
         // (25) :停止工單
@@ -412,6 +434,7 @@ namespace NPxP
             if (JobHelper.IsOpenHistory)
             {
                 string mdRange = "(";
+
                 if (_cuts.Count != 0)
                 {
                     foreach (double bottomOfPart in _cuts)
@@ -427,8 +450,11 @@ namespace NPxP
                 }
                 else
                 {
-                    mdRange += "1 = 1";
+                    MessageBox.Show("This job is not Piece by Piece, Can't use this plugin!");
+                    return;
+                   
                 }
+
                 mdRange += ")";
 
                 var jobDoffNum = _mp._jobDoffNum;
@@ -436,6 +462,20 @@ namespace NPxP
                 dh.GetEachFlawQuantity(ref jobDoffNum, mdRange);
                 _mp.UpdatePagesCount();
                 _mp.JumpToSpecificPiece(1);
+            }
+            else
+            {
+                // apend xml to database
+                DataHelper dh = new DataHelper();
+                if (dh.AppendXmlToJobsPxPInfo())
+                {
+                    //
+                }
+                else
+                {
+                    MessageBox.Show("Notice : config not saved in database");
+                }
+
             }
             JobHelper.IsOpenHistory = false;
             _mp.SettingUIControlStatus(true);

@@ -874,5 +874,657 @@ namespace NPxP.Helper
             }
             return true;
         }
+
+
+        // method using database generate xml data 
+        //--------------------------------------------------------------------------------------//
+
+        // Database: 取得 PxPTab.cs/dgvFlaw 要使用的欄位且排序完成.
+        public List<Column> GetdgvFlawColumnsByDB()
+        {
+            List<Column> columns = new List<Column>();
+
+            string system_config_path = PathHelper.SystemConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(system_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//dgv_flaw/column");
+                while (node.MoveNext())
+                {
+                    int index = Convert.ToInt32(node.Current.SelectSingleNode("index").Value);
+                    string columnName = node.Current.SelectSingleNode("name").Value;
+                    int width = Convert.ToInt32(node.Current.SelectSingleNode("width").Value);
+                    Column column = new Column(index, columnName, width);
+                    columns.Add(column);
+                }
+                columns.Sort((x, y) => x.Index.CompareTo(y.Index));
+                return columns;
+            }
+        }
+        // Database: 取得 PxPTab.cs/tlpFlawImages 幾列(預設)
+        public int GettlpFlawImagesRowsByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int row = Convert.ToInt32(navigator.SelectSingleNode("/config/pxptab/image_grid_rows").Value);
+
+                return row;
+            }
+        }
+        // Database: 取得 PxPTab.cs/tlpFlawImages 幾攔(預設)
+        public int GettlpFlawImagesColumnsByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int columns = Convert.ToInt32(navigator.SelectSingleNode("/config/pxptab/image_grid_columns").Value);
+
+                return columns;
+            }
+        }
+        // Database: 取得 PxPTab.cs/dgvFlaw 排序的欄位名稱
+        public string GetSortByColumnNameByDB()
+        {
+            string system_config_path = PathHelper.SystemConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(system_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string column = navigator.SelectSingleNode("//dgv_flaw/orderby").Value;
+
+                return column;
+            }
+        }
+        // Database: 取得 MapWindow Filter Type
+        public string GetFilterTypeByDB()
+        {
+            string system_config_path = PathHelper.SystemConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(system_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("/system/filter_display").Value);
+                // 顯示項目 0:All, 1:Pass, 2:Fail
+                string result;
+                switch (value)
+                {
+                    case 0:
+                        result = "All";
+                        break;
+                    case 1:
+                        result = "Pass";
+                        break;
+                    case 2:
+                        result = "Fail";
+                        break;
+                    default:
+                        result = "All";
+                        break;
+                }
+                return result;
+            }
+        }
+        // Database: 取得 MapSetup.cs Map 格線是否開啟
+        public bool GetIsDisplayMapGridByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//map_window/map_chart/grid_line_display").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 MapSetup.cs 格線顯示模式 0->FixCellSize, 1-> EachCellCount
+        public bool GetIsFixCellSizeModeByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/grid_line_mode").Value);
+                if (value == 0)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        // Database: 取得 FixCellSize 時 symbol
+        public string GetFixCellSizeSmybolByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string value = navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/fix/symbol").Value;
+                return value;
+            }
+        }
+        // Database: 取得 FixCellSize 時 CD
+        public double GetFixCellSizeCDByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                double value = Convert.ToDouble(navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/fix/cd").Value);
+                return value;
+            }
+        }
+        // Database: 取得 FixCellSize 時 MD
+        public double GetFixCellSizeMDByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                double value = Convert.ToDouble(navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/fix/md").Value);
+                return value;
+            }
+        }
+        // Database: 取得 CountSize 時 CD
+        public int GetCountSizeCDByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/count/cd").Value);
+                return value;
+            }
+        }
+        // Database: 取得 CountSize 時 MD
+        public int GetCountSizeMDByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/grid_line_set/count/md").Value);
+                return value;
+            }
+        }
+        // Database: 取得 Bottom Axes 
+        public string GetBottomAxesByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string value = navigator.SelectSingleNode("//map_window/map_chart/bottom_axes").Value;
+                return value;
+            }
+        }
+        // Database: 取得 MD 是否反轉(垂直翻轉)
+        public bool IsMdInver_Y_ByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//map_window/map_chart/md_inver").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 CD 是否反轉(水平翻轉)
+        public bool IsCdInver_X_ByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//map_window/map_chart/cd_inver").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 Map Control 的 X 比例(X:Y)
+        public int GetMapProportion_X_ByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/map_proportion[@name='x']").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 Map Control 的 Y 比例(X:Y)
+        public int GetMapProportion_Y_ByDB()
+        {
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//map_window/map_chart/map_proportion[@name='y']").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 Map Setup FlawLegend List
+        public List<string> GetPrevFlawLegendListByDB()
+        {
+            List<string> legends = new List<string>();
+            string map_config_path = PathHelper.MapConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//map_window/flaw_legend");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    legends.Add(name);
+                }
+                return legends;
+            }
+        }
+        // Database: 取得 Map Setup FlawLegend Dictionary (key=ClassID)
+        public Dictionary<int, string> GetPrevFlawLegendDictionaryByDB()
+        {
+            Dictionary<int, string> legends = new Dictionary<int, string>();
+            string map_config_path = PathHelper.MapConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//map_window/flaw_legend");
+                while (node.MoveNext())
+                {
+                    int flawtype = Convert.ToInt32(node.Current.SelectSingleNode("flaw_type").Value);
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    legends.Add(flawtype, name);
+                }
+                return legends;
+            }
+        }
+        // Database: 取得 Map Setup FlawLegend Dictionary (key=ClassName)
+        public Dictionary<string, int> GetPrevFlawLegendDictionaryIDByDB()
+        {
+            Dictionary<string, int> legends = new Dictionary<string, int>();
+            string map_config_path = PathHelper.MapConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//map_window/flaw_legend");
+                while (node.MoveNext())
+                {
+                    int flawtype = Convert.ToInt32(node.Current.SelectSingleNode("flaw_type").Value);
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    legends.Add(name, flawtype);
+                }
+                return legends;
+            }
+        }
+        // Database: 取得 Map Setup FlawLegend(FlawType) DataTable
+        public DataTable GetDataTablePrevFlawLegendByDB()
+        {
+            DataTable dtb = new DataTable("FlawLegends");
+            dtb.Columns.Add("FlawType", typeof(int));
+            dtb.Columns.Add("Name", typeof(string));
+            dtb.Columns.Add("Shape", typeof(string));
+            dtb.Columns.Add("Color", typeof(string));
+
+            Dictionary<string, string> dicLegendShape = new Dictionary<string, string>();
+            dicLegendShape.Add("Triangle", "▲");
+            dicLegendShape.Add("InvertedTriangle", "▼");
+            dicLegendShape.Add("Square", "■");
+            dicLegendShape.Add("Circle", "●");
+            dicLegendShape.Add("Plus", "✚");
+            dicLegendShape.Add("Cross", "✖");
+            dicLegendShape.Add("Star", "★");
+
+            string map_config_path = PathHelper.MapConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(map_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//map_window/flaw_legend");
+                while (node.MoveNext())
+                {
+                    int flawType = Convert.ToInt32(node.Current.SelectSingleNode("flaw_type").Value);
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    string color = node.Current.SelectSingleNode("color").Value;
+                    string shape = node.Current.SelectSingleNode("shape").Value;
+                    DataRow dr = dtb.NewRow();
+                    dr["FlawType"] = flawType;
+                    dr["Name"] = name;
+                    if (dicLegendShape.ContainsKey(shape))
+                    {
+                        dr["Shape"] = shape;
+                    }
+                    else
+                    {
+                        dr["Shape"] = "Circle";
+                    }
+                    dr["Color"] = color;
+
+                    dtb.Rows.Add(dr);
+                }
+                return dtb;
+            }
+
+        }
+        // Database: 取得 Grade Mode 
+        public string GetGradeNoRoiModeByDB()
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                string value = navigator.SelectSingleNode("//roi/mode").Value;
+
+                return value;
+            }
+        }
+        // Database: 取得 Grade Column Size
+        public int GetGradeColumnsByDB()
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//roi/columns/size").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 Grade Rows Size
+        public int GetGradeRowsByDB()
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//roi/rows/size").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 GradeSetup.cs/dgvColumns DataTable 設定資料
+        public DataTable GetDataTableOfdgvColumnsByDB()
+        {
+            DataTable dtb = new DataTable("Columns");
+            dtb.Columns.Add("Name", typeof(string));
+            dtb.Columns.Add("Start", typeof(double));
+            dtb.Columns.Add("End", typeof(double));
+
+            string grade_config_path = PathHelper.GradeConfigFolder +  "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//config/roi/columns/column");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    double start = Convert.ToDouble(node.Current.SelectSingleNode("start").Value);
+                    double end = Convert.ToDouble(node.Current.SelectSingleNode("end").Value);
+                    DataRow dr = dtb.NewRow();
+                    dr["Name"] = name;
+                    dr["Start"] = start;
+                    dr["End"] = end;
+
+                    dtb.Rows.Add(dr);
+                }
+                return dtb;
+            }
+        }
+        // Database: 取得 GradeSetup.cs/dgvRows DataTable 設定資料
+        public DataTable GetDataTableOfdgvRowsByDB()
+        {
+            DataTable dtb = new DataTable("Columns");
+            dtb.Columns.Add("Name", typeof(string));
+            dtb.Columns.Add("Start", typeof(double));
+            dtb.Columns.Add("End", typeof(double));
+
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//config/roi/rows/row");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.SelectSingleNode("name").Value;
+                    double start = Convert.ToDouble(node.Current.SelectSingleNode("start").Value);
+                    double end = Convert.ToDouble(node.Current.SelectSingleNode("end").Value);
+                    DataRow dr = dtb.NewRow();
+                    dr["Name"] = name;
+                    dr["Start"] = start;
+                    dr["End"] = end;
+
+                    dtb.Rows.Add(dr);
+                }
+                return dtb;
+            }
+        }
+        // Database: 取得 Grade / point is enable
+        public bool IsGradePointEnableByDB()
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//grade/points/enable").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 GradeSetup.cs/ points subpiece name list
+        public List<string> GetSubPointsNameListByDB()
+        {
+            List<string> subpieces = new List<string>();
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//grade/points/sub_piece/name");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.Value;
+
+                    subpieces.Add(name);
+                }
+                return subpieces;
+            }
+        }
+        // Database: 取得 GradeSetup.cs/ grade(marks) subpiece name list
+        public List<string> GetSubMarksNameListByDB()
+        {
+            List<string> subpieces = new List<string>();
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                XPathNodeIterator node = navigator.Select("//grade/marks/sub_piece/name");
+                while (node.MoveNext())
+                {
+                    string name = node.Current.Value;
+
+                    subpieces.Add(name);
+                }
+                return subpieces;
+            }
+        }
+        // Database: 取得 所有 GradeSetup.cs/ dgvPoint DataTable (All, ROI-11, ROI-12...) All in one table.
+        public DataTable GetDataTabledgvPointsByDB()
+        {
+            DataTable dtb = new DataTable();
+            dtb.Columns.Add("SubpieceName", typeof(string));
+            dtb.Columns.Add("ClassName", typeof(string));
+            dtb.Columns.Add("Score", typeof(int));
+            string map_path = GetDefaultMapConfigName();
+            Dictionary<int, string> flawTypeNames = GetPrevFlawLegendDictionaryByDB(); //<flawtype, name> ex : <0, Not Classified>
+
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string expr = String.Format("//config/grade/points/sub_piece");
+                XPathNodeIterator node = navigator.Select(expr);
+                while (node.MoveNext())
+                {
+                    string subpieceName = node.Current.SelectSingleNode("name").Value;
+                    XPathNodeIterator subNode = node.Current.Select("flawtype_score");
+                    while (subNode.MoveNext())
+                    {
+                        int flawtypeID = int.TryParse(subNode.Current.SelectSingleNode("@id").Value, out flawtypeID) ? flawtypeID : 0;
+                        string flawtypeName = "";
+                        if (flawTypeNames.ContainsKey(flawtypeID))
+                        {
+                            flawtypeName = flawTypeNames[flawtypeID];
+                        }
+                        else
+                        {
+                            flawtypeName = "* FlawType ID not match, Pleash check grade config";
+                        }
+                        int score = Convert.ToInt32(subNode.Current.Value);
+                        DataRow dr = dtb.NewRow();
+                        dr["SubpieceName"] = subpieceName;
+                        dr["ClassName"] = flawtypeName;
+                        dr["Score"] = score;
+
+                        dtb.Rows.Add(dr);
+                    }
+                }
+                return dtb;
+            }
+        }
+        // Database: 取得 所有 GradeSetup.cs/ dgvGrade DataTable (All, ROI-11, ROI-12...) All in one table.
+        public DataTable GetDataTabledgvGradeByDB()
+        {
+            DataTable dtb = new DataTable();
+            dtb.Columns.Add("SubpieceName", typeof(string));
+            dtb.Columns.Add("GradeName", typeof(string));
+            dtb.Columns.Add("Score", typeof(int));
+
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string expr = String.Format("//config/grade/marks/sub_piece");
+                XPathNodeIterator node = navigator.Select(expr);
+                while (node.MoveNext())
+                {
+                    string subpieceName = node.Current.SelectSingleNode("name").Value;
+                    XPathNodeIterator subNode = node.Current.Select("mark");
+                    while (subNode.MoveNext())
+                    {
+                        string flawtypeID = subNode.Current.SelectSingleNode("@id").Value;
+                        int score = Convert.ToInt32(subNode.Current.Value);
+                        DataRow dr = dtb.NewRow();
+                        dr["SubpieceName"] = subpieceName;
+                        dr["GradeName"] = flawtypeID;
+                        dr["Score"] = score;
+
+                        dtb.Rows.Add(dr);
+                    }
+                }
+                return dtb;
+            }
+        }
+        // Database: 取得 所有 GradeSetup.cs/ dgvPassFail DataTable 
+        public DataTable GetDataTabledgvPassFailByDB()
+        {
+            DataTable dtb = new DataTable();
+            dtb.Columns.Add("Grade", typeof(string));
+            dtb.Columns.Add("Score", typeof(int));
+
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+                string expr = String.Format("//config/grade/pass_fail/score");
+                XPathNodeIterator node = navigator.Select(expr);
+                while (node.MoveNext())
+                {
+                    string grade = node.Current.SelectSingleNode("@id").Value;
+                    int score = Convert.ToInt32(node.Current.Value);
+                    DataRow dr = dtb.NewRow();
+                    dr["Grade"] = grade;
+                    dr["Score"] = score;
+                    dtb.Rows.Add(dr);
+                }
+                return dtb;
+            }
+        }
+        // Database: 取得 Grade / marks(grade) is enable
+        public bool IsGradeMarksEnableByDB()
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//grade/marks/enable").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 Grade / pass_fail 
+        public bool IsGradePassFailEnableByDB()
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                bool value = Convert.ToBoolean(navigator.SelectSingleNode("//grade/pass_fail/enable").Value);
+
+                return value;
+            }
+        }
+        // Database: 取得 Grade / pass_fail / score
+        public int GetPassFailScoreByDB()
+        {
+            string grade_config_path = PathHelper.GradeConfigFolder + "default.database";
+            using (FileStream stream = new FileStream(grade_config_path, FileMode.Open))
+            {
+                XPathDocument document = new XPathDocument(stream);
+                XPathNavigator navigator = document.CreateNavigator();
+
+                int value = Convert.ToInt32(navigator.SelectSingleNode("//grade/pass_fail/score").Value);
+
+                return value;
+            }
+        }
     }
 }

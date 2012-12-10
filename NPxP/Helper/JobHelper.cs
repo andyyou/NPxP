@@ -25,6 +25,7 @@ namespace NPxP.Helper
             IsOnline = false;
             IsOpenHistory = false;
             DbConnectString = "";
+            JobKey = 0;
         }
     }
 }

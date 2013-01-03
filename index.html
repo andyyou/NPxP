@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="NPxP : Next generation plugin of Piece by Piece" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>NPxP</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/AndyYou/NPxP">View on GitHub</a>
+
+          <h1 id="project_title">NPxP</h1>
+          <h2 id="project_tagline">Next generation plugin of Piece by Piece</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/AndyYou/NPxP/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/AndyYou/NPxP/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>Requirement</h3>
+
+<h1></h1>
+
+<p>Windows XP/Vista/7
+.NET Framework 3.5</p>
+
+<h3>Installation</h3>
+
+<h1></h1>
+
+<h4>Install DevExpress dll</h4>
+
+<p><img src="http://www.winspection.com/npxp/1.png" alt="1"><img src="http://www.winspection.com/npxp/2.png" alt="2">
+Move dlls into C:\Windows\assembly. Notice: it has 8 dlls.
+<img src="http://www.winspection.com/npxp/3.png" alt="3">
+That's map chart control.</p>
+
+<h4>Deploy Parameter Files::NPxP Config</h4>
+
+<p><img src="http://www.winspection.com/npxp/4.png" alt="4">
+Copy all folder to <code>C:\Program Files\Web Ranger\Parameter Files\</code>
+Those config might not appropriate for your project, but next step will
+help you setup this. You just copy that.
+Check the <code>NPxP</code> folder has <code>system</code>,<code>grade</code>,<code>map</code> folders.</p>
+
+<h4>Install plugin</h4>
+
+<p><img src="http://www.winspection.com/npxp/5.png" alt="5"><img src="http://www.winspection.com/npxp/6.png" alt="6">
+PlugIns has three folders, that vaersion <code>2.7.3</code> , <code>2.8.x+</code>, <code>Others</code></p>
+
+<h5>2.7.3</h5>
+
+<hr><p>only support Web Inspector 2.7.3. that is not append xml of config into database. but fixed memory issue, and other bug issue.</p>
+
+<h6>2.8.x+</h6>
+
+<p>It's fixed current all issue. but not test with machine in production environment.</p>
+
+<h6>Others</h6>
+
+<p>The folder has some dll that for backup.
+System occur crush in XP sometime that cause RT and NPxP config broke.
+If you encounter this situation please check all config files.(Parameter Files) and use dlls.</p>
+
+<h6>Notes</h6>
+
+<p>In 2.7.3 version necessary a <code>C:\temp</code> folder that debug tool for log of exception.
+If you can't open software that show all empty on map please check that folder exists.
+<img src="http://www.winspection.com/npxp/7.png" alt="7"></p>
+
+<h3>Launch</h3>
+
+<h1></h1>
+
+<p><img src="http://www.winspection.com/npxp/8.png" alt="8">
+When you first start Web Inspector with NPxP Plugin . You should set some config in debug mode.
+That press <code>Ctrl + d</code> to open debug mode. and turn off the default Flawmap.
+<img src="http://www.winspection.com/npxp/9.png" alt="9">
+That's done. You can see screen as follow :
+<img src="http://www.winspection.com/npxp/10.png" alt="10"></p>
+
+<h3>Quick Setup</h3>
+
+<h1></h1>
+
+<p><img src="http://www.winspection.com/npxp/11.png" alt="11">
+Switch tab to <code>Queue</code> and load your job (mcs).
+then click <code>Map Setting</code> button to open window.
+<img src="http://www.winspection.com/npxp/12.png" alt="12">
+Click save. that's done.</p>
+
+<p>This step for load your defect data into map config.</p>
+
+<h3>Usage::Detail</h3>
+
+<h1></h1>
+
+<h4>Map Setting</h4>
+
+<hr><p>The map setting is for config map ex: shape, color.</p>
+
+<p><img src="http://www.winspection.com/npxp/13.png" alt="13">
+Start <code>Web Inspector</code> and switch tab to <code>Queue</code>
+Click <code>Edit</code> job to config for NPxP. </p>
+
+<p><img src="http://www.winspection.com/npxp/14.png" alt="14">
+The NPxP Plugin need some piece data from this.
+So it checked and enter width and height of Piece.</p>
+
+<p><img src="http://www.winspection.com/npxp/15.png" alt="15">
+Click <code>Load Next</code> job that help NPxP Plugin get defect and piece data.</p>
+
+<p><img src="http://www.winspection.com/npxp/16.png" alt="16">
+Click <code>Map Setting</code> open the setup window, You can setup your preferences here for map.
+If you first time use NPxP Plugin, even if doesn't edit anything , you should click <code>save</code> .</p>
+
+<p><img src="http://www.winspection.com/npxp/17.png" alt="17">
+Double click on cell then open color setup dialog. </p>
+
+<p><img src="http://www.winspection.com/npxp/18.png" alt="18">
+Check your preferences and save then should see success message.</p>
+
+<p><img src="http://www.winspection.com/npxp/19.png" alt="19">
+The legend can help you hide or show defect on map</p>
+
+<p><img src="http://www.winspection.com/npxp/20.png" alt="20">
+The shape is show your preferences.</p>
+
+<h4>Grade Setting</h4>
+
+<hr><p>The Grade is a custom scoring mechanism.</p>
+
+<h5>ROI Setting</h5>
+
+<p><img src="http://www.winspection.com/npxp/21.png" alt="21">
+The first step you should config grid's columns and rows.
+Then click <code>Create</code></p>
+
+<p><img src="http://www.winspection.com/npxp/22.png" alt="22">
+Set each grid size. Notice your unit that follow job.</p>
+
+<h5>Grade Setting</h5>
+
+<p><img src="http://www.winspection.com/npxp/23.png" alt="23">
+Switch to <code>Grade Setting Tab</code> and sub tab <code>Point</code> is mean your defect.
+You can set each defect score.</p>
+
+<p><img src="http://www.winspection.com/npxp/24.png" alt="24">
+Notice each grid has score own. If you want to set once for all grid(sub piece). Please select <code>All</code> and checked <code>Same value from [All] tag</code></p>
+
+<p><img src="http://www.winspection.com/npxp/25.png" alt="25">
+Each grid(sub piece) has a score that can get a level. According this level and score list.
+You can set A-E and assign a score. example: A:10 B:20 when grid get 15 that level is A.
+Other score belongs to F(ail).</p>
+
+<p><img src="http://www.winspection.com/npxp/26.png" alt="26">
+Pass or Fail Score is define a piece will send what event. A-F
+Again according this list, All grid(sub piece)'s total score will get a level (Event).
+Now all config is done.</p>
+
+<h4>Start Inspect</h4>
+
+<p><img src="http://www.winspection.com/npxp/27.png" alt="27">
+Click <code>Start</code> to start inspect.</p>
+
+<p><img src="http://www.winspection.com/npxp/28.png" alt="28">
+Top area will show about pass number , fail number, yield, and Total Score of this piece.</p>
+
+<p><img src="http://www.winspection.com/npxp/29.png" alt="29">
+Click <code>Fail Piece List</code> to open window that show all fail piece </p>
+
+<p><img src="http://www.winspection.com/npxp/30.png" alt="30">
+Click the row will switch to that fail piece</p>
+
+<p><img src="http://www.winspection.com/npxp/31.png" alt="31">
+The legend list help you show just you want to see.
+<img src="http://www.winspection.com/npxp/32.png" alt="32"></p>
+
+<p><img src="http://www.winspection.com/npxp/33.png" alt="33">
+Click the right table's tab will selection a defect and <code>GridView</code> selection realtime.
+<img src="http://www.winspection.com/npxp/34.png" alt="34"></p>
+
+<p><img src="http://www.winspection.com/npxp/35.png" alt="35">
+You can change pieces by <code>Prev</code> or <code>Next</code> button.</p>
+
+<p><img src="http://www.winspection.com/npxp/36.png" alt="36">
+Double click will show the defect detail information.
+<img src="http://www.winspection.com/npxp/37.png" alt="37"><img src="http://www.winspection.com/npxp/38.png" alt="38">
+You can Zoom in out this image of defect.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">NPxP maintained by <a href="https://github.com/AndyYou">AndyYou</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
